@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+ # Triggers the workflow on pull request event for the "main" branch.
+ pull_request:
+  branches: ["main"]
+
+ workflow_dispatch:
+
+# Defines the jobs to be run
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  env:
+   NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+
+  steps:
+   - uses: actions/checkout@v2 # Chekcs-out the repository under our Github Workspace to allow our jobs to access it.
+
+   - uses: actions/setup-node@v2 # Sets up a Node.js environment for the job.
+     with:
+      node-version: "18"
+
+   - name: Read Public API URL Variable (TEST)
+     run: echo "NEXT_PUBLIC_API_URL => ${{ secrets.NEXT_PUBLIC_API_URL }}"
+
+   # Ensure `package.json` has matching commands under the `run` keys.
+   # Installs dependencies defined in package.json
+   - name: Install dependencies
+     run: npm install
+
+   # Executes the lint script defined in package.json
+   - name: Run ESLint
+     run: npm lint
+
+   # Checks all files compliance with Prettier formatting
+   - name: Run Prettier Check
+     run: npm prettier-check
+
+   # Builds the project to catch build errors, replicate production environment, and ensuring project builds successfully.
+   - name: Build the project
+     run: npm build
