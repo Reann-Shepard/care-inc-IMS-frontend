@@ -31,7 +31,7 @@ jobs:
 
    # Executes the lint script defined in package.json
    - name: Run ESLint
-     run: npm lint
+     run: npm run lint
 
    # Checks all files compliance with Prettier formatting
    - name: Run Prettier Check
