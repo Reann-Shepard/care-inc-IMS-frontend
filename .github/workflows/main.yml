@@ -35,7 +35,7 @@ jobs:
 
    # Checks all files compliance with Prettier formatting
    - name: Run Prettier Check
-     run: npm prettier-check
+     run: npm run prettier-check
 
    # Builds the project to catch build errors, replicate production environment, and ensuring project builds successfully.
    - name: Build the project
