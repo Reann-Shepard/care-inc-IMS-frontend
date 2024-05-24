@@ -39,4 +39,4 @@ jobs:
 
    # Builds the project to catch build errors, replicate production environment, and ensuring project builds successfully.
    - name: Build the project
-     run: npm build
+     run: npm run build
