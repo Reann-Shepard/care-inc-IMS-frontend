@@ -98,9 +98,8 @@ export default function Alteration() {
                     Type <span className="font-bold text-red-600">*</span>
                   </p>
                   <details ref={detailsRef} className="dropdown mt-2 mb-8">
-                    <summary className="input input-bordered btn w-80 justify-between font-normal text-sm">
+                    <summary className="select input input-bordered btn w-80 justify-between font-normal text-sm">
                       <span>{inputData.type || 'Select device type'}</span>
-                      <span>V</span>
                     </summary>
                     <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80">
                       <li

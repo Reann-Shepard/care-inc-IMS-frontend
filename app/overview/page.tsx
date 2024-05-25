@@ -1,4 +1,4 @@
-import Card from '@/component/cards/Card';
+import Card from '@/components/cards/Card';
 
 interface CategoryData {
   name: string;
@@ -80,7 +80,7 @@ export default function Overview() {
       <p className="text-2xl text-center">(Header and NavBar)</p>
       <div className="w-full h-10 my-5 bg-gray-200 "></div>
       <div className="flex m-10 justify-center">
-        <div className="mr-20">
+        <div className="mr-10">
           <Card title="Devices" data={devices} />
           <Card title="Alterations" data={alterations} />
         </div>
@@ -88,11 +88,11 @@ export default function Overview() {
           <Card title="Total Packages" data={packages} />
           <Card title="Manufacturers" data={manufacturers} />
         </div>
-        <div className="border ml-20 m-10 border-black w-96 rounded-lg p-4">
-          <p className="text-xl font-bold bg-amber-400 p-2">
+        <div className="rounded-xl border-4 ml-20 m-10 border-black w-96">
+          <p className="text-xl font-bold p-4 rounded-t-lg bg-[#FFB931]">
             Recent Activities
           </p>
-          <div className="border-b-2 border-black">
+          <div className="border-b-2 border-black bg-white pt-2">
             <div className="bg-slate-200 p-4 rounded-xl m-4">
               <p className="text-lg font-bold">New Device added</p>
               <p className="text-sm">Details</p>
@@ -102,11 +102,11 @@ export default function Overview() {
               <p className="text-sm">Details</p>
             </div>
           </div>
-          <div className="border-b-2 h-36 p-4 border-black">
+          <div className="border-b-2 h-36 p-4 border-black bg-white">
             <p className="font-bold text-xl">Device Assigned</p>
             <p className="text-sm">Pre-package</p>
           </div>
-          <div className="border-b-2 h-36 p-4 border-black">
+          <div className="border-b-2 h-36 p-4 mb-2 border-black bg-white">
             <p className="font-bold text-xl">New Device Added</p>
             <p className="text-sm">Details</p>
           </div>
