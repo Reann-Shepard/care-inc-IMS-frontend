@@ -24,6 +24,14 @@ export default function Alteration() {
     shippingNumber: '',
   });
 
+  const typeItems = [
+    'Hearing Aid R',
+    'Hearing Aid L',
+    'Charger',
+    'Earmold',
+    'Remote',
+  ];
+
   const handleType = (selection: string) => {
     setInputData({ ...inputData, type: selection });
     if (detailsRef.current) {
@@ -102,36 +110,15 @@ export default function Alteration() {
                       <span>{inputData.type || 'Select device type'}</span>
                     </summary>
                     <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80">
-                      <li
-                        className="dropdown-item"
-                        onClick={() => handleType('Hearing Aid R')}
-                      >
-                        <a>Hearing Aid R</a>
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => handleType('Hearing Aid L')}
-                      >
-                        <a>Hearing Aid L</a>
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => handleType('Charger')}
-                      >
-                        <a>Charger</a>
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => handleType('Earmold')}
-                      >
-                        <a>Earmold</a>
-                      </li>
-                      <li
-                        className="dropdown-item"
-                        onClick={() => handleType('Remote')}
-                      >
-                        <a>Remote</a>
-                      </li>
+                      {typeItems.map((item) => (
+                        <li
+                          key={item}
+                          className="dropdown-item"
+                          onClick={() => handleType(item)}
+                        >
+                          <a>{item}</a>
+                        </li>
+                      ))}
                     </ul>
                   </details>
                 </td>
