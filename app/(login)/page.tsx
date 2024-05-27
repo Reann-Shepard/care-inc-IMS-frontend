@@ -4,15 +4,17 @@ import FormInput from '@/components/inputs/InputForm';
 import Image from 'next/image';
 import Link from 'next/link';
 import FormButton from '@/components/buttons/Button';
-import { useFormState } from 'react-dom';
-import { redirect } from 'next/navigation';
-
-function navOverview() {
-  redirect('/overview');
-}
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [state, action] = useFormState(navOverview, null);
+  const router = useRouter();
+
+  const handleLoginForm = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    console.log(formData.get('username'), formData.get('password'));
+    router.push('/overview');
+  };
 
   return (
     <div className="flex flex-col items-center justify-between bg-gray-900 min-h-screen">
@@ -31,7 +33,7 @@ export default function Home() {
             INVENTORY MANAGEMENT SYSTEM
           </span>
         </div>
-        <form action={action} className="flex flex-col gap-3 w-96">
+        <form onSubmit={handleLoginForm} className="flex flex-col gap-3 w-96">
           <FormInput
             name="username"
             label="Username * :"
