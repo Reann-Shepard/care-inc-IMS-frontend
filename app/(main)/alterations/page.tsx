@@ -66,7 +66,6 @@ export default function Alterations() {
 
   return (
     <div>
-      <p className="text-2xl text-center">(Header and NavBar)</p>
       <div className="w-full h-10 my-5 bg-gray-200 "></div>
       <div className="mt-20 flex justify-center">
         <form className="w-fit" onSubmit={handleSubmit}>

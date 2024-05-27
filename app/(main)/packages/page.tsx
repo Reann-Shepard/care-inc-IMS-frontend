@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { eventNames } from 'process';
 import React, { useEffect, useState, useRef } from 'react';
 
 interface Package {
@@ -277,7 +276,6 @@ export default function Packages() {
 
   return (
     <div>
-      <p className="text-2xl text-center">(Header and NavBar)</p>
       <div className="flex m-10 justify-between">
         <div className="flex items-center">
           <div className="flex items-center">
@@ -457,9 +455,12 @@ export default function Packages() {
                     </div>
                 </details> */}
         </div>
-        <button className="btn px-8 btn-success">
-          <Link href="/packages/add_package">+</Link>
-        </button>
+        <Link
+          className="btn px-10 font-bold text-white bg-[#54CE50]"
+          href="/packages/add_package"
+        >
+          +
+        </Link>
       </div>
       <div className="overflow-x-auto">
         <table className="table border-2">

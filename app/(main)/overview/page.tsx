@@ -78,8 +78,6 @@ export default function Overview() {
 
   return (
     <div>
-      <p className="text-2xl text-center">(Header and NavBar)</p>
-      <div className="w-full h-10 my-5 bg-gray-200 "></div>
       <div className="flex m-10 justify-center">
         <div className="mr-10">
           <Card title="Devices" data={devices} />
