@@ -1,15 +1,25 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+  const router = useRouter();
+
+  const handleLogoClick = () => {
+    router.push('/overview');
+  };
+
   return (
     <div className="flex items-center justify-between bg-gray-900 p-4">
-      <div className="">
+      <div className="cursor-pointer">
         <Image
           src={'/logos/logo_small.png'}
           alt="logo_small"
           width={150}
           height={150}
+          onClick={() => handleLogoClick()}
         />
       </div>
       <div>
