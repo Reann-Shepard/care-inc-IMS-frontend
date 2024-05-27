@@ -11,7 +11,9 @@ interface alterationInputData {
   shippingNumber: string;
 }
 
-export default function Alteration() {
+export default function Alterations() {
+  const title = 'Alterations';
+
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
   const [inputData, setInputData] = useState<alterationInputData>({

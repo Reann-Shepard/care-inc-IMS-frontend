@@ -6,6 +6,7 @@ interface CategoryData {
 }
 
 export default function Overview() {
+  const title = 'Overview';
   const devices: CategoryData[] = [
     {
       name: 'Oticon',

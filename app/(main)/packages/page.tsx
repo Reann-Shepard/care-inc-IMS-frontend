@@ -14,6 +14,7 @@ interface Package {
 }
 
 export default function Packages() {
+  const title = 'Packages';
   const [packages, setPackages] = useState<Package[]>([]);
   const sortByRef = useRef<HTMLDetailsElement>(null);
   const [sortBy, setSortBy] = useState<string>('company');
