@@ -19,12 +19,10 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Header />
-        <NavBar />
-        {children}
-      </body>
-    </html>
+    <div className={inter.className}>
+      <Header />
+      <NavBar />
+      {children}
+    </div>
   );
 }
