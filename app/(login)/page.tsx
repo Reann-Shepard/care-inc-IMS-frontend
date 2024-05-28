@@ -12,6 +12,8 @@ export default function Home() {
   const handleLoginForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+
+    // TODO: Remove the console log before deploying
     console.log(formData.get('username'), formData.get('password'));
     router.push('/overview');
   };
