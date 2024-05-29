@@ -1,7 +1,9 @@
-'use client';
-
 import Inventory from '@/component/Inventory/inventory_list';
 import { useState } from 'react';
+
+export const metadata = {
+  title: 'Inventory',
+};
 
 interface CategoryData {
   color: string;
