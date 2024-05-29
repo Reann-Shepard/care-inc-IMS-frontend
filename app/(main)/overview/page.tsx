@@ -4,9 +4,11 @@ interface CategoryData {
   name: string;
   count?: number;
 }
+export const metadata = {
+  title: 'Overview',
+};
 
 export default function Overview() {
-  const title = 'Overview';
   const devices: CategoryData[] = [
     {
       name: 'Oticon',

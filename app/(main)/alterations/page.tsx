@@ -10,10 +10,11 @@ interface alterationInputData {
   reason: string;
   shippingNumber: string;
 }
+export const metadata = {
+  title: 'Alterations',
+};
 
 export default function Alterations() {
-  const title = 'Alterations';
-
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
   const [inputData, setInputData] = useState<alterationInputData>({

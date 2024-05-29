@@ -20,9 +20,9 @@ export default function NavBar() {
   }, [path]);
 
   return (
-    <div className="navbar bg-base-100 items-center">
-      <div className="navbar-start hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 my-2">
+    <div className="navbar bg-base-100 items-center justify-center">
+      <div className="navbar-start flex justify-start w-full">
+        <ul className="menu menu-horizontal px-1 my-2 space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 xl:space-x-10 2xl:space-x-10">
           {navItems.map((item, index) => (
             <li
               key={index}
