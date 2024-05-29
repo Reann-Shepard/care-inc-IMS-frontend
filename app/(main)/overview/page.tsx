@@ -1,12 +1,14 @@
+'use client';
+
 import Card from '@/components/cards/Card';
 
 interface CategoryData {
   name: string;
   count?: number;
 }
-export const metadata = {
-  title: 'Overview',
-};
+// export const metadata = {
+//   title: 'Overview',
+// };
 
 export default function Overview() {
   const devices: CategoryData[] = [

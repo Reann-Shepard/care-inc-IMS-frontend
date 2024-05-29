@@ -11,9 +11,6 @@ interface Package {
   remote: string;
   charger: string;
 }
-export const metadata = {
-  title: 'Packages',
-};
 
 export default function Packages() {
   const [packages, setPackages] = useState<Package[]>([]);
