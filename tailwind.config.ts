@@ -16,6 +16,9 @@ const config: Config = {
       colors: {
         ochre: '#FFC05A',
       },
+      screens: {
+        xs: '350px',
+      },
     },
   },
   plugins: [require('daisyui')],
