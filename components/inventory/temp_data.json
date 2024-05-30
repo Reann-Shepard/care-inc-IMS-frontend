@@ -1,0 +1,43 @@
+[
+    {
+        "color": "Chroma Beige",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Oticon"
+    },
+
+    {
+        "color": "Silver Grey",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Oticon"
+    },
+
+    {
+        "color": "Chroma Beige",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Unitron"
+    },
+
+    {
+        "color": "Pink",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Unitron"
+    },
+
+    {
+        "color": "Chroma Beige",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Signia"
+    },
+
+    {
+        "color": "Red",
+        "type": "Left Hearing Aid",
+        "SN": "B60532",
+        "model": "Signia"
+    }
+  ]
