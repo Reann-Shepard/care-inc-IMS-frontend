@@ -1,4 +1,4 @@
-import Inventory from '@/component/Inventory/Inventory_ov';
+import Inventory from '@/components/inventory/Inventory_ov';
 
 interface CategoryData {
   name: string;
@@ -35,7 +35,6 @@ export default function InventoryOVPage() {
 
   return (
     <div>
-      <div className="text-2xl font-bold">Nav bar</div>
       <div className="flex justify-end mb-2 mr-10">
         <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
           +
