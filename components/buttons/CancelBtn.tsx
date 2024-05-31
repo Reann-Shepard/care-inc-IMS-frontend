@@ -1,10 +1,15 @@
-export default function CancelBtn() {
+import Link from 'next/link';
+
+interface CancelBtnProps {
+  pathName: string;
+}
+
+export default function CancelBtn({ pathName }: CancelBtnProps) {
   return (
     <div>
-      {/* path */}
-      {/* add_package need to back to Package */}
-      {/* alterations need to back to overview */}
-      <div className="mb-20 btn btn-danger">Cancel</div>
+      <div className="mb-20 btn btn-danger">
+        <Link href={pathName}>Cancel</Link>
+      </div>
     </div>
   );
 }

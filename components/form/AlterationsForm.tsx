@@ -138,7 +138,7 @@ export default function AlterationsForm() {
             </tr>
             <tr>
               <td>
-                <SubmitAndCancelDiv />
+                <SubmitAndCancelDiv cancelPath="./overview" />
               </td>
             </tr>
           </tbody>

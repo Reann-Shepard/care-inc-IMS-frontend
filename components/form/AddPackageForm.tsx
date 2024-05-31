@@ -269,7 +269,7 @@ export default function AddPackage() {
           onChangeHandler={handleDevice4Input}
         />
 
-        <SubmitAndCancelDiv />
+        <SubmitAndCancelDiv cancelPath="./" />
       </form>
     </div>
   );
