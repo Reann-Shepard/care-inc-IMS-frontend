@@ -27,7 +27,6 @@ export default function InputDropdownBox({
     name: string | number;
   } | null>(null);
   // const title = name[0].toUpperCase() + name.slice(1);
-
   const handleSelect = (selection: string | number) => {
     detailsRef.current?.removeAttribute('open');
     setSelectedItem({ name: selection });
