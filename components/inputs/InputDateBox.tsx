@@ -25,12 +25,12 @@ export default function InputBox({
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <input
-        type="text"
+        type="date"
         placeholder={placeholder}
         name={name}
         value={value}
         onChange={onChangeHandler}
-        required={isRequired}
+        required
         className="mt-2 mb-8 text-sm input input-bordered w-80"
       />
     </div>
