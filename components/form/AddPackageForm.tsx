@@ -142,6 +142,11 @@ export default function AddPackage() {
     });
   };
 
+  // const handleDeviceInput = ( e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setInputData({ ...inputData, [name]: value });
+  // };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputData.device1.type.length > 0) {
@@ -204,6 +209,7 @@ export default function AddPackage() {
                   placeholder="Select manufacturer"
                   isRequired
                   name="manufacturer"
+                  value={inputData.manufacturer}
                   data={manufacturers}
                   onChangeHandler={handleInput}
                 />
@@ -226,6 +232,7 @@ export default function AddPackage() {
 
         <DeviceFormInAddPackage
           listTitle="Device 1:"
+          name="device1"
           typeData={typeItems}
           type={inputData.device1.type}
           deviceId={inputData.device1.deviceId}
@@ -235,6 +242,7 @@ export default function AddPackage() {
         />
         <DeviceFormInAddPackage
           listTitle="Device 2:"
+          name="device2"
           typeData={typeItems}
           type={inputData.device2.type}
           deviceId={inputData.device2.deviceId}
@@ -244,6 +252,7 @@ export default function AddPackage() {
         />
         <DeviceFormInAddPackage
           listTitle="Device 3:"
+          name="device3"
           typeData={typeItems}
           type={inputData.device3.type}
           deviceId={inputData.device3.deviceId}
@@ -253,6 +262,7 @@ export default function AddPackage() {
         />
         <DeviceFormInAddPackage
           listTitle="Device 4:"
+          name="device4"
           typeData={typeItems}
           type={inputData.device4.type}
           deviceId={inputData.device4.deviceId}
