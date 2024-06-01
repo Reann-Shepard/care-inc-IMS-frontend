@@ -1,4 +1,5 @@
 import dataSet from '@/components/inventory/temp_inv-ovData.json';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Inventory',
@@ -34,9 +35,11 @@ export default function InventoryOVPage() {
   return (
     <div>
       <div className="flex justify-end mb-2 mr-10">
-        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
-          +
-        </button>
+        <Link href="/inventory/add_inventory">
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
+            +
+          </button>
+        </Link>
       </div>
       <table className="table border-2">
         <thead>
