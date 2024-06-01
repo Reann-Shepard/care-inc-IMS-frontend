@@ -1,4 +1,5 @@
 import Inventory from '@/components/inventory/Inventory_ov';
+import Link from 'next/link';
 
 interface CategoryData {
   name: string;
@@ -35,10 +36,17 @@ export default function InventoryOVPage() {
 
   return (
     <div>
-      <div className="flex justify-end mb-2 mr-10">
+      {/* <div className="flex justify-end mb-2 mr-10">
         <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
           +
         </button>
+      </div> */}
+      <div className="flex justify-end flex-grow">
+        <Link href="/inventory/add_inventory">
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
+            +
+          </button>
+        </Link>
       </div>
       <div className="w-full h-10 my-5 px-5 bg-gray-200 flex items-center">
         <div className="text-l font-bold mr-20 w-1/6">Company</div>
