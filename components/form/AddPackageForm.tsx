@@ -98,17 +98,6 @@ export default function AddPackage() {
     setInputData({ ...inputData, [name]: value });
   };
 
-  // const handleDeviceListInput = (deviceNum: keyof newPackageInputData, e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setInputData({
-  //     ...inputData,
-  //     [deviceNum]: {
-  //       ...inputData[deviceNum],
-  //       [name]: value,
-  //     },
-  //   });
-  // }
-
   const handleDevice1Input = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInputData({
@@ -201,6 +190,7 @@ export default function AddPackage() {
             <tr>
               <td>
                 <InputDateBox
+                  label="Stock Date"
                   placeholder="Select date"
                   isRequired
                   name="stockDate"
@@ -210,6 +200,7 @@ export default function AddPackage() {
               </td>
               <td className="pl-12">
                 <InputDropdownBox
+                  label="Manufacturer"
                   placeholder="Select manufacturer"
                   isRequired
                   name="manufacturer"
@@ -221,6 +212,7 @@ export default function AddPackage() {
             <tr>
               <td>
                 <InputBox
+                  label="Color"
                   placeholder="Enter color"
                   isRequired
                   name="color"

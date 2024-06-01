@@ -169,7 +169,11 @@ export default function PackagesPage() {
     <div>
       <div className="flex m-10 justify-between">
         <div className="flex items-center">
-          <SortByBtn dataColumnName={dataColumnName} onSortBy={handleSortBy} />
+          <SortByBtn
+            dataColumnName={dataColumnName}
+            value={sortBy}
+            onSortBy={handleSortBy}
+          />
           <FilterBtn />
         </div>
         <Link
