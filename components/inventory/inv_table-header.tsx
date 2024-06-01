@@ -10,6 +10,7 @@ export interface CategoryData {
 import { useState, useEffect, use } from 'react';
 import tempData from './temp_data.json';
 import Inventory from './inventory_list';
+import Link from 'next/link';
 const dataSet: CategoryData[] = tempData;
 
 export default function InventoryHeader() {
@@ -93,9 +94,11 @@ export default function InventoryHeader() {
           </div>
         </div>
         <div className="flex justify-end flex-grow">
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
-            +
-          </button>
+          <Link href="/inventory/add_inventory">
+            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
+              +
+            </button>
+          </Link>
         </div>
       </div>
 
