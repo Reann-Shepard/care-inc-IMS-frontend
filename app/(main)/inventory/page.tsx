@@ -1,20 +1,72 @@
-import Inventory from '@/component/Inventory/inventory_list';
-import { useState } from 'react';
+import dataSet from '@/components/inventory/temp_inv-ovData.json';
 
 export const metadata = {
   title: 'Inventory',
 };
 
 interface CategoryData {
-  color: string;
-  type: string;
-  SN: string;
+  name: string;
+  model: string;
+  quantity: number;
 }
 
-export default function InventoryPage() {
+export default function InventoryOVPage() {
+  const devices: CategoryData[] = dataSet;
+
+  const header = ['Company', 'Model', 'Amount'];
+
+  const data = devices.map((device) => [
+    device.name,
+    device.model,
+    device.quantity,
+  ]);
+
+  const getBGColor = (quantity: number) => {
+    if (quantity <= 2) {
+      return 'bg-red-300';
+    } else if (quantity <= 5) {
+      return 'bg-yellow-300';
+    } else {
+      return 'bg-green-300';
+    }
+  };
+
   return (
     <div>
-      <InventoryHeader />
+      <div className="flex justify-end mb-2 mr-10">
+        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
+          +
+        </button>
+      </div>
+      <table className="table border-2">
+        <thead>
+          <tr className="text-lg text-black bg-gray-200 text-center">
+            {header.map((item) => (
+              <th key={item}>{item}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data &&
+            data.map((row, index) => (
+              <tr key={index} className="text-lg text-center hover ">
+                {row.map((item, index) => (
+                  <td key={index} className="">
+                    <div
+                      className={
+                        (index === 2
+                          ? 'w-1/12 m-auto rounded-full bg-opacity-70 border-red-300 '
+                          : '') + (index === 2 ? getBGColor(Number(item)) : '')
+                      }
+                    >
+                      {item}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 }
