@@ -1,4 +1,4 @@
-import AddPackageForm from '@/components/form/AddPackageForm';
+import AddPackageForm from '@/components/forms/AddPackageForm';
 
 export const metadata = {
   title: 'Add new packages',

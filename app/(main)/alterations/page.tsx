@@ -1,4 +1,4 @@
-import AlterationsForm from '@/components/form/AlterationsForm';
+import AlterationsForm from '@/components/forms/AlterationsForm';
 
 export const metadata = {
   title: 'Alterations',

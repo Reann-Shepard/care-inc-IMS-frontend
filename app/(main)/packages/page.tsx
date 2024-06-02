@@ -1,4 +1,4 @@
-import PackagesPage from '@/components/form/PackagePage';
+import PackagesPage from '@/components/pages/PackagePage';
 
 export const metadata = {
   title: 'Packages',

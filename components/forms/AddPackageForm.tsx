@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import InputDateBox from '@/components/inputs/InputDateBox';
 import InputBox from '@/components/inputs/InputBox';
 import InputDropdownBox from '@/components/inputs/InputDropdownBox';
-import DeviceFormInAddPackage from '@/components/form/DeviceFormInAddPackage';
+import DeviceFormInAddPackage from '@/components/forms/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
 
 interface DeviceData {
