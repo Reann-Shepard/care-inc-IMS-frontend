@@ -164,6 +164,7 @@ export default function PackagesPage() {
     eachPackage.remote,
     eachPackage.charger,
   ]);
+  const filterHeader = ['Company', 'Model', 'Color'];
 
   return (
     <div>
@@ -174,7 +175,7 @@ export default function PackagesPage() {
             value={sortBy}
             onSortBy={handleSortBy}
           />
-          <FilterBtn />
+          <FilterBtn dataTitle={filterHeader} data={data} />
         </div>
         <Link
           href="/packages/add_package"
