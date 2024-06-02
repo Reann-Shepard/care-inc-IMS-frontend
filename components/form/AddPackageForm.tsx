@@ -56,6 +56,7 @@ export default function AddPackage() {
     },
   });
 
+  // !@TODO: fetch data from database
   const manufacturers = [
     'Oticon',
     'Unitron (V.RS.7)',
@@ -63,6 +64,7 @@ export default function AddPackage() {
     'Signia',
   ];
 
+  // !@TODO: fetch data from database
   const typeItems = [
     'Hearing Aid R',
     'Hearing Aid L',

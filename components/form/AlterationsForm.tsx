@@ -27,6 +27,7 @@ export default function AlterationsForm() {
     shippingNumber: '',
   });
 
+  // !@TODO: fetch data from database
   const typeItems = [
     'Hearing Aid R',
     'Hearing Aid L',
