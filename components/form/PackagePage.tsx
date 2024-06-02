@@ -18,6 +18,7 @@ interface Package {
 export default function PackagesPage() {
   const [packages, setPackages] = useState<Package[]>([]);
 
+  // !@TODO: fetch database column names
   const dataColumnName = [
     'company',
     'model',
@@ -28,12 +29,14 @@ export default function PackagesPage() {
     'charger',
   ];
   const [sortBy, setSortBy] = useState<string>(dataColumnName[0]);
+  // const [sortBy, setSortBy] = useState<string>('company');
 
   const handleSortBy = (sortBy: string) => {
     setSortBy(sortBy);
   };
 
   useEffect(() => {
+    //!@TODO: fetch data from database
     const packages: Package[] = [
       {
         company: 'Oticon',
@@ -119,33 +122,13 @@ export default function PackagesPage() {
     ];
 
     // sort by sortBy
-    switch (sortBy) {
-      case 'company':
-        packages.sort((a, b) => a.company.localeCompare(b.company));
-        break;
-      case 'model':
-        packages.sort((a, b) => a.model.localeCompare(b.model));
-        break;
-      case 'color':
-        packages.sort((a, b) => a.color.localeCompare(b.color));
-        break;
-      case 'leftSN':
-        packages.sort((a, b) => a.leftSN.localeCompare(b.leftSN));
-        break;
-      case 'rightSN':
-        packages.sort((a, b) => a.rightSN.localeCompare(b.rightSN));
-        break;
-      case 'remote':
-        packages.sort((a, b) => a.remote.localeCompare(b.remote));
-        break;
-      case 'charger':
-        packages.sort((a, b) => a.charger.localeCompare(b.charger));
-        break;
-    }
-
-    setPackages(packages);
+    const sortedPackages = (col: keyof Package) => {
+      return [...packages].sort((a, b) => a[col].localeCompare(b[col]));
+    };
+    setPackages(sortedPackages(sortBy as keyof Package));
   }, [sortBy]);
 
+  // for displaying
   const header = [
     'Company',
     'Model',
@@ -155,6 +138,14 @@ export default function PackagesPage() {
     'Remote',
     'Charger',
   ];
+
+  // find sortBy value in header to get the index for displaying
+  const sortByIndex = dataColumnName.findIndex((item) => item === sortBy);
+
+  // for filter categories
+  const filterHeader = ['Company', 'Model', 'Color'];
+
+  // for data in ListTable
   const data = packages.map((eachPackage) => [
     eachPackage.company,
     eachPackage.model,
@@ -164,15 +155,15 @@ export default function PackagesPage() {
     eachPackage.remote,
     eachPackage.charger,
   ]);
-  const filterHeader = ['Company', 'Model', 'Color'];
 
   return (
     <div>
       <div className="flex m-10 justify-between">
         <div className="flex items-center">
           <SortByBtn
+            dataColumnTitle={header}
             dataColumnName={dataColumnName}
-            value={sortBy}
+            value={header[sortByIndex]}
             onSortBy={handleSortBy}
           />
           <FilterBtn dataTitle={filterHeader} data={data} />
