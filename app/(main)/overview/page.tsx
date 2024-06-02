@@ -1,5 +1,5 @@
 import Card from '@/components/cards/Card';
-import ActivityInOverview from '@/components/cards/ActivityInOverview';
+import ActivitiesInOverview from '@/components/cards/ActivitiesInOverview';
 
 interface CategoryData {
   name: string;
@@ -30,6 +30,7 @@ export default function Overview() {
     },
   ];
 
+  // @TODO: Fetch data from api
   const packages: CategoryData[] = [
     {
       name: 'Oticon',
@@ -49,6 +50,7 @@ export default function Overview() {
     },
   ];
 
+  // @TODO: Fetch data from api
   const alterations: CategoryData[] = [
     {
       name: 'Oticon',
@@ -68,6 +70,7 @@ export default function Overview() {
     },
   ];
 
+  // @TODO: Fetch data from api
   const manufacturers: CategoryData[] = [
     {
       name: 'Oticon',
@@ -91,7 +94,7 @@ export default function Overview() {
           <Card title="Total Packages" data={packages} />
           <Card title="Manufacturers" data={manufacturers} />
         </div>
-        <ActivityInOverview />
+        <ActivitiesInOverview />
       </div>
     </div>
   );

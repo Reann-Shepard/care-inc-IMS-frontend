@@ -1,4 +1,4 @@
-export default function ActivityInOverview() {
+export default function ActivitiesInOverview() {
   return (
     <div className="rounded-xl border-4 ml-20 m-10 border-black w-96">
       <p className="text-xl font-bold p-4 rounded-t-lg bg-[#FFB931]">
