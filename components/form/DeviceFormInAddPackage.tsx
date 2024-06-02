@@ -3,7 +3,6 @@ import InputDropdownBox from '../inputs/InputDropdownBox';
 
 interface DeviceData {
   listTitle: string;
-  name: string;
   typeData?: string[];
   type: string;
   deviceId: string;
@@ -15,7 +14,6 @@ interface DeviceData {
 export default function DeviceFormInAddPackage({
   listTitle,
   typeData,
-  name,
   type,
   deviceId,
   serialNumber1,
