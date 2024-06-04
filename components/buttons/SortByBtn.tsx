@@ -1,25 +1,22 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 
-interface SortByBtnProps<T> {
-  dataColumnName: string[];
-  // data?: T[];
-  // onClick: () => void;
+interface SortByBtnProps {
+  dataColumnTitle: string[]; // for display
+  dataColumnName: string[]; // for database column names
+  value: string;
   onSortBy: (sortBy: string) => void;
 }
 
-export default function SortByBtn<T>({
+export default function SortByBtn({
+  dataColumnTitle,
   dataColumnName,
+  value,
   onSortBy,
-}: SortByBtnProps<T>) {
+}: SortByBtnProps) {
   const sortByRef = useRef<HTMLDetailsElement>(null);
-  // const [sortBy, setSortBy] = useState<string>(dataColumnName[0]);
-  // const [sortByTitle, setSortByTitle] = useState<string>(dataColumnName[0].charAt(0).toUpperCase() + dataColumnName[0].slice(1));
 
   const handleSortBy = (sortBy: string) => {
-    // setSortBy(sortBy);
-    // const sortBy_title = sortBy.charAt(0).toUpperCase() + sortBy.slice(1);
-    // setSortByTitle(sortBy_title);
     sortByRef.current?.removeAttribute('open');
     onSortBy(sortBy);
   };
@@ -27,15 +24,15 @@ export default function SortByBtn<T>({
   return (
     <div className="flex items-center">
       <div className="text-xs">Sort By: </div>
-
       <details ref={sortByRef} className="dropdown dropdown-hover rounded-lg">
-        <summary className="m-2 pr-7 btn btn-xs select">
-          {dataColumnName[0]}
-        </summary>
-        <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+        <summary className="m-2 pr-7 btn btn-xs select">{value}</summary>
+        <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-72">
           <ul>
-            {dataColumnName.map((item) => (
-              <li key={item} onClick={() => handleSortBy(item)}>
+            {dataColumnTitle.map((item, index) => (
+              <li
+                key={item}
+                onClick={() => handleSortBy(dataColumnName[index])}
+              >
                 <a>{item}</a>
               </li>
             ))}

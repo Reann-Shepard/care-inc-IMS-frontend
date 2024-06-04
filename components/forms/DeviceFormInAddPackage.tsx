@@ -32,15 +32,18 @@ export default function DeviceFormInAddPackage({
           <tr>
             <td>
               <InputDropdownBox
+                label="Type"
                 placeholder="Select device type"
                 isRequired
                 name="type"
+                value={type}
                 data={typeData}
                 onChangeHandler={onChangeHandler}
               />
             </td>
             <td className="pl-12">
               <InputBox
+                label="Device Id"
                 placeholder="Enter device ID"
                 isRequired
                 name="deviceId"
@@ -52,6 +55,7 @@ export default function DeviceFormInAddPackage({
           <tr>
             <td>
               <InputBox
+                label="Serial Number 1"
                 placeholder="Enter serial number"
                 isRequired
                 name="serialNumber1"
@@ -61,6 +65,7 @@ export default function DeviceFormInAddPackage({
             </td>
             <td className="pl-12">
               <InputBox
+                label="Serial Number 2"
                 placeholder="Enter serial number"
                 name="serialNumber2"
                 value={serialNumber2}
