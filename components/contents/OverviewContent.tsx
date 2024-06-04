@@ -6,7 +6,7 @@ interface CategoryData {
   count?: number;
 }
 
-export default function OverviewPage() {
+export default function OverviewContent() {
   // @TODO: Fetch data from api
   const devices: CategoryData[] = [
     {

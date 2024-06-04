@@ -1,4 +1,4 @@
-import OverviewPage from '@/components/pages/OverviewPage';
+import OverviewContent from '@/components/contents/OverviewContent';
 export const metadata = {
   title: 'Overview',
 };
@@ -6,7 +6,7 @@ export const metadata = {
 export default function Overview() {
   return (
     <div>
-      <OverviewPage />
+      <OverviewContent />
     </div>
   );
 }

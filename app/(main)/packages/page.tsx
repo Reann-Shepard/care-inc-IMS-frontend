@@ -1,4 +1,4 @@
-import PackagesPage from '@/components/pages/PackagePage';
+import PackagesContent from '@/components/contents/PackagesContent';
 
 export const metadata = {
   title: 'Packages',
@@ -7,7 +7,7 @@ export const metadata = {
 export default function Packages() {
   return (
     <div>
-      <PackagesPage />
+      <PackagesContent />
     </div>
   );
 }
