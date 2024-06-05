@@ -1,5 +1,6 @@
 import Card from '@/components/cards/Card';
 import ActivitiesInOverview from '@/components/cards/ActivitiesInOverview';
+import ManufacturerList from './overview/ManufacturerList';
 
 interface CategoryData {
   name: string;
@@ -89,7 +90,7 @@ export default function OverviewContent() {
         </div>
         <div>
           <Card title="Total Packages" data={packages} />
-          <Card title="Manufacturers" data={manufacturers} />
+          <ManufacturerList />
         </div>
         <ActivitiesInOverview />
       </div>

@@ -4,7 +4,7 @@ interface CardProps {
   data?: { name: string; count?: number }[];
 }
 
-export default async function Card({ title, data }: CardProps) {
+export default function Card({ title, data }: CardProps) {
   return (
     <div className="w-80 m-10 border-4 border-black rounded-xl">
       <div className="text-xl font-bold p-4 rounded-t-lg bg-[#FFB931]">
