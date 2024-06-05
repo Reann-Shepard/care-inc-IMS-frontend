@@ -1,4 +1,5 @@
-import InventoryList from '@/components/inventory/inventory_page';
+import React from 'react';
+import Inventory from '@/components/inventory/inventory_page';
 
 export const metadata = {
   title: 'Inventory',
@@ -7,7 +8,7 @@ export const metadata = {
 export default function InventoryPage() {
   return (
     <div>
-      <InventoryList />
+      <Inventory />
     </div>
   );
 }
