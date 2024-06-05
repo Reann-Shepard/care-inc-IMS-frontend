@@ -11,7 +11,7 @@ export interface CategoryData {
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import tempData from './temp_invData.json';
-import Table from '../table/ListTable.tsx';
+import Table from '../table/ListTable';
 import Link from 'next/link';
 import { set } from 'zod';
 import React from 'react';
