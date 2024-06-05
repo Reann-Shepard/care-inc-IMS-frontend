@@ -11,9 +11,10 @@ export interface CategoryData {
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import tempData from './temp_invData.json';
-import Table from '../table/ListTable';
+import Table from '../table/ListTable.tsx';
 import Link from 'next/link';
 import { set } from 'zod';
+import React from 'react';
 const dataSet: CategoryData[] = tempData;
 const ADataSet: CategoryData[] = tempData.filter(
   (device) => device.package === '1',
