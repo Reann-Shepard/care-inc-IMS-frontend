@@ -1,5 +1,6 @@
 import React from 'react';
 import Inventory from '@/components/inventory/inventory_page';
+import { Suspense } from 'react';
 
 export const metadata = {
   title: 'Inventory',
@@ -8,7 +9,9 @@ export const metadata = {
 export default function InventoryPage() {
   return (
     <div>
-      <Inventory />
+      <Suspense fallback={<>Loading...</>}>
+        <Inventory />
+      </Suspense>
     </div>
   );
 }
