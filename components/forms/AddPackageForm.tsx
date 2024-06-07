@@ -4,48 +4,26 @@ import React, { useEffect, useState } from 'react';
 import InputDateBox from '@/components/inputs/InputDateBox';
 import InputBox from '@/components/inputs/InputBox';
 import InputDropdownBox from '@/components/inputs/InputDropdownBox';
-import DeviceFormInAddPackage from '@/components/form/DeviceFormInAddPackage';
+import DeviceFormInAddPackage from '@/components/forms/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
 
-// interface DeviceData {
-//   type: string;
-//   deviceId: string;
-//   serialNumber1: string;
-//   serialNumber2: string;
-// }
+interface DeviceData {
+  type: string;
+  deviceId: string;
+  serialNumber1: string;
+  serialNumber2: string;
+}
 interface newPackageInputData {
   stockDate: string;
   manufacturer: string;
   color: string;
-  // device1: DeviceData;
-  // device2: DeviceData;
-  // device3: DeviceData;
-  // device4: DeviceData;
-  device1: {
-    type: string;
-    deviceId: string;
-    serialNumber1: string;
-    serialNumber2?: string;
-  };
-  device2: {
-    type: string;
-    deviceId: string;
-    serialNumber1: string;
-    serialNumber2?: string;
-  };
-  device3: {
-    type: string;
-    deviceId: string;
-    serialNumber1: string;
-    serialNumber2?: string;
-  };
-  device4: {
-    type: string;
-    deviceId: string;
-    serialNumber1: string;
-    serialNumber2?: string;
-  };
+  device1: DeviceData;
+  device2: DeviceData;
+  device3: DeviceData;
+  device4: DeviceData;
 }
+
+type deviceKey = 'device1' | 'device2' | 'device3' | 'device4';
 
 export default function AddPackage() {
   const [inputData, setInputData] = useState<newPackageInputData>({
@@ -78,6 +56,7 @@ export default function AddPackage() {
     },
   });
 
+  // !@TODO: fetch data from database
   const manufacturers = [
     'Oticon',
     'Unitron (V.RS.7)',
@@ -85,6 +64,7 @@ export default function AddPackage() {
     'Signia',
   ];
 
+  // !@TODO: fetch data from database
   const typeItems = [
     'Hearing Aid R',
     'Hearing Aid L',
@@ -98,56 +78,15 @@ export default function AddPackage() {
     setInputData({ ...inputData, [name]: value });
   };
 
-  // const handleDeviceListInput = (deviceNum: keyof newPackageInputData, e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setInputData({
-  //     ...inputData,
-  //     [deviceNum]: {
-  //       ...inputData[deviceNum],
-  //       [name]: value,
-  //     },
-  //   });
-  // }
-
-  const handleDevice1Input = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeviceInput = (
+    deviceNum: deviceKey,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const { name, value } = e.target;
     setInputData({
       ...inputData,
-      device1: {
-        ...inputData.device1,
-        [name]: value,
-      },
-    });
-  };
-
-  const handleDevice2Input = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputData({
-      ...inputData,
-      device2: {
-        ...inputData.device2,
-        [name]: value,
-      },
-    });
-  };
-
-  const handleDevice3Input = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputData({
-      ...inputData,
-      device3: {
-        ...inputData.device3,
-        [name]: value,
-      },
-    });
-  };
-
-  const handleDevice4Input = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputData({
-      ...inputData,
-      device4: {
-        ...inputData.device4,
+      [deviceNum]: {
+        ...inputData[deviceNum],
         [name]: value,
       },
     });
@@ -201,6 +140,7 @@ export default function AddPackage() {
             <tr>
               <td>
                 <InputDateBox
+                  label="Stock Date"
                   placeholder="Select date"
                   isRequired
                   name="stockDate"
@@ -210,9 +150,11 @@ export default function AddPackage() {
               </td>
               <td className="pl-12">
                 <InputDropdownBox
+                  label="Manufacturer"
                   placeholder="Select manufacturer"
                   isRequired
                   name="manufacturer"
+                  value={inputData.manufacturer}
                   data={manufacturers}
                   onChangeHandler={handleInput}
                 />
@@ -221,6 +163,7 @@ export default function AddPackage() {
             <tr>
               <td>
                 <InputBox
+                  label="Color"
                   placeholder="Enter color"
                   isRequired
                   name="color"
@@ -239,7 +182,7 @@ export default function AddPackage() {
           deviceId={inputData.device1.deviceId}
           serialNumber1={inputData.device1.serialNumber1}
           serialNumber2={inputData.device1.serialNumber2}
-          onChangeHandler={handleDevice1Input}
+          onChangeHandler={(e) => handleDeviceInput('device1' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 2:"
@@ -248,7 +191,7 @@ export default function AddPackage() {
           deviceId={inputData.device2.deviceId}
           serialNumber1={inputData.device2.serialNumber1}
           serialNumber2={inputData.device2.serialNumber2}
-          onChangeHandler={handleDevice2Input}
+          onChangeHandler={(e) => handleDeviceInput('device2' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 3:"
@@ -257,7 +200,7 @@ export default function AddPackage() {
           deviceId={inputData.device3.deviceId}
           serialNumber1={inputData.device3.serialNumber1}
           serialNumber2={inputData.device3.serialNumber2}
-          onChangeHandler={handleDevice3Input}
+          onChangeHandler={(e) => handleDeviceInput('device3' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 4:"
@@ -266,7 +209,7 @@ export default function AddPackage() {
           deviceId={inputData.device4.deviceId}
           serialNumber1={inputData.device4.serialNumber1}
           serialNumber2={inputData.device4.serialNumber2}
-          onChangeHandler={handleDevice4Input}
+          onChangeHandler={(e) => handleDeviceInput('device4' as deviceKey, e)}
         />
 
         <SubmitAndCancelDiv cancelPath="./" />

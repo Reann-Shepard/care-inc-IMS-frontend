@@ -74,6 +74,7 @@ export default function AddInventory() {
       <form className="w-fit" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-y-1 gap-x-12">
           <InputDateBox
+            label="Stock Date"
             placeholder="Select stock date"
             isRequired
             name="stockDate"
@@ -81,6 +82,7 @@ export default function AddInventory() {
             onChangeHandler={handleInput}
           />
           <InputDropdownBox
+            label="Manufacturer"
             placeholder="Enter manufacturer"
             isRequired
             name="manufacturer"
@@ -89,6 +91,7 @@ export default function AddInventory() {
           />
 
           <InputDropdownBox
+            label="Device Type"
             placeholder="Select device type"
             isRequired
             name="type"
@@ -97,6 +100,7 @@ export default function AddInventory() {
           />
 
           <InputBox
+            label="Device ID"
             placeholder="Enter device ID"
             isRequired
             name="deviceId"
@@ -105,6 +109,7 @@ export default function AddInventory() {
           />
 
           <InputBox
+            label="Serial Number 1"
             placeholder="Enter serial number"
             isRequired
             name="serialNumber1"
@@ -113,6 +118,7 @@ export default function AddInventory() {
           />
 
           <InputBox
+            label="Serial Number 2"
             placeholder="Enter serial number"
             name="serialNumber2"
             value={newInventoryInput.serialNumber2}
@@ -120,6 +126,7 @@ export default function AddInventory() {
           />
 
           <InputBox
+            label="Color"
             placeholder="Enter color"
             isRequired
             name="color"

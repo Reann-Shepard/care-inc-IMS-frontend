@@ -27,6 +27,7 @@ export default function AlterationsForm() {
     shippingNumber: '',
   });
 
+  // !@TODO: fetch data from database
   const typeItems = [
     'Hearing Aid R',
     'Hearing Aid L',
@@ -42,7 +43,8 @@ export default function AlterationsForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (inputData.type.length > 0) {
+    // inputData.type.length > 0 ||
+    if (inputData.type.valueOf() !== '') {
       console.log(inputData);
       setInputData({
         date: '',
@@ -67,6 +69,7 @@ export default function AlterationsForm() {
             <tr>
               <td>
                 <InputDateBox
+                  label="Date"
                   placeholder="Select date"
                   isRequired
                   name="date"
@@ -76,6 +79,7 @@ export default function AlterationsForm() {
               </td>
               <td className="pl-12">
                 <InputBox
+                  label="Name"
                   placeholder="Enter customer name"
                   isRequired
                   name="name"
@@ -87,9 +91,11 @@ export default function AlterationsForm() {
             <tr>
               <td>
                 <InputDropdownBox
+                  label="Type"
                   placeholder="Select device type"
                   isRequired
                   name="type"
+                  value={inputData.type}
                   data={typeItems}
                   onChangeHandler={handleInput}
                 />
@@ -98,6 +104,7 @@ export default function AlterationsForm() {
             <tr>
               <td>
                 <InputBox
+                  label="Serial Number 1"
                   placeholder="Enter serial number"
                   isRequired
                   name="serialNumber1"
@@ -107,6 +114,7 @@ export default function AlterationsForm() {
               </td>
               <td className="pl-12">
                 <InputBox
+                  label="Serial Number 2"
                   placeholder="Enter serial number"
                   name="serialNumber2"
                   value={inputData.serialNumber2}
@@ -117,6 +125,7 @@ export default function AlterationsForm() {
             <tr>
               <td colSpan={2}>
                 <InputBox
+                  label="Reason"
                   placeholder="Enter reason"
                   name="reason"
                   isRequired
@@ -128,6 +137,7 @@ export default function AlterationsForm() {
             <tr>
               <td>
                 <InputBox
+                  label="Shipping Number"
                   placeholder="Enter shipping number"
                   isRequired
                   name="shippingNumber"
