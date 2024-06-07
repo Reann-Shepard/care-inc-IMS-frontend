@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
-import ListTable from '@/components/table/ListTable';
+import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
 
