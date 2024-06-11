@@ -4,16 +4,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
-
-interface Package {
-  company: string;
-  model: string;
-  color: string;
-  leftSN: string;
-  rightSN: string;
-  remote: string;
-  charger: string;
-}
+import { getAllPackages } from '@/services/package/getPackage';
+import { Package } from '@/entities/Package';
 
 export default function PackagesContent() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -23,17 +15,23 @@ export default function PackagesContent() {
   }>({});
 
   // !@TODO: fetch database column names
+  // const dataColumnName = [
+  //   'company',
+  //   'model',
+  //   'color',
+  //   'leftSN',
+  //   'rightSN',
+  //   'remote',
+  //   'charger',
+  // ];
   const dataColumnName = [
-    'company',
-    'model',
-    'color',
-    'leftSN',
-    'rightSN',
-    'remote',
-    'charger',
+    'clientId',
+    'fittingDate',
+    'warrantyExpiration',
+    'orderCustomerId',
+    'comments',
   ];
   const [sortBy, setSortBy] = useState<string>(dataColumnName[0]);
-  // const [sortBy, setSortBy] = useState<string>('company');
 
   const handleSortBy = (sortBy: string) => {
     setSortBy(sortBy);
@@ -41,113 +39,142 @@ export default function PackagesContent() {
 
   useEffect(() => {
     //!@TODO: fetch data from database
-    const packages: Package[] = [
-      {
-        company: 'Oticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'AOticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'Oticon',
-        model: 'Real2',
-        color: 'Blue',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '1338NYCL6',
-      },
-      {
-        company: 'Oticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'COticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '1344N2W2J',
-        remote: '2337F440HN',
-        charger: '5338NYCL6',
-      },
-      {
-        company: 'Oticon',
-        model: 'Real2',
-        color: 'Green',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '1337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'Oticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '1335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'BOticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '2337F440HN',
-        charger: '2338NYCL6',
-      },
-      {
-        company: 'BOticon',
-        model: 'Real2',
-        color: 'Charcoal',
-        leftSN: '2335N0R66',
-        rightSN: '2344N2W2J',
-        remote: '1337F440HN',
-        charger: '2338NYCL6',
-      },
-    ];
+    // const packages: Package[] = [
+    //   {
+    //     company: 'Oticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'AOticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'Oticon',
+    //     model: 'Real2',
+    //     color: 'Blue',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '1338NYCL6',
+    //   },
+    //   {
+    //     company: 'Oticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'COticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '1344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '5338NYCL6',
+    //   },
+    //   {
+    //     company: 'Oticon',
+    //     model: 'Real2',
+    //     color: 'Green',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '1337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'Oticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '1335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'BOticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '2337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    //   {
+    //     company: 'BOticon',
+    //     model: 'Real2',
+    //     color: 'Charcoal',
+    //     leftSN: '2335N0R66',
+    //     rightSN: '2344N2W2J',
+    //     remote: '1337F440HN',
+    //     charger: '2338NYCL6',
+    //   },
+    // ];
+    const fetchPackages = async () => {
+      getAllPackages().then((data) => {
+        setPackages(data);
+      });
+      console.log(packages);
+    };
+    fetchPackages();
 
     // sort by sortBy
     const sortedPackages = (col: keyof Package) => {
-      return [...packages].sort((a, b) => a[col].localeCompare(b[col]));
+      // return [...packages].sort((a, b) => a[col].localeCompare(b[col]));
+      return [...packages].sort((a, b) => {
+        const aVal = a[col];
+        const bVal = b[col];
+        if (typeof aVal === 'string' && typeof bVal === 'string') {
+          return aVal.localeCompare(bVal);
+        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+          return aVal - bVal;
+        } else {
+          return 0;
+        }
+      });
     };
     setPackages(sortedPackages(sortBy as keyof Package));
   }, [sortBy]);
 
   // for displaying
+  // const header = [
+  //   'Company',
+  //   'Model',
+  //   'Color',
+  //   'Left SN',
+  //   'Right SN',
+  //   'Remote',
+  //   'Charger',
+  // ];
   const header = [
-    'Company',
-    'Model',
-    'Color',
-    'Left SN',
-    'Right SN',
-    'Remote',
-    'Charger',
+    'Client ID',
+    'Fitting Date',
+    'Warranty Expiration',
+    'Order Customer ID',
+    'Comments',
   ];
 
   // find sortBy value in header to get the index for displaying
   const sortByIndex = dataColumnName.findIndex((item) => item === sortBy);
 
   // for filter categories
-  const filterHeader = ['Company', 'Model', 'Color'];
+  // const filterHeader = ['Company', 'Model', 'Color'];
+  // const filterHeader = ['Client ID', 'Order Customer ID'];
+  const filterHeaderIndexes = [0, 3];
+  // for filter categories' title
+  const filterHeader = filterHeaderIndexes.map((index) => header[index]);
 
   // !!@TODO: filter functionality is not working
   // for filter data
@@ -173,28 +200,27 @@ export default function PackagesContent() {
 
   // for data in ListTable
   const data = packages.map((eachPackage) => [
-    eachPackage.company,
-    eachPackage.model,
-    eachPackage.color,
-    eachPackage.leftSN,
-    eachPackage.rightSN,
-    eachPackage.remote,
-    eachPackage.charger,
+    eachPackage.clientId,
+    eachPackage.fittingDate,
+    eachPackage.warrantyExpiration,
+    eachPackage.orderCustomerId,
+    eachPackage.comments,
   ]);
+  console.log(data);
 
   return (
     <div>
       <div className="flex m-10 justify-between">
         <div className="flex items-center">
           <SortByBtn
-            dataColumnTitle={header}
-            dataColumnName={dataColumnName}
+            dataColumnTitles={header}
+            dataColumnNames={dataColumnName}
             value={header[sortByIndex]}
             onSortBy={handleSortBy}
           />
           <FilterBtn
-            dataColumnTitle={filterHeader}
-            dataColumnName={dataColumnName}
+            dataColumnIndexes={filterHeaderIndexes}
+            dataColumnNames={filterHeader}
             data={data}
             onFilter={handlerFilter}
           />

@@ -2,10 +2,10 @@ import React from 'react';
 
 interface listTableProps {
   header: string[];
-  data?: string[][];
+  data?: (string | number | Date | null)[][];
 }
 
-export default function ListTable({ header, data }: listTableProps) {
+export default function ListTable({ header, data = [] }: listTableProps) {
   return (
     <div>
       <table className="table border-2">
@@ -21,7 +21,7 @@ export default function ListTable({ header, data }: listTableProps) {
             data.map((row, index) => (
               <tr key={index} className="text-lg text-center hover">
                 {row.map((item, index) => (
-                  <td key={index}>{item}</td>
+                  <td key={index}>{item !== null ? item.toString() : ''}</td>
                 ))}
               </tr>
             ))}
