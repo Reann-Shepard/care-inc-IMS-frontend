@@ -85,14 +85,31 @@ export default function Inventory() {
     }
   }, [sort]);
 
-  const header = ['Color', 'Device Type', 'Serial Number', 'Package'];
+  if (selectedModel === 'All') {
+    var header = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
+    var data = devices.map((device) => [
+      device.model,
+      device.color,
+      device.type,
+      device.SN,
+      device.package,
+    ]);
+  } else {
+    var header = ['Color', 'Device Type', 'Serial Number', 'Package'];
+    var data = devices.map((device) => [
+      device.color,
+      device.type,
+      device.SN,
+      device.package,
+    ]);
+  }
 
-  const data = devices.map((device) => [
-    device.color,
-    device.type,
-    device.SN,
-    device.package,
-  ]);
+  // const data = devices.map((device) => [
+  //   device.color,
+  //   device.type,
+  //   device.SN,
+  //   device.package,
+  // ]);
 
   return (
     <>
@@ -109,6 +126,7 @@ export default function Inventory() {
               value={sort}
             >
               <option value="" disabled selected></option>
+              <option value="model">Model</option>
               <option value="color">Color</option>
               <option value="type">Device Type</option>
               <option value="SN">Serial Number</option>
