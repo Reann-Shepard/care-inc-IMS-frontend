@@ -1,5 +1,9 @@
-export default function Inventory() {
-  const title = 'Inventory';
+export const metadata = {
+  title: 'Inventory',
+};
 
-  return <>Inventory</>;
+import Inventory from '@/components/inventory/Inventory-ov_page';
+
+export default function InventoryOVPage() {
+  return <Inventory />;
 }

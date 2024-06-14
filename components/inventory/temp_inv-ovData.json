@@ -1,0 +1,25 @@
+[
+  {
+    "name": "Oticon",
+    "model": "Real 2",
+    "quantity": "5"
+  },
+
+  {
+    "name": "Unitron",
+    "model": "V-RS 7",
+    "quantity": "11"
+  },
+
+  {
+    "name": "Unitron",
+    "model": "V-R 7",
+    "quantity": "1"
+  },
+
+  {
+    "name": "Signia",
+    "model": "5IX",
+    "quantity": "2"
+  }
+]
