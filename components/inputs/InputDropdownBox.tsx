@@ -8,7 +8,7 @@ interface InputDropdownBoxProps {
   isRequired?: boolean;
   name: string;
   // data?: {name: string};
-  data?: string[];
+  data?: string[] | number[];
   value?: string;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -23,12 +23,12 @@ export default function InputDropdownBox({
   onChangeHandler,
 }: InputDropdownBoxProps) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
-  const [selectedItem, setSelectedItem] = useState<{ name: string } | null>(
-    null,
-  );
+  const [selectedItem, setSelectedItem] = useState<{
+    name: string | number;
+  } | null>(null);
   // const title = name[0].toUpperCase() + name.slice(1);
 
-  const handleSelect = (selection: string) => {
+  const handleSelect = (selection: string | number) => {
     detailsRef.current?.removeAttribute('open');
     setSelectedItem({ name: selection });
     onChangeHandler({

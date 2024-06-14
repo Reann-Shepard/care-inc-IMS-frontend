@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useRef } from 'react';
 import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
@@ -8,11 +9,13 @@ import { getAllPackages } from '@/services/package/getPackage';
 import { Package } from '@/entities/Package';
 
 export default function PackagesContent() {
+  const router = useRouter();
   const [packages, setPackages] = useState<Package[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
   }>({});
+  // const [selectedRow, setSelectedRow] = React.useState<string | number | Date | null>(null);
 
   // !@TODO: fetch database column names
   // const dataColumnName = [
@@ -25,6 +28,7 @@ export default function PackagesContent() {
   //   'charger',
   // ];
   const dataColumnName = [
+    'id',
     'clientId',
     'fittingDate',
     'warrantyExpiration',
@@ -159,6 +163,7 @@ export default function PackagesContent() {
   //   'Charger',
   // ];
   const header = [
+    'Package ID',
     'Client ID',
     'Fitting Date',
     'Warranty Expiration',
@@ -182,6 +187,16 @@ export default function PackagesContent() {
     setSelectedFilters(selectedBoxes);
   };
 
+  const toDate = (date: string | Date): string => {
+    if (typeof date === 'string') {
+      return date.split('T')[0];
+    } else if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    } else {
+      throw new Error('Invalid date format.');
+    }
+  };
+
   // useEffect(() => {
   //   // filter data
   //   const filterPackages = (packages: Package[], selectedFilters: { [key: string]: string[] }) => {
@@ -200,13 +215,20 @@ export default function PackagesContent() {
 
   // for data in ListTable
   const data = packages.map((eachPackage) => [
+    eachPackage.id,
     eachPackage.clientId,
-    eachPackage.fittingDate,
-    eachPackage.warrantyExpiration,
+    toDate(eachPackage.fittingDate),
+    toDate(eachPackage.warrantyExpiration),
     eachPackage.orderCustomerId,
     eachPackage.comments,
   ]);
   console.log(data);
+
+  const handleRowClick = (rowId: string | number | Date | null) => {
+    if (rowId) {
+      router.push(`/packages/package_id=${rowId}`);
+    }
+  };
 
   return (
     <div>
@@ -233,7 +255,7 @@ export default function PackagesContent() {
         </Link>
       </div>
       <div className="overflow-x-auto">
-        <ListTable header={header} data={data} />
+        <ListTable header={header} data={data} onClick={handleRowClick} />
       </div>
     </div>
   );

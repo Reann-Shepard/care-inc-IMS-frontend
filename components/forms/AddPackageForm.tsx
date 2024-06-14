@@ -2,21 +2,35 @@
 import React, { useEffect, useState } from 'react';
 
 import InputDateBox from '@/components/inputs/InputDateBox';
-import InputBox from '@/components/inputs/InputBox';
 import InputDropdownBox from '@/components/inputs/InputDropdownBox';
 import DeviceFormInAddPackage from '@/components/forms/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
+import { Color } from '@/entities/Color';
+import { getAllColors } from '@/services/color/getColor';
+import { Manufacturer } from '@/entities/Manufacturer';
+import { getAllManufacturers } from '@/services/manufacturer/getManufacturer';
+import { Type } from '@/entities/Type';
+import { getAllTypes } from '@/services/type/getType';
+import { Client } from '@/entities/Client';
+import { getAllClients } from '@/services/client/getClient';
+import ClientPackageForm from './ClientPackageForm';
 
 interface DeviceData {
   type: string;
   deviceId: string;
-  serialNumber1: string;
-  serialNumber2: string;
+}
+
+interface ClientPackageData {
+  clientID: string;
+  fittingDate: string;
+  warrantyDate: string;
+  comment: string;
 }
 interface newPackageInputData {
   stockDate: string;
   manufacturer: string;
   color: string;
+  clientPackage?: ClientPackageData;
   device1: DeviceData;
   device2: DeviceData;
   device3: DeviceData;
@@ -26,56 +40,85 @@ interface newPackageInputData {
 type deviceKey = 'device1' | 'device2' | 'device3' | 'device4';
 
 export default function AddPackage() {
-  const [inputData, setInputData] = useState<newPackageInputData>({
+  const clearData = {
     stockDate: '',
     manufacturer: '',
     color: '',
+    clientPackage: {
+      clientID: '',
+      fittingDate: '',
+      warrantyDate: '',
+      comment: '',
+    },
     device1: {
       type: '',
       deviceId: '',
-      serialNumber1: '',
-      serialNumber2: '',
     },
     device2: {
       type: '',
       deviceId: '',
-      serialNumber1: '',
-      serialNumber2: '',
     },
     device3: {
       type: '',
       deviceId: '',
-      serialNumber1: '',
-      serialNumber2: '',
     },
     device4: {
       type: '',
       deviceId: '',
-      serialNumber1: '',
-      serialNumber2: '',
     },
-  });
+  };
+  const [inputData, setInputData] = useState<newPackageInputData>(clearData);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
+  const [clients, setClients] = useState<Client[]>([]); // [Client, setClientItems
+  const [typeItems, setTypeItems] = useState<Type[]>([]);
 
-  // !@TODO: fetch data from database
-  const manufacturers = [
-    'Oticon',
-    'Unitron (V.RS.7)',
-    'Unitron (V.R.7)',
-    'Signia',
-  ];
-
-  // !@TODO: fetch data from database
-  const typeItems = [
-    'Hearing Aid R',
-    'Hearing Aid L',
-    'Charger',
-    'Earmold',
-    'Remote',
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const manufacturers = await getAllManufacturers();
+        setManufacturers(manufacturers);
+      } catch (error) {
+        console.error('Failed fetching Manufacturer data');
+      }
+      try {
+        const colors = await getAllColors();
+        setColors(colors);
+      } catch (error) {
+        console.error('Failed fetching Color data');
+      }
+      try {
+        const clients = await getAllClients();
+        setClients(clients);
+      } catch (error) {
+        console.error('Failed fetching Client data');
+      }
+      try {
+        const types = await getAllTypes();
+        setTypeItems(types);
+      } catch (error) {
+        console.error('Failed fetching Type data');
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInputData({ ...inputData, [name]: value });
+  };
+
+  const handleClientPackageInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setInputData({
+      ...inputData,
+      clientPackage: {
+        ...inputData.clientPackage,
+        [name]: value,
+      },
+    });
   };
 
   const handleDeviceInput = (
@@ -96,35 +139,7 @@ export default function AddPackage() {
     e.preventDefault();
     if (inputData.device1.type.length > 0) {
       console.log(inputData);
-      setInputData({
-        stockDate: '',
-        manufacturer: '',
-        color: '',
-        device1: {
-          type: '',
-          deviceId: '',
-          serialNumber1: '',
-          serialNumber2: '',
-        },
-        device2: {
-          type: '',
-          deviceId: '',
-          serialNumber1: '',
-          serialNumber2: '',
-        },
-        device3: {
-          type: '',
-          deviceId: '',
-          serialNumber1: '',
-          serialNumber2: '',
-        },
-        device4: {
-          type: '',
-          deviceId: '',
-          serialNumber1: '',
-          serialNumber2: '',
-        },
-      });
+      setInputData(clearData);
 
       alert('Form submitted');
     } else {
@@ -148,26 +163,27 @@ export default function AddPackage() {
                   onChangeHandler={handleInput}
                 />
               </td>
-              <td className="pl-12">
+            </tr>
+            <tr>
+              <td>
                 <InputDropdownBox
                   label="Manufacturer"
                   placeholder="Select manufacturer"
                   isRequired
                   name="manufacturer"
                   value={inputData.manufacturer}
-                  data={manufacturers}
+                  data={manufacturers.map((manufacturer) => manufacturer.name)}
                   onChangeHandler={handleInput}
                 />
               </td>
-            </tr>
-            <tr>
-              <td>
-                <InputBox
+              <td className="pl-12">
+                <InputDropdownBox
                   label="Color"
                   placeholder="Enter color"
                   isRequired
                   name="color"
                   value={inputData.color}
+                  data={colors.map((color) => color.name)}
                   onChangeHandler={handleInput}
                 />
               </td>
@@ -175,40 +191,41 @@ export default function AddPackage() {
           </tbody>
         </table>
 
+        <ClientPackageForm
+          clientIDValue={inputData.clientPackage?.clientID ?? ''}
+          clientsData={clients.map((client) => client.id)}
+          fittingDateValue={inputData.clientPackage?.fittingDate ?? ''}
+          warrantyDateValue={inputData.clientPackage?.warrantyDate ?? ''}
+          commentValue={inputData.clientPackage?.comment ?? ''}
+          onChangeHandler={handleClientPackageInput}
+        />
+
         <DeviceFormInAddPackage
           listTitle="Device 1:"
-          typeData={typeItems}
+          typeData={typeItems.map((type) => type.name)}
           type={inputData.device1.type}
           deviceId={inputData.device1.deviceId}
-          serialNumber1={inputData.device1.serialNumber1}
-          serialNumber2={inputData.device1.serialNumber2}
           onChangeHandler={(e) => handleDeviceInput('device1' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 2:"
-          typeData={typeItems}
+          typeData={typeItems.map((type) => type.name)}
           type={inputData.device2.type}
           deviceId={inputData.device2.deviceId}
-          serialNumber1={inputData.device2.serialNumber1}
-          serialNumber2={inputData.device2.serialNumber2}
           onChangeHandler={(e) => handleDeviceInput('device2' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 3:"
-          typeData={typeItems}
+          typeData={typeItems.map((type) => type.name)}
           type={inputData.device3.type}
           deviceId={inputData.device3.deviceId}
-          serialNumber1={inputData.device3.serialNumber1}
-          serialNumber2={inputData.device3.serialNumber2}
           onChangeHandler={(e) => handleDeviceInput('device3' as deviceKey, e)}
         />
         <DeviceFormInAddPackage
           listTitle="Device 4:"
-          typeData={typeItems}
+          typeData={typeItems.map((type) => type.name)}
           type={inputData.device4.type}
           deviceId={inputData.device4.deviceId}
-          serialNumber1={inputData.device4.serialNumber1}
-          serialNumber2={inputData.device4.serialNumber2}
           onChangeHandler={(e) => handleDeviceInput('device4' as deviceKey, e)}
         />
 
