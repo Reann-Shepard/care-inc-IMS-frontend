@@ -1,15 +1,17 @@
 'use client';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/router';
 import React, { useEffect, useState, useRef } from 'react';
 import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
 import { getAllPackages } from '@/services/package/getPackage';
 import { Package } from '@/entities/Package';
+import { usePackageNavigation } from '@/services/package/usePackageNavigation';
 
 export default function PackagesContent() {
-  const router = useRouter();
+  // const router = useRouter();
+  const { pushToPackageId } = usePackageNavigation();
   const [packages, setPackages] = useState<Package[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<{
@@ -17,16 +19,6 @@ export default function PackagesContent() {
   }>({});
   // const [selectedRow, setSelectedRow] = React.useState<string | number | Date | null>(null);
 
-  // !@TODO: fetch database column names
-  // const dataColumnName = [
-  //   'company',
-  //   'model',
-  //   'color',
-  //   'leftSN',
-  //   'rightSN',
-  //   'remote',
-  //   'charger',
-  // ];
   const dataColumnName = [
     'id',
     'clientId',
@@ -226,7 +218,7 @@ export default function PackagesContent() {
 
   const handleRowClick = (rowId: string | number | Date | null) => {
     if (rowId) {
-      router.push(`/packages/package_id=${rowId}`);
+      pushToPackageId(rowId.toString());
     }
   };
 

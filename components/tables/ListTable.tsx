@@ -2,13 +2,13 @@ import React from 'react';
 interface listTableProps {
   header: string[];
   data?: (string | number | Date | null)[][];
-  onClick: (row: string | number | Date | null) => void;
+  onClick?: (row: string | number | Date | null) => void;
 }
 
 export default function ListTable({
   header,
   data = [],
-  onClick,
+  onClick = () => {},
 }: listTableProps) {
   return (
     <div>
