@@ -1,6 +1,6 @@
 'use client';
 
-export interface CategoryData {
+export interface InvData {
   color: string;
   type: string;
   SN: string;
@@ -8,69 +8,50 @@ export interface CategoryData {
   package: string;
 }
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import tempData from './temp_invData.json';
 import Table from '@/components/tables/ListTable';
 import Link from 'next/link';
-import { set } from 'zod';
 import React from 'react';
-const dataSet: CategoryData[] = tempData;
-const ADataSet: CategoryData[] = tempData.filter(
-  (device) => device.package === '1',
-);
-const UADataSet: CategoryData[] = tempData.filter(
-  (device) => device.package === '0',
-);
+import { getAllDevices } from '@/services/device/getDevice';
+import { deviceToInv } from './deviceToInv';
 
 export default function Inventory() {
+  const [devices, setDevices] = useState<InvData[]>([]);
+  const [dataSet, setDataSet] = useState<InvData[]>([]);
+
+  useEffect(() => {
+    getAllDevices().then(async (data) => {
+      setDataSet(await deviceToInv(data));
+      setDevices(await deviceToInv(data));
+    });
+  }, []);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedModel = searchParams.get('model') || 'All';
 
-  // const [devices, setDevices] = useState<CategoryData[]>(dataSet);
-  const [Adevices, setAdevices] = useState<CategoryData[]>(ADataSet);
-  const [UAdevices, setUAdevices] = useState<CategoryData[]>(UADataSet);
-  const [devices, setDevices] = useState<CategoryData[]>([
-    ...UAdevices,
-    ...Adevices,
-  ]);
   const uniqueModels = Array.from(
     new Set([...dataSet.map((device) => device.model)]),
   );
-  const [sort, setSort] = useState<keyof CategoryData | ''>();
+  const [sort, setSort] = useState<keyof InvData | ''>();
 
   // Sorting Function
-  const handleSort = (sortBy: keyof CategoryData) => {
-    const sortedADevices = devices
-      .filter((device) => device.package === '1')
-      .sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    const sortedUADevices = devices
-      .filter((device) => device.package === '0')
-      .sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    setDevices([...sortedUADevices, ...sortedADevices]);
+  const handleSort = (sortBy: keyof InvData) => {
+    const sortedDevices = devices.sort((a, b) =>
+      a[sortBy].localeCompare(b[sortBy]),
+    );
+    setDevices([...sortedDevices]);
   };
-
-  // Filtering Function
-  // const handleFilter = (filterBy: keyof CategoryData, filterValue: string) => {
-  //   const filteredDevices = devices.filter(
-  //     (device) => device[filterBy] === filterValue,
-  //   );
-  //   setDevices(filteredDevices);
-  // };
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
     if (newModel === 'All') {
-      setDevices([...UADataSet, ...ADataSet]);
+      setDevices([...dataSet]);
     } else {
-      const newADevices = ADataSet.filter(
-        (device) => device.model === newModel,
-      );
-      const newUADevices = UADataSet.filter(
-        (device) => device.model === newModel,
-      );
-      setDevices([...newUADevices, ...newADevices]);
+      const newDevices = dataSet.filter((device) => device.model === newModel);
+      setDevices([...newDevices]);
     }
   };
 
@@ -87,29 +68,33 @@ export default function Inventory() {
 
   if (selectedModel === 'All') {
     var header = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
-    var data = devices.map((device) => [
-      device.model,
-      device.color,
-      device.type,
-      device.SN,
-      device.package,
-    ]);
+    var ASS = devices
+      .filter((device) => device.package === 'Yes')
+      .map((device) => [
+        device.model,
+        device.color,
+        device.type,
+        device.SN,
+        device.package,
+      ]);
+    var UASS = devices
+      .filter((device) => device.package === '')
+      .map((device) => [
+        device.model,
+        device.color,
+        device.type,
+        device.SN,
+        device.package,
+      ]);
   } else {
     var header = ['Color', 'Device Type', 'Serial Number', 'Package'];
-    var data = devices.map((device) => [
-      device.color,
-      device.type,
-      device.SN,
-      device.package,
-    ]);
+    var ASS = devices
+      .filter((device) => device.package === 'Yes')
+      .map((device) => [device.color, device.type, device.SN, device.package]);
+    var UASS = devices
+      .filter((device) => device.package === '')
+      .map((device) => [device.color, device.type, device.SN, device.package]);
   }
-
-  // const data = devices.map((device) => [
-  //   device.color,
-  //   device.type,
-  //   device.SN,
-  //   device.package,
-  // ]);
 
   return (
     <>
@@ -121,7 +106,7 @@ export default function Inventory() {
             </label>
             <select
               id="sort"
-              onChange={(e) => setSort(e.target.value as keyof CategoryData)}
+              onChange={(e) => setSort(e.target.value as keyof InvData)}
               className="border rounded-lg p-1"
               value={sort}
             >
@@ -164,7 +149,7 @@ export default function Inventory() {
       </div>
 
       <div>
-        <Table header={header} data={data} />
+        <Table header={header} data={[...UASS, ...ASS]} />
       </div>
     </>
   );
