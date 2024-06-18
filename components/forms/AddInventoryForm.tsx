@@ -11,9 +11,9 @@ interface newInventoryInputData {
   stockDate: string;
   manufacturer: string;
   type: string;
-  deviceId: string;
+  // deviceId: string;
   serialNumber1: string;
-  serialNumber2: string;
+  // serialNumber2: string;
   color: string;
 }
 
@@ -23,9 +23,9 @@ export default function AddInventory() {
       stockDate: '',
       manufacturer: '',
       type: '',
-      deviceId: '',
+      // deviceId: '',
       serialNumber1: '',
-      serialNumber2: '',
+      // serialNumber2: '',
       color: '',
     });
 
@@ -57,9 +57,9 @@ export default function AddInventory() {
         stockDate: '',
         manufacturer: '',
         type: '',
-        deviceId: '',
+        // deviceId: '',
         serialNumber1: '',
-        serialNumber2: '',
+        // serialNumber2: '',
         color: '',
       });
 
@@ -99,14 +99,14 @@ export default function AddInventory() {
             onChangeHandler={handleInput}
           />
 
-          <InputBox
+          {/* <InputBox
             label="Device ID"
             placeholder="Enter device ID"
             isRequired
             name="deviceId"
             value={newInventoryInput.deviceId}
             onChangeHandler={handleInput}
-          />
+          /> */}
 
           <InputBox
             label="Serial Number 1"
@@ -117,13 +117,13 @@ export default function AddInventory() {
             onChangeHandler={handleInput}
           />
 
-          <InputBox
+          {/* <InputBox
             label="Serial Number 2"
             placeholder="Enter serial number"
             name="serialNumber2"
             value={newInventoryInput.serialNumber2}
             onChangeHandler={handleInput}
-          />
+          /> */}
 
           <InputBox
             label="Color"
