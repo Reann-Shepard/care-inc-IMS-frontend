@@ -1,6 +1,8 @@
 import Card from '@/components/cards/Card';
 import ActivitiesInOverview from '@/components/cards/ActivitiesInOverview';
 import ManufacturerList from './overview/ManufacturerList';
+import DeviceList from './overview/DeviceList';
+import PackageList from './overview/PackageList';
 
 interface CategoryData {
   name: string;
@@ -85,11 +87,11 @@ export default function OverviewContent() {
     <div>
       <div className="flex m-10 justify-center">
         <div className="mr-10">
-          <Card title="Devices" data={devices} />
+          <DeviceList />
           <Card title="Alterations" data={alterations} />
         </div>
         <div>
-          <Card title="Total Packages" data={packages} />
+          <PackageList />
           <ManufacturerList />
         </div>
         <ActivitiesInOverview />
