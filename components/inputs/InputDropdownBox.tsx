@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 interface InputDropdownBoxProps {
-  label: string;
+  label?: string;
   placeholder: string;
   isRequired?: boolean;
   name: string;
@@ -14,7 +14,7 @@ interface InputDropdownBoxProps {
 }
 
 export default function InputDropdownBox({
-  label,
+  label = '',
   placeholder,
   isRequired,
   name,
@@ -27,6 +27,12 @@ export default function InputDropdownBox({
     name: string | number;
   } | null>(null);
   // const title = name[0].toUpperCase() + name.slice(1);
+
+  const [thisLabel, setThisLabel] = useState<string>(label);
+  if (thisLabel.length == 0) {
+    setThisLabel(name);
+  }
+
   const handleSelect = (selection: string | number) => {
     detailsRef.current?.removeAttribute('open');
     setSelectedItem({ name: selection });
@@ -38,7 +44,7 @@ export default function InputDropdownBox({
   return (
     <div>
       <p>
-        {label}{' '}
+        {thisLabel}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <details ref={detailsRef} className="dropdown mt-2 mb-8">

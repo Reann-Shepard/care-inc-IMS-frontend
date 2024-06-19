@@ -1,4 +1,4 @@
-import AddInventoryForm from '@/components/forms/AddInventoryForm';
+import AddInventoryForm from '@/components/form/AddInventoryForm';
 
 export const metadata = {
   title: 'Add Inventory',
