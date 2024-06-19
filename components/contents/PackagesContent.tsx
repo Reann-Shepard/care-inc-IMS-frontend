@@ -5,26 +5,28 @@ import React, { useEffect, useState, useRef } from 'react';
 import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
-import { getAllPackages } from '@/services/package/getPackage';
 import { Package } from '@/entities/Package';
+import { OrderCustomer } from '@/entities/OrderCustomer';
+import { getAllPackages } from '@/services/package/getPackage';
 import { usePackageNavigation } from '@/services/package/usePackageNavigation';
+import { getAllOrderCustomers } from '@/services/orderCustomer/getOrderCustomer';
 
 export default function PackagesContent() {
   // const router = useRouter();
   const { pushToPackageId } = usePackageNavigation();
   const [packages, setPackages] = useState<Package[]>([]);
+  const [orderCustomers, setOrderCustomers] = useState<OrderCustomer[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
   }>({});
-  // const [selectedRow, setSelectedRow] = React.useState<string | number | Date | null>(null);
 
   const dataColumnName = [
     'id',
     'clientId',
     'fittingDate',
     'warrantyExpiration',
-    'orderCustomerId',
+    'orderDate',
     'comments',
   ];
   const [sortBy, setSortBy] = useState<string>(dataColumnName[0]);
@@ -34,97 +36,26 @@ export default function PackagesContent() {
   };
 
   useEffect(() => {
-    //!@TODO: fetch data from database
-    // const packages: Package[] = [
-    //   {
-    //     company: 'Oticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'AOticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'Oticon',
-    //     model: 'Real2',
-    //     color: 'Blue',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '1338NYCL6',
-    //   },
-    //   {
-    //     company: 'Oticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'COticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '1344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '5338NYCL6',
-    //   },
-    //   {
-    //     company: 'Oticon',
-    //     model: 'Real2',
-    //     color: 'Green',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '1337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'Oticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '1335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'BOticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '2337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    //   {
-    //     company: 'BOticon',
-    //     model: 'Real2',
-    //     color: 'Charcoal',
-    //     leftSN: '2335N0R66',
-    //     rightSN: '2344N2W2J',
-    //     remote: '1337F440HN',
-    //     charger: '2338NYCL6',
-    //   },
-    // ];
-    const fetchPackages = async () => {
-      getAllPackages().then((data) => {
-        setPackages(data);
-      });
-      console.log(packages);
+    //fetch data from database
+    const fetchPackagesData = async () => {
+      try {
+        getAllPackages().then((data) => {
+          setPackages(data);
+        });
+        console.log(packages);
+      } catch (error) {
+        console.log('Failed fetching Package data', error);
+      }
+      try {
+        getAllOrderCustomers().then((data) => {
+          setOrderCustomers(data);
+        });
+        console.log(orderCustomers);
+      } catch (error) {
+        console.log('Failed fetching OrderCustomer data', error);
+      }
     };
-    fetchPackages();
+    fetchPackagesData();
 
     // sort by sortBy
     const sortedPackages = (col: keyof Package) => {
@@ -145,21 +76,12 @@ export default function PackagesContent() {
   }, [sortBy]);
 
   // for displaying
-  // const header = [
-  //   'Company',
-  //   'Model',
-  //   'Color',
-  //   'Left SN',
-  //   'Right SN',
-  //   'Remote',
-  //   'Charger',
-  // ];
   const header = [
     'Package ID',
     'Client ID',
     'Fitting Date',
     'Warranty Expiration',
-    'Order Customer ID',
+    'Order Date',
     'Comments',
   ];
 
@@ -206,14 +128,22 @@ export default function PackagesContent() {
   // , [selectedFilters]);
 
   // for data in ListTable
-  const data = packages.map((eachPackage) => [
-    eachPackage.id,
-    eachPackage.clientId,
-    toDate(eachPackage.fittingDate),
-    toDate(eachPackage.warrantyExpiration),
-    eachPackage.orderCustomerId,
-    eachPackage.comments,
-  ]);
+  const data = packages.map((eachPackage) => {
+    const orderCustomerDate = orderCustomers.find(
+      (orderCustomer) => orderCustomer.id === eachPackage.clientId,
+    );
+    const orderDate = orderCustomerDate
+      ? toDate(orderCustomerDate.orderDate)
+      : '';
+    return [
+      eachPackage.id,
+      eachPackage.clientId,
+      toDate(eachPackage.fittingDate),
+      toDate(eachPackage.warrantyExpiration),
+      orderDate,
+      eachPackage.comments,
+    ];
+  });
   console.log(data);
 
   const handleRowClick = (rowId: string | number | Date | null) => {

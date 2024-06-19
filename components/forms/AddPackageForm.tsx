@@ -79,25 +79,25 @@ export default function AddPackage() {
         const manufacturers = await getAllManufacturers();
         setManufacturers(manufacturers);
       } catch (error) {
-        console.error('Failed fetching Manufacturer data');
+        console.error('Failed fetching Manufacturer data', error);
       }
       try {
         const colors = await getAllColors();
         setColors(colors);
       } catch (error) {
-        console.error('Failed fetching Color data');
+        console.error('Failed fetching Color data', error);
       }
       try {
         const clients = await getAllClients();
         setClients(clients);
       } catch (error) {
-        console.error('Failed fetching Client data');
+        console.error('Failed fetching Client data', error);
       }
       try {
         const types = await getAllTypes();
         setTypeItems(types);
       } catch (error) {
-        console.error('Failed fetching Type data');
+        console.error('Failed fetching Type data', error);
       }
     };
     fetchData();
@@ -111,14 +111,16 @@ export default function AddPackage() {
   const handleClientPackageInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value } = e.target;
-    setInputData({
-      ...inputData,
-      clientPackage: {
-        ...inputData.clientPackage,
-        [name]: value,
-      },
-    });
+    if (inputData.clientPackage) {
+      const { name, value } = e.target;
+      setInputData({
+        ...inputData,
+        clientPackage: {
+          ...inputData.clientPackage,
+          [name]: value,
+        },
+      });
+    }
   };
 
   const handleDeviceInput = (
