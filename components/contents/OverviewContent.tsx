@@ -11,46 +11,6 @@ interface CategoryData {
 
 export default function OverviewContent() {
   // @TODO: Fetch data from api
-  const devices: CategoryData[] = [
-    {
-      name: 'Oticon',
-      count: 16,
-    },
-    {
-      name: 'Unitron (V.RS.7)',
-      count: 44,
-    },
-    {
-      name: 'Unitron (V.R.7)',
-      count: 4,
-    },
-    {
-      name: 'Signia',
-      count: 8,
-    },
-  ];
-
-  // @TODO: Fetch data from api
-  const packages: CategoryData[] = [
-    {
-      name: 'Oticon',
-      count: 5,
-    },
-    {
-      name: 'Unitron (V.RS.7)',
-      count: 11,
-    },
-    {
-      name: 'Unitron (V.R.7)',
-      count: 1,
-    },
-    {
-      name: 'Signia',
-      count: 2,
-    },
-  ];
-
-  // @TODO: Fetch data from api
   const alterations: CategoryData[] = [
     {
       name: 'Oticon',
@@ -67,19 +27,6 @@ export default function OverviewContent() {
     {
       name: 'Signia',
       count: 2,
-    },
-  ];
-
-  // @TODO: Fetch data from api
-  const manufacturers: CategoryData[] = [
-    {
-      name: 'Oticon',
-    },
-    {
-      name: 'Unitron',
-    },
-    {
-      name: 'Signia',
     },
   ];
 
