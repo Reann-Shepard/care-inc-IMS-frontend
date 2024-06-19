@@ -101,16 +101,6 @@ export default function PackagesContent() {
     setSelectedFilters(selectedBoxes);
   };
 
-  const toDate = (date: string | Date): string => {
-    if (typeof date === 'string') {
-      return date.split('T')[0];
-    } else if (date instanceof Date) {
-      return date.toISOString().split('T')[0];
-    } else {
-      throw new Error('Invalid date format.');
-    }
-  };
-
   // useEffect(() => {
   //   // filter data
   //   const filterPackages = (packages: Package[], selectedFilters: { [key: string]: string[] }) => {
@@ -126,6 +116,16 @@ export default function PackagesContent() {
   //   setFilteredPackages(filterPackages(packages, selectedFilters));
   // }
   // , [selectedFilters]);
+
+  const toDate = (date: string | Date): string => {
+    if (typeof date === 'string') {
+      return date.split('T')[0];
+    } else if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    } else {
+      throw new Error('Invalid date format.');
+    }
+  };
 
   // for data in ListTable
   const data = packages.map((eachPackage) => {
@@ -146,9 +146,10 @@ export default function PackagesContent() {
   });
   console.log(data);
 
-  const handleRowClick = (rowId: string | number | Date | null) => {
-    if (rowId) {
-      pushToPackageId(rowId.toString());
+  const handleRowClick = (row: (string | number | Date | null)[]) => {
+    const packageId = row[0];
+    if (packageId) {
+      pushToPackageId(packageId.toString());
     }
   };
 

@@ -2,7 +2,7 @@ import React from 'react';
 interface listTableProps {
   header: string[];
   data?: (string | number | Date | null)[][];
-  onClick?: (row: string | number | Date | null) => void;
+  onClick?: (row: (string | number | Date | null)[]) => void;
 }
 
 export default function ListTable({
@@ -26,7 +26,7 @@ export default function ListTable({
               <tr
                 key={rowIndex}
                 className="text-lg text-center hover"
-                onClick={() => onClick(row[0])}
+                onClick={() => onClick(row)}
               >
                 {row.map((item, colIndex) => (
                   <td key={colIndex}>{item !== null ? item.toString() : ''}</td>
