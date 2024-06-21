@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getAllManufacturers } from '../../../services/manufacturer/getManufacturer';
 import Card from '@/components/cards/Card';
-import { Manufacturer } from '@/entities/Manufacturer';
+import { getAllManufacturers } from '@/services/overview/getManufacturer';
+import { Manufacturer } from '@/entities/overviewTypes';
 
 export default function ManufacturerList() {
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
