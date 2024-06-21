@@ -1,13 +1,11 @@
 import InputBox from '../inputs/InputBox';
 import InputDropdownBox from '../inputs/InputDropdownBox';
 
-interface DeviceData {
+interface DeviceDataProps {
   listTitle: string;
   typeData?: string[];
   type: string;
   deviceId: string;
-  serialNumber1: string;
-  serialNumber2?: string;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -16,10 +14,8 @@ export default function DeviceFormInAddPackage({
   typeData,
   type,
   deviceId,
-  serialNumber1,
-  serialNumber2,
   onChangeHandler,
-}: DeviceData) {
+}: DeviceDataProps) {
   return (
     <div>
       <table>
@@ -48,27 +44,6 @@ export default function DeviceFormInAddPackage({
                 isRequired
                 name="deviceId"
                 value={deviceId}
-                onChangeHandler={onChangeHandler}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <InputBox
-                label="Serial Number 1"
-                placeholder="Enter serial number"
-                isRequired
-                name="serialNumber1"
-                value={serialNumber1}
-                onChangeHandler={onChangeHandler}
-              />
-            </td>
-            <td className="pl-12">
-              <InputBox
-                label="Serial Number 2"
-                placeholder="Enter serial number"
-                name="serialNumber2"
-                value={serialNumber2}
                 onChangeHandler={onChangeHandler}
               />
             </td>
