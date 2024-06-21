@@ -29,12 +29,8 @@ export default function PackageId() {
       });
       // console.log(devices);
     };
-    try {
-      fetchDevices();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [devices]);
+    fetchDevices();
+  }, []);
 
   const toDate = (date: string | Date | undefined): string => {
     if (!date) return '';
