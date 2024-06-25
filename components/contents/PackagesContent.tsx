@@ -8,12 +8,11 @@ import FilterBtn from '@/components/buttons/FilterBtn';
 import { Package } from '@/entities/Package';
 import { OrderCustomer } from '@/entities/OrderCustomer';
 import { getAllPackages } from '@/services/package/getPackage';
-import { usePackageNavigation } from '@/services/package/usePackageNavigation';
 import { getAllOrderCustomers } from '@/services/orderCustomer/getOrderCustomer';
+import { useRouter } from 'next/navigation';
 
 export default function PackagesContent() {
-  // const router = useRouter();
-  const { pushToPackageId } = usePackageNavigation();
+  const router = useRouter();
   const [packages, setPackages] = useState<Package[]>([]);
   const [orderCustomers, setOrderCustomers] = useState<OrderCustomer[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
@@ -149,7 +148,7 @@ export default function PackagesContent() {
   const handleRowClick = (row: (string | number | Date | null)[]) => {
     const packageId = row[0];
     if (packageId) {
-      pushToPackageId(packageId.toString());
+      router.push(`/packages/package_id?package_id=${packageId.toString()}`);
     }
   };
 
