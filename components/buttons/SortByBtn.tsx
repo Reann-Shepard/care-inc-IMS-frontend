@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 interface SortByBtnProps {
   dataColumnTitles: string[]; // for display

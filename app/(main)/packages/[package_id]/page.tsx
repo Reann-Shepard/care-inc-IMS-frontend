@@ -5,18 +5,23 @@ import ListTable from '@/components/tables/ListTable';
 
 import { getAllDevices } from '@/services/device/getDevice';
 import { Device } from '@/entities/Device';
+import { getThisColorName } from '@/services/color/getColor';
+import { set } from 'zod';
+import { getThisTypeName } from '@/services/type/getType';
+import { getThisManufacturerName } from '@/services/overview/getManufacturer';
 
 export default function PackageId() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('package_id') ?? '';
   const [devices, setDevices] = useState<Device[]>([]);
+  const [data, setData] = useState<(string | number | Date | null)[][]>([]);
 
   const dataTitle = [
     'Device ID',
     'Serial Number',
-    'Manufacturer ID',
-    'Color ID',
-    'Type ID',
+    'Manufacturer',
+    'Color',
+    'Type',
     'Stock Date',
     'Sell Date',
     'Package ID',
@@ -43,19 +48,28 @@ export default function PackageId() {
     }
   };
 
-  const thisPackageData = devices.filter(
-    (device) => device.packageId === parseInt(selectedId),
-  );
-  const data = thisPackageData.map((thisDevice) => [
-    thisDevice.id,
-    thisDevice.serialNumber,
-    thisDevice.manufacturerId,
-    thisDevice.colorId,
-    thisDevice.typeId,
-    toDate(thisDevice.stockDate),
-    toDate(thisDevice.sellDate ?? ''),
-    thisDevice.packageId ?? '',
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const thisPackageData = devices.filter(
+        (device) => device.packageId === parseInt(selectedId),
+      );
+      const data = thisPackageData.map(async (thisDevice) => [
+        thisDevice.id,
+        thisDevice.serialNumber,
+        await getThisManufacturerName(thisDevice.manufacturerId),
+        await getThisColorName(thisDevice.colorId),
+        await getThisTypeName(thisDevice.typeId),
+        toDate(thisDevice.stockInDate),
+        toDate(thisDevice.sellDate ?? ''),
+        thisDevice.packageId ?? '',
+      ]);
+      const resolvedData = await Promise.all(data);
+      setData(resolvedData);
+    };
+    fetchData().then((data) => {
+      console.log(data);
+    });
+  }, [devices, selectedId]);
 
   return (
     <div>

@@ -1,5 +1,5 @@
 'use clients';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface FilterBtnProps {
   // dataColumnTitle: string[];
@@ -16,6 +16,7 @@ export default function FilterBtn({
   data,
   onFilter,
 }: FilterBtnProps) {
+  const filterRef = useRef<HTMLDetailsElement>(null);
   const [selectedBoxes, setSelectedBoxes] = useState<{
     [key: string]: string[];
   }>({});
@@ -46,42 +47,39 @@ export default function FilterBtn({
 
   return (
     <div className="flex items-center">
-      <div className="text-xs ml-5 mr-2">Filter: </div>
-      <div className="dropdown dropdown-hover">
-        <div tabIndex={0} role="button" className="btn btn-xs m-1 px-7">
-          filter
+      <div className="text-xs">Filter:</div>
+      <details ref={filterRef} className="dropdown dropdown-hover rounded-lg">
+        <summary className="m-2 pr-7 btn btn-xs select">filter</summary>
+        <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+          <ul>
+            {dataColumnIndexes.map((colIndex, titleIndex) => (
+              <li key={titleIndex}>
+                <div>
+                  <a className="w-20">{dataColumnNames[titleIndex]}</a>
+                  {dataUniqueByTitle[titleIndex].map((name, nameIndex) => (
+                    <label key={nameIndex} className="flex w-36">
+                      <input
+                        type="checkbox"
+                        value={name as string}
+                        onClick={() => {
+                          handleFilterBoxes(
+                            dataColumnNames[titleIndex],
+                            name as string,
+                          );
+                        }}
+                        checked={selectedBoxes[
+                          dataColumnNames[titleIndex]
+                        ]?.includes(name as string)}
+                      />
+                      <span className="ml-2">{String(name)}</span>
+                    </label>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul
-          tabIndex={0}
-          className="menu dropdown-content z-[1] bg-base-100 shadow rounded-box "
-        >
-          {dataColumnIndexes.map((colIndex, titleIndex) => (
-            <li key={titleIndex}>
-              <div>
-                <a className="w-20">{dataColumnNames[titleIndex]}</a>
-                {dataUniqueByTitle[titleIndex].map((name, nameIndex) => (
-                  <label key={nameIndex} className="flex w-36">
-                    <input
-                      type="checkbox"
-                      value={name as string}
-                      onClick={() => {
-                        handleFilterBoxes(
-                          dataColumnNames[titleIndex],
-                          name as string,
-                        );
-                      }}
-                      checked={selectedBoxes[
-                        dataColumnNames[titleIndex]
-                      ]?.includes(name as string)}
-                    />
-                    <span className="ml-2">{String(name)}</span>
-                  </label>
-                ))}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      </details>
     </div>
   );
 }

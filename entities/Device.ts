@@ -4,7 +4,7 @@ export interface Device {
   manufacturerId: number;
   colorId: number;
   typeId: number;
-  stockDate: Date;
+  stockInDate: Date;
   sellDate?: Date;
   packageId?: number;
 }
