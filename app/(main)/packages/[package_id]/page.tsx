@@ -9,12 +9,15 @@ import { getThisColorName } from '@/services/color/getColor';
 import { set } from 'zod';
 import { getThisTypeName } from '@/services/type/getType';
 import { getThisManufacturerName } from '@/services/overview/getManufacturer';
+import Link from 'next/link';
+import BackBtn from '@/components/buttons/BackBtn';
 
 export default function PackageId() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('package_id') ?? '';
   const [devices, setDevices] = useState<Device[]>([]);
   const [data, setData] = useState<(string | number | Date | null)[][]>([]);
+  const [currentLocation, setCurrentLocation] = useState<string>('');
 
   const dataTitle = [
     'Device ID',
@@ -22,7 +25,7 @@ export default function PackageId() {
     'Manufacturer',
     'Color',
     'Type',
-    'Stock Date',
+    'Stock in Date',
     'Sell Date',
     'Package ID',
   ];
@@ -49,6 +52,8 @@ export default function PackageId() {
   };
 
   useEffect(() => {
+    const current = `Package ID: ${selectedId}`;
+    setCurrentLocation(current);
     const fetchData = async () => {
       const thisPackageData = devices.filter(
         (device) => device.packageId === parseInt(selectedId),
@@ -73,6 +78,11 @@ export default function PackageId() {
 
   return (
     <div>
+      <BackBtn
+        backToLocation="Packages"
+        currentLocation={currentLocation}
+        pathName="/packages"
+      />
       <ListTable header={dataTitle} data={data} />
     </div>
   );
