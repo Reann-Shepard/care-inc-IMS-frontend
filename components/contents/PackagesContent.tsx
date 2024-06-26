@@ -10,6 +10,7 @@ import { OrderCustomer } from '@/entities/OrderCustomer';
 import { getAllPackages } from '@/services/package/getPackage';
 import { getAllOrderCustomers } from '@/services/orderCustomer/getOrderCustomer';
 import { useRouter } from 'next/navigation';
+import AddBtn from '../buttons/AddBtn';
 
 export default function PackagesContent() {
   const router = useRouter();
@@ -183,12 +184,7 @@ export default function PackagesContent() {
             onFilter={handlerFilter}
           />
         </div>
-        <Link
-          href="/packages/add_package"
-          className="btn px-10 font-bold text-white bg-[#54CE50]"
-        >
-          +
-        </Link>
+        <AddBtn pathName="/packages/add_package" />
       </div>
       <div className="overflow-x-auto">
         <ListTable
