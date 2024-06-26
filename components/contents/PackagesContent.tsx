@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 // import { useRouter } from 'next/router';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, use } from 'react';
 import ListTable from '@/components/tables/ListTable';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
@@ -19,6 +19,9 @@ export default function PackagesContent() {
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
   }>({});
+  const [sortedData, setSortedData] = useState<
+    (string | number | Date | null)[][]
+  >([]);
 
   const dataColumnName = [
     'id',
@@ -38,10 +41,12 @@ export default function PackagesContent() {
     //fetch data from database
     const fetchPackagesData = async () => {
       try {
-        getAllPackages().then((data) => {
-          setPackages(data);
-        });
-        console.log(packages);
+        if (sortBy != 'orderDate') {
+          getAllPackages(sortBy).then((data) => {
+            setPackages(data);
+          });
+          console.log(packages);
+        }
       } catch (error) {
         console.log('Failed fetching Package data', error);
       }
@@ -55,23 +60,6 @@ export default function PackagesContent() {
       }
     };
     fetchPackagesData();
-
-    // sort by sortBy
-    const sortedPackages = (col: keyof Package) => {
-      // return [...packages].sort((a, b) => a[col].localeCompare(b[col]));
-      return [...packages].sort((a, b) => {
-        const aVal = a[col];
-        const bVal = b[col];
-        if (typeof aVal === 'string' && typeof bVal === 'string') {
-          return aVal.localeCompare(bVal);
-        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return aVal - bVal;
-        } else {
-          return 0;
-        }
-      });
-    };
-    setPackages(sortedPackages(sortBy as keyof Package));
   }, [sortBy]);
 
   // for displaying
@@ -145,6 +133,17 @@ export default function PackagesContent() {
   });
   console.log(data);
 
+  useEffect(() => {
+    if (sortBy == 'orderDate') {
+      const result = [...data].sort((a, b) => {
+        const dateA = a[4] ? a[4].toString() : '';
+        const dateB = b[4] ? b[4].toString() : '';
+        return dateA.localeCompare(dateB);
+      });
+      setSortedData(result);
+    }
+  }, [sortBy]);
+
   const handleRowClick = (row: (string | number | Date | null)[]) => {
     const packageId = row[0];
     if (packageId) {
@@ -177,7 +176,11 @@ export default function PackagesContent() {
         </Link>
       </div>
       <div className="overflow-x-auto">
-        <ListTable header={header} data={data} onClick={handleRowClick} />
+        <ListTable
+          header={header}
+          data={sortBy === 'orderDate' ? sortedData : data}
+          onClick={handleRowClick}
+        />
       </div>
     </div>
   );

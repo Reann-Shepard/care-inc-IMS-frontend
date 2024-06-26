@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const getAllPackages = async () => {
+const getAllPackages = async (sortBy = '') => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   if (!apiUrl) {
@@ -9,7 +9,11 @@ const getAllPackages = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/package`);
+    const response = await axios.get(`${apiUrl}/package`, {
+      params: {
+        sortBy,
+      },
+    });
     console.log('Package data: ', response.data);
     return response.data;
   } catch (error) {
