@@ -6,7 +6,7 @@ interface FilterBtnProps {
   dataColumnIndexes: number[];
   dataColumnNames: string[];
   data?: (string | number | Date | null)[][];
-  onFilter: (selectedBoxed: { [key: string]: string[] }) => void;
+  onFilter: (selectedBoxed: { [key: string]: (string | number)[] }) => void;
 }
 
 export default function FilterBtn({
@@ -53,27 +53,29 @@ export default function FilterBtn({
         <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <ul>
             {dataColumnIndexes.map((colIndex, titleIndex) => (
-              <li key={titleIndex}>
-                <div>
-                  <a className="w-20">{dataColumnNames[titleIndex]}</a>
-                  {dataUniqueByTitle[titleIndex].map((name, nameIndex) => (
-                    <label key={nameIndex} className="flex w-36">
-                      <input
-                        type="checkbox"
-                        value={name as string}
-                        onClick={() => {
-                          handleFilterBoxes(
-                            dataColumnNames[titleIndex],
-                            name as string,
-                          );
-                        }}
-                        checked={selectedBoxes[
-                          dataColumnNames[titleIndex]
-                        ]?.includes(name as string)}
-                      />
-                      <span className="ml-2">{String(name)}</span>
-                    </label>
-                  ))}
+              <li key={titleIndex} className="w-[520px]">
+                <div className="border-t-2">
+                  <a className="w-20 mr-4">{dataColumnNames[titleIndex]}</a>
+                  <div className="flex flex-wrap">
+                    {dataUniqueByTitle[titleIndex].map((name, nameIndex) => (
+                      <label key={nameIndex} className="flex flex-wrap w-24">
+                        <input
+                          type="checkbox"
+                          value={name as string}
+                          onClick={() => {
+                            handleFilterBoxes(
+                              dataColumnNames[titleIndex],
+                              name as string,
+                            );
+                          }}
+                          checked={selectedBoxes[
+                            dataColumnNames[titleIndex]
+                          ]?.includes(name as string)}
+                        />
+                        <span className="ml-2">{String(name)}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </li>
             ))}
