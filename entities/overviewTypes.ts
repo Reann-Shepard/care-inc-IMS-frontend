@@ -1,14 +1,19 @@
-export interface Manufacturer {
+export interface OverviewManufacturer {
   id: number;
   name: string;
 }
 
-export interface Device {
+export interface OverviewDevice {
   name: string;
   count: number;
 }
 
-export interface Package {
+export interface OverviewPackage {
+  name: string;
+  count: number;
+}
+
+export interface OverviewAlteration {
   name: string;
   count: number;
 }

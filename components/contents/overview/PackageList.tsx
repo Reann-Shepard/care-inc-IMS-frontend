@@ -1,12 +1,13 @@
 'use client';
 
 import Card from '@/components/cards/Card';
-import { Package } from '@/entities/overviewTypes';
-import { getPackgeCountByMfr } from '@/services/overview/getPackage';
+import { OverviewPackage } from '@/entities/overviewTypes';
+import { getPackgeCountByMfr } from '@/services/overview/getPOverviewPackage';
+
 import { useEffect, useState } from 'react';
 
 export default function PackageList() {
-  const [packages, setPackages] = useState<Package[]>([]);
+  const [packages, setPackages] = useState<OverviewPackage[]>([]);
 
   useEffect(() => {
     getPackgeCountByMfr().then((data) => {
