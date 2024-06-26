@@ -1,7 +1,7 @@
 'use client';
 
 import Card from '@/components/cards/Card';
-import { OverviewPackage } from '@/entities/overviewTypes';
+import { OverviewPackage } from '@/entities/overview-types';
 import { getPackgeCountByMfr } from '@/services/overview/getPOverviewPackage';
 
 import { useEffect, useState } from 'react';

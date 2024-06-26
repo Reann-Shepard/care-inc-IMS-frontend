@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Card from '@/components/cards/Card';
-import { OverviewDevice } from '@/entities/overviewTypes';
+import { OverviewDevice } from '@/entities/overview-types';
 import { getDeviceCountByName } from '@/services/overview/getOverviewDevice';
 
 export default function DeviceList() {

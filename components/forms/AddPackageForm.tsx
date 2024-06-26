@@ -7,8 +7,8 @@ import DeviceFormInAddPackage from '@/components/forms/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
 import { Color } from '@/entities/Color';
 import { getAllColors } from '@/services/color/getColor';
-import { Manufacturer } from '@/entities/Manufacturer';
-import { getAllManufacturers } from '@/services/manufacturer/getManufacturer';
+import { OverviewManufacturer } from '@/entities/overview-types';
+import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
 import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
 import { Client } from '@/entities/Client';
@@ -68,7 +68,9 @@ export default function AddPackage() {
     },
   };
   const [inputData, setInputData] = useState<newPackageInputData>(clearData);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+  const [manufacturers, setManufacturers] = useState<OverviewManufacturer[]>(
+    [],
+  );
   const [colors, setColors] = useState<Color[]>([]);
   const [clients, setClients] = useState<Client[]>([]); // [Client, setClientItems
   const [typeItems, setTypeItems] = useState<Type[]>([]);

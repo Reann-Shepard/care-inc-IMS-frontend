@@ -1,7 +1,7 @@
 'use client';
 
 import Card from '@/components/cards/Card';
-import { OverviewAlteration } from '@/entities/overviewTypes';
+import { OverviewAlteration } from '@/entities/overview-types';
 import { getAlterationByMfr } from '@/services/overview/getOverviewAlteration';
 import { useEffect, useState } from 'react';
 
