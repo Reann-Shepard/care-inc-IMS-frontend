@@ -1,5 +1,5 @@
 'use client';
-import React, { use, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface SortByBtnProps {
   dataColumnTitles: string[]; // for display
@@ -17,9 +17,14 @@ export default function SortByBtn({
   const sortByRef = useRef<HTMLDetailsElement>(null);
 
   const handleSortBy = (sortBy: string) => {
-    sortByRef.current?.removeAttribute('open');
     onSortBy(sortBy);
   };
+
+  useEffect(() => {
+    document.addEventListener('click', () => {
+      sortByRef.current?.removeAttribute('open');
+    });
+  }, []);
 
   return (
     <div className="flex items-center">

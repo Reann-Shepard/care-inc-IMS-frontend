@@ -41,8 +41,25 @@ export default function FilterBtn({
       return selectedBoxes;
     });
   };
+
   useEffect(() => {
     console.log(selectedBoxes);
+
+    function handleClickOutside(event: any) {
+      // or can be only MouseEvent
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        filterRef.current.removeAttribute('open');
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [selectedBoxes]);
 
   return (

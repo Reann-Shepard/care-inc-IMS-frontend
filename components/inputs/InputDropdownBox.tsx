@@ -7,7 +7,6 @@ interface InputDropdownBoxProps {
   placeholder: string;
   isRequired?: boolean;
   name: string;
-  // data?: {name: string};
   data?: string[] | number[];
   value?: string;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -26,7 +25,6 @@ export default function InputDropdownBox({
   const [selectedItem, setSelectedItem] = useState<{
     name: string | number;
   } | null>(null);
-  // const title = name[0].toUpperCase() + name.slice(1);
 
   const [thisLabel, setThisLabel] = useState<string>(label);
   if (thisLabel.length == 0) {
@@ -41,6 +39,12 @@ export default function InputDropdownBox({
     } as React.ChangeEvent<HTMLInputElement>);
   };
 
+  useEffect(() => {
+    document.addEventListener('click', () => {
+      detailsRef.current?.removeAttribute('open');
+    });
+  }, []);
+
   return (
     <div>
       <p>
@@ -53,7 +57,6 @@ export default function InputDropdownBox({
             placeholder={placeholder}
             name={name}
             value={value}
-            // value={selectedItem ? selectedItem.name : placeholder}
             onChange={onChangeHandler}
             readOnly
           />
