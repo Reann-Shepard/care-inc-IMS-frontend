@@ -1,8 +1,3 @@
-export interface OverviewManufacturer {
-  id: number;
-  name: string;
-}
-
 export interface OverviewDevice {
   name: string;
   count: number;

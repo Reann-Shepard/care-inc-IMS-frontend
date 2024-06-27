@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Card from '@/components/cards/Card';
-import { OverviewManufacturer } from '@/entities/overview-types';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
+import { Manufacturer } from '@/entities/manufacturer';
 
 export default function ManufacturerList() {
-  const [manufacturers, setManufacturers] = useState<OverviewManufacturer[]>(
-    [],
-  );
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
 
   useEffect(() => {
     getAllManufacturers().then((data) => {
