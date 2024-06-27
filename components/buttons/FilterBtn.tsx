@@ -47,9 +47,9 @@ export default function FilterBtn({
 
   return (
     <div className="flex items-center">
-      <div className="text-xs">Filter:</div>
+      <div className="text-xs">Filter By:</div>
       <details ref={filterRef} className="dropdown dropdown-hover rounded-lg">
-        <summary className="m-2 pr-7 btn btn-xs select">filter</summary>
+        <summary className="m-2 pr-7 btn btn-xs select">Filter</summary>
         <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <ul>
             {dataColumnIndexes.map((colIndex, titleIndex) => (
