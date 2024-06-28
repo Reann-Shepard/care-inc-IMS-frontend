@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Card from '@/components/cards/Card';
-import { Device } from '@/entities/overviewTypes';
-import { getDeviceCountByName } from '@/services/overview/getDevice';
+import { OverviewDevice } from '@/entities/overview-types';
+import { getDeviceCountByName } from '@/services/overview/getOverviewDevice';
 
 export default function DeviceList() {
-  const [devices, setDevices] = useState<Device[]>([]);
+  const [devices, setDevices] = useState<OverviewDevice[]>([]);
 
   useEffect(() => {
     getDeviceCountByName().then((data) => {
