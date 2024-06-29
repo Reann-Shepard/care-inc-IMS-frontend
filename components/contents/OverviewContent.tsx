@@ -3,6 +3,7 @@ import ActivitiesInOverview from '@/components/cards/ActivitiesInOverview';
 import ManufacturerList from './overview/ManufacturerList';
 import DeviceList from './overview/DeviceList';
 import PackageList from './overview/PackageList';
+import AlterationList from './overview/AlterationList';
 
 interface CategoryData {
   name: string;
@@ -10,32 +11,12 @@ interface CategoryData {
 }
 
 export default function OverviewContent() {
-  // @TODO: Fetch data from api
-  const alterations: CategoryData[] = [
-    {
-      name: 'Oticon',
-      count: 0,
-    },
-    {
-      name: 'Unitron (V.RS.7)',
-      count: 5,
-    },
-    {
-      name: 'Unitron (V.R.7)',
-      count: 0,
-    },
-    {
-      name: 'Signia',
-      count: 2,
-    },
-  ];
-
   return (
     <div>
       <div className="flex m-10 justify-center">
         <div className="mr-10">
           <DeviceList />
-          <Card title="Alterations" data={alterations} />
+          <AlterationList />
         </div>
         <div>
           <PackageList />
