@@ -8,7 +8,7 @@ import { Device } from '@/entities/Device';
 import { getThisColorName } from '@/services/color/getColor';
 import { set } from 'zod';
 import { getThisTypeName } from '@/services/type/getType';
-import { getThisManufacturerName } from '@/services/overview/getManufacturer';
+import { getThisManufacturerName } from '@/services/overview/getOverviewManufacturer';
 import Link from 'next/link';
 import BackBtn from '@/components/buttons/BackBtn';
 

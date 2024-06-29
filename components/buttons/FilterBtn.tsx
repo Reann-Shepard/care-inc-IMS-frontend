@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 interface FilterBtnProps {
-  // dataColumnTitle: string[];
   dataColumnIndexes: number[];
   dataColumnNames: string[];
   data?: (string | number | Date | null)[][];
@@ -10,7 +9,6 @@ interface FilterBtnProps {
 }
 
 export default function FilterBtn({
-  // dataColumnTitle,
   dataColumnIndexes,
   dataColumnNames,
   data,
@@ -18,7 +16,7 @@ export default function FilterBtn({
 }: FilterBtnProps) {
   const filterRef = useRef<HTMLDetailsElement>(null);
   const [selectedBoxes, setSelectedBoxes] = useState<{
-    [key: string]: string[];
+    [key: string]: (string | number)[];
   }>({});
   const getUniqueData = (index: number) => {
     return Array.from(new Set(data?.map((eachPackage) => eachPackage[index])));
@@ -27,6 +25,7 @@ export default function FilterBtn({
   const dataUniqueByTitle = dataColumnIndexes.map((index) =>
     getUniqueData(index),
   );
+
   // get selectedboxes based on their dataTitle
   const handleFilterBoxes = (column: string, name: string) => {
     setSelectedBoxes((prev) => {
@@ -35,7 +34,6 @@ export default function FilterBtn({
         ? prevSelectedBoxes.filter((selected) => selected !== name)
         : [...prevSelectedBoxes, name];
       const selectedBoxes = { ...prev, [column]: newSelectedBoxes };
-      // const selectedBoxes = { ...newSelectedBoxes };
 
       onFilter(selectedBoxes);
       return selectedBoxes;
@@ -79,15 +77,17 @@ export default function FilterBtn({
                         <input
                           type="checkbox"
                           value={name as string}
-                          onClick={() => {
+                          onChange={() => {
                             handleFilterBoxes(
                               dataColumnNames[titleIndex],
                               name as string,
                             );
                           }}
-                          checked={selectedBoxes[
-                            dataColumnNames[titleIndex]
-                          ]?.includes(name as string)}
+                          checked={
+                            selectedBoxes[
+                              dataColumnNames[titleIndex]
+                            ]?.includes(name as string) || false
+                          }
                         />
                         <span className="ml-2">{String(name)}</span>
                       </label>

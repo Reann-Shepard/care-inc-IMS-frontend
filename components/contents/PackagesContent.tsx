@@ -61,11 +61,6 @@ export default function PackagesContent() {
     clientId: [],
     fittingDate: [],
   });
-  const [packageFilter, setPackageFilter] = useState<(string | number)[]>([]);
-  const [clientIdFilter, setClientIdFilter] = useState<(string | number)[]>([]);
-  const [fittingDateFilter, setFittingDateFilter] = useState<
-    (string | number)[]
-  >([]);
 
   const handleSortBy = (sortBy: string) => {
     setSortBy(sortBy);
@@ -75,66 +70,47 @@ export default function PackagesContent() {
   const handlerFilter = (selectedBoxes: {
     [key: string]: (string | number)[];
   }) => {
-    // setSelectedFilters(selectedBoxes);
-    // const packageFilterData = selectedBoxes[header[0]] ? selectedBoxes[header[0]].map((item) => item) : [];
-    // const clientIdFilterData = selectedBoxes[header[1]] ? selectedBoxes[header[1]].map((item) => item) : [];
-    const fittingDateFilter = selectedBoxes[header[2]] || [];
-    const packageFilterData = selectedBoxes[header[0]] || [];
-    const clientIdFilterData = selectedBoxes[header[1]] || [];
-    setPackageFilter(packageFilterData);
-    setClientIdFilter(clientIdFilterData);
-    setFittingDateFilter(fittingDateFilter);
     setSelectedFilters({
-      packageId: packageFilter,
-      clientId: clientIdFilter,
-      fittingDate: fittingDateFilter,
+      packageId: selectedBoxes[header[0]] || [],
+      clientId: selectedBoxes[header[1]] || [],
+      fittingDate: selectedBoxes[header[2]] || [],
     });
   };
-  // console.log("filter by package Id", selectedFilters[header[0]]);
-  // console.log("filter by client Id", selectedFilters[header[1]]);
-  // console.log('selectedFilters', selectedFilters.clientId.length);
-  // console.log('fittingDateFilter', fittingDateFilter);
 
   useEffect(() => {
     const fetchPackagesData = async () => {
-      getAllPackages().then((data) => {
-        setAllPackages(data); // for filter data will not change
-      });
-      if (sortBy !== 'orderDate') {
-        getAllPackagesSortedFiltered(sortBy, selectedFilters).then((data) => {
-          setPackages(data);
-        });
-        console.log(packages);
-      }
-      if (
-        packageFilter.length > 0 ||
-        clientIdFilter.length > 0 ||
-        fittingDateFilter.length > 0
-      ) {
-        getAllPackagesSortedFiltered(sortBy, {
-          packageId: packageFilter,
-          clientId: clientIdFilter,
-          fittingDate: fittingDateFilter,
-        }).then((data) => {
-          setPackages(data);
-        });
-      } else {
-        getAllPackages().then((data) => {
-          setPackages(data);
-        });
-      }
-      getAllOrderCustomers().then((data) => {
-        setOrderCustomers(data);
-      });
-      console.log(orderCustomers);
+      const [packagesData, orderCustomersData] = await Promise.all([
+        getAllPackages(),
+        getAllOrderCustomers(),
+      ]);
+      setAllPackages(packagesData);
+      setOrderCustomers(orderCustomersData);
     };
     fetchPackagesData();
-  }, [sortBy, packageFilter, clientIdFilter, fittingDateFilter]);
+  }, []);
 
-  // const filterFittingDate = allPackages.map((eachPackage) => {
-  //   return toDate(eachPackage.fittingDate).slice(0, 7);
-  // });
-  // console.log('fittingDateFilter', filterFittingDate);
+  useEffect(() => {
+    const fetchSortedFilteredPackagesData = async () => {
+      let sortedFilteredData = [];
+
+      if (
+        selectedFilters.packageId.length > 0 ||
+        selectedFilters.clientId.length > 0 ||
+        selectedFilters.fittingDate.length > 0
+      ) {
+        sortedFilteredData = await getAllPackagesSortedFiltered(
+          sortBy,
+          selectedFilters,
+        );
+      } else {
+        if (sortBy !== 'orderDate') {
+          sortedFilteredData = await getAllPackagesSortedFiltered(sortBy);
+        }
+      }
+      setPackages(sortedFilteredData);
+    };
+    fetchSortedFilteredPackagesData();
+  }, [sortBy, selectedFilters]);
 
   // convert date to string
   const toDate = (date: string | Date): string => {
@@ -156,26 +132,44 @@ export default function PackagesContent() {
       const orderDate = orderCustomerDate
         ? toDate(orderCustomerDate.orderDate)
         : '';
-      if (showYearMonth) {
-        // for filter data
-        return [
-          eachPackage.id,
-          eachPackage.clientId,
-          toDate(eachPackage.fittingDate).slice(0, 7),
-          toDate(eachPackage.warrantyExpiration).slice(0, 7),
-          orderDate,
-          eachPackage.comments,
-        ];
-      } else {
-        return [
-          eachPackage.id,
-          eachPackage.clientId,
-          toDate(eachPackage.fittingDate),
-          toDate(eachPackage.warrantyExpiration),
-          orderDate,
-          eachPackage.comments,
-        ];
-      }
+
+      return showYearMonth
+        ? [
+            eachPackage.id,
+            eachPackage.clientId,
+            toDate(eachPackage.fittingDate).slice(0, 7),
+            toDate(eachPackage.warrantyExpiration).slice(0, 7),
+            orderDate,
+            eachPackage.comments,
+          ]
+        : [
+            eachPackage.id,
+            eachPackage.clientId,
+            toDate(eachPackage.fittingDate),
+            toDate(eachPackage.warrantyExpiration),
+            orderDate,
+            eachPackage.comments,
+          ];
+      // if (showYearMonth) {
+      //   // for filter data
+      //   return [
+      //     eachPackage.id,
+      //     eachPackage.clientId,
+      //     toDate(eachPackage.fittingDate).slice(0, 7),
+      //     toDate(eachPackage.warrantyExpiration).slice(0, 7),
+      //     orderDate,
+      //     eachPackage.comments,
+      //   ];
+      // } else {
+      //   return [
+      //     eachPackage.id,
+      //     eachPackage.clientId,
+      //     toDate(eachPackage.fittingDate),
+      //     toDate(eachPackage.warrantyExpiration),
+      //     orderDate,
+      //     eachPackage.comments,
+      //   ];
+      // }
     });
   };
   const data = toTableData(packages, false);
