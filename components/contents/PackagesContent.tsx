@@ -14,8 +14,6 @@ import {
 import { getAllOrderCustomers } from '@/services/orderCustomer/getOrderCustomer';
 import { useRouter } from 'next/navigation';
 import AddBtn from '../buttons/AddBtn';
-import { set } from 'zod';
-import { all } from 'axios';
 
 export default function PackagesContent() {
   const router = useRouter();
@@ -26,6 +24,7 @@ export default function PackagesContent() {
     (string | number | Date | null)[][]
   >([]);
   // for displaying
+  // for sorting and table header
   const header = [
     'Package ID',
     'Client ID',
@@ -34,6 +33,7 @@ export default function PackagesContent() {
     'Order Date',
     'Comments',
   ];
+  // for sorting
   const dataColumnName = [
     'id',
     'clientId',
@@ -76,6 +76,10 @@ export default function PackagesContent() {
       fittingDate: selectedBoxes[header[2]] || [],
     });
   };
+
+  useEffect(() => {
+    console.log('here', selectedFilters);
+  }, [selectedFilters]);
 
   useEffect(() => {
     const fetchPackagesData = async () => {
@@ -150,26 +154,6 @@ export default function PackagesContent() {
             orderDate,
             eachPackage.comments,
           ];
-      // if (showYearMonth) {
-      //   // for filter data
-      //   return [
-      //     eachPackage.id,
-      //     eachPackage.clientId,
-      //     toDate(eachPackage.fittingDate).slice(0, 7),
-      //     toDate(eachPackage.warrantyExpiration).slice(0, 7),
-      //     orderDate,
-      //     eachPackage.comments,
-      //   ];
-      // } else {
-      //   return [
-      //     eachPackage.id,
-      //     eachPackage.clientId,
-      //     toDate(eachPackage.fittingDate),
-      //     toDate(eachPackage.warrantyExpiration),
-      //     orderDate,
-      //     eachPackage.comments,
-      //   ];
-      // }
     });
   };
   const data = toTableData(packages, false);
@@ -208,6 +192,7 @@ export default function PackagesContent() {
           <FilterBtn
             dataColumnIndexes={filterHeaderIndexes}
             dataColumnNames={filterHeader}
+            calendarRowIndex={[2]}
             data={filterData}
             onFilter={handlerFilter}
           />
