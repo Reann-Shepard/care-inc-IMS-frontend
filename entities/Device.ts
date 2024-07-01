@@ -1,3 +1,5 @@
+import { Manufacturer } from './manufacturer';
+
 export interface Device {
   id: number;
   serialNumber: string;
@@ -7,4 +9,5 @@ export interface Device {
   stockDate: Date;
   sellDate?: Date;
   packageId?: number;
+  manufacturer: Manufacturer;
 }
