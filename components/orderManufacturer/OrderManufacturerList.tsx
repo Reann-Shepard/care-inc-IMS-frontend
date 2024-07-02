@@ -4,6 +4,7 @@ import { OrderManufacturer } from '@/entities/order-manufacturer';
 import { getAllOrderManufacturers } from '@/services/orderManufacturer/getOrderManufacturer';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function OrderManufacturerList() {
   const [orderManufacturers, setOrderManufacturers] = useState<
@@ -17,10 +18,14 @@ export default function OrderManufacturerList() {
   >('All');
 
   useEffect(() => {
-    getAllOrderManufacturers().then((data) => {
-      setOrderManufacturers(data);
-      filterOrders(data, 'All');
-    });
+    getAllOrderManufacturers()
+      .then((data) => {
+        setOrderManufacturers(data);
+        filterOrders(data, 'All');
+      })
+      .catch((error) => {
+        console.error('Error fetching order manufacturers:', error);
+      });
   }, []);
 
   const filterOrders = (
@@ -80,6 +85,7 @@ export default function OrderManufacturerList() {
             <th>Amount</th>
             <th>Order Date</th>
             <th>Stock In Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -94,22 +100,24 @@ export default function OrderManufacturerList() {
             ).join(', ');
 
             return (
-              <tr key={order.id}>
+              <tr className="hover" key={order.id}>
                 <th>{index + 1}</th>
                 <td>{manufacturerNames}</td>
                 <td>{order.amount}</td>
                 <td>{dayjs(order.orderDate).format('MM/DD/YYYY')}</td>
                 <td>{stockInDates}</td>
                 <td>
-                  {order.OrderDevices.some((od) => od.device.stockDate) ? (
-                    <button className="btn btn-outline btn-success btn-sm">
-                      Delivered
-                    </button>
-                  ) : (
-                    <button className="btn btn-outline btn-primary btn-sm">
-                      View Detail
-                    </button>
-                  )}
+                  <Link href={`/order-manufacturer/${order.id}`}>
+                    {order.OrderDevices.some((od) => od.device.stockDate) ? (
+                      <button className="btn btn-outline btn-success btn-sm">
+                        Delivered
+                      </button>
+                    ) : (
+                      <button className="btn btn-outline btn-primary btn-sm">
+                        View Detail
+                      </button>
+                    )}
+                  </Link>
                 </td>
               </tr>
             );

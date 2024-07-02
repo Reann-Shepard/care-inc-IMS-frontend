@@ -4,7 +4,7 @@ export const metadata = {
   title: 'Order Manufacturer',
 };
 
-export default function OrderManufacturer() {
+export default function Page() {
   return (
     <div>
       <OrderManufacturerList />
