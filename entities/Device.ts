@@ -11,7 +11,8 @@ export interface Device {
   stockDate: Date;
   sellDate?: Date;
   packageId?: number;
-  manufacturer: Manufacturer;
-  type: Type;
-  color: Color;
+  manufacturer?: Manufacturer;
+  type?: Type;
+  color?: Color;
+  deleted?: boolean;
 }

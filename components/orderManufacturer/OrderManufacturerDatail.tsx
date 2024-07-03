@@ -13,12 +13,7 @@ export default function OrderManufacturerDetail() {
   const [orderManufacturer, setOrderManufacturer] =
     useState<OrderManufacturer | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { isDirty },
-  } = useForm();
+  const { control, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     if (id) {
@@ -35,7 +30,7 @@ export default function OrderManufacturerDetail() {
 
   const onSubmit = (data: any) => {
     console.log('Updated data:', data);
-    // TODO: Save db into databse
+    // TODO: Save db into database
   };
 
   const handleDiscard = () => {
@@ -173,31 +168,31 @@ export default function OrderManufacturerDetail() {
             ))}
           </tbody>
         </table>
-        {isDirty && selected.length > 0 && (
-          <div className="flex justify-between mx-5 mt-4">
-            <div>
-              <button type="submit" className="btn btn-outline btn-info">
-                Save
-              </button>
-            </div>
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={handleDiscard}
-                className="btn btn-outline btn-warning"
-              >
-                Discard
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="btn btn-outline btn-error"
-              >
-                Delete
-              </button>
-            </div>
+
+        <div className="fixed bottom-5 left-0 right-0 flex justify-between mx-5 mt-4 ">
+          <div>
+            <button type="submit" className="btn btn-outline btn-info">
+              Received
+            </button>
           </div>
-        )}
+
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={handleDiscard}
+              className="btn btn-outline btn-warning"
+            >
+              Discard
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="btn btn-outline btn-error"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   );

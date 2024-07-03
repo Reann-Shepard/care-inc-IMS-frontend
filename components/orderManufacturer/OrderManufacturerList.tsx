@@ -54,6 +54,11 @@ export default function OrderManufacturerList() {
 
   return (
     <div className="overflow-x-auto">
+      <div className="flex justify-end mr-8 mb-2">
+        <Link href="/order-manufacturer/new">
+          <button className="btn btn-outline btn-success">+ Add Order</button>
+        </Link>
+      </div>
       <div role="tablist" className="tabs tabs-bordered">
         <button
           role="tab"
@@ -91,7 +96,7 @@ export default function OrderManufacturerList() {
         <tbody>
           {filteredOrderManufacturers.map((order, index) => {
             const manufacturerNames = order.OrderDevices.map(
-              (od) => od.device.manufacturer.name,
+              (od) => od.device.manufacturer?.name,
             ).join(', ');
             const stockInDates = order.OrderDevices.map((od) =>
               od.device.stockDate
