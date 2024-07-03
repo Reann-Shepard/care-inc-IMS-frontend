@@ -1,33 +1,67 @@
 'use client';
-import dataSet from '@/components/inventory/temp_inv-ovData.json';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { getAllDevices } from '@/services/device/getDevice';
+import { deviceToInv } from './deviceToInv';
 
 export const metadata = {
   title: 'Inventory',
 };
 
 interface CategoryData {
-  name: string;
   model: string;
-  quantity: string;
+  quantity: number;
 }
 
 export default function InventoryOVPage() {
   const router = useRouter();
-  const devices: CategoryData[] = dataSet;
-  const [selectedModel, setSelectedModel] = useState<string>();
+  const [devices, setDevices] = useState<CategoryData[]>([]);
+  const searchParams = useSearchParams();
+  const selectedModel = searchParams.get('model');
 
-  const header = ['Company', 'Model', 'Amount'];
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        const data = await getAllDevices();
+        const invData = await deviceToInv(data);
+        const modelCounts: { [key: string]: number } = {};
 
-  const data = devices.map((device) => [
-    device.name,
-    device.model,
-    device.quantity,
-  ]);
+        // invData.forEach((device) => {
+        //   if (modelCounts[device.model]) {
+        //     modelCounts[device.model]++;
+        //   } else {
+        //     modelCounts[device.model] = 1;
+        //   }
+        // });
 
-  const getBGColor = (quantity: number) => {
+        invData.forEach((device) => {
+          modelCounts[device.model] = (modelCounts[device.model] || 0) + 1;
+        });
+
+        const categorizedData = Object.keys(modelCounts).map((model) => ({
+          model,
+          quantity: modelCounts[model],
+        }));
+
+        setDevices(categorizedData);
+      } catch (error) {
+        console.error('Error fetching devices', error);
+      }
+    };
+
+    fetchDevices();
+  }, []);
+
+  useEffect(() => {
+    if (selectedModel) {
+      router.push(`/inventory_list?model=${selectedModel}`);
+    }
+  }, [selectedModel, router]);
+
+  const header = ['Model', 'Amount'];
+
+  const getBGColor = useCallback((quantity: number) => {
     if (quantity <= 2) {
       return 'bg-red-300';
     } else if (quantity <= 5) {
@@ -35,13 +69,14 @@ export default function InventoryOVPage() {
     } else {
       return 'bg-green-300';
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    if (selectedModel) {
-      router.push(`/inventory_list?model=${selectedModel}`);
-    }
-  }, [selectedModel]);
+  const handleRowClick = useCallback(
+    (model: string) => {
+      router.push(`/inventory_list?model=${model}`);
+    },
+    [router],
+  );
 
   return (
     <div>
@@ -52,39 +87,38 @@ export default function InventoryOVPage() {
           </button>
         </Link>
       </div>
-      <table className="table border-2">
-        <thead>
-          <tr className="text-lg text-black bg-gray-200 text-center">
-            {header.map((item) => (
-              <th key={item}>{item}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((row, index) => (
+
+      <div className="flex justify-center">
+        <table className="table border-2 min-w-full">
+          <thead>
+            <tr className="text-lg text-black bg-gray-200 text-center">
+              {header.map((item) => (
+                <th key={item} className="py-2">
+                  {item}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {devices.map((device, index) => (
               <tr
                 key={index}
-                className="text-lg text-center hover "
-                onClick={() => setSelectedModel(row[0] + ' ' + row[1])}
+                className="text-lg text-center hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleRowClick(device.model)}
               >
-                {row.map((item, index) => (
-                  <td key={index} className="">
-                    <div
-                      className={
-                        (index === 2
-                          ? 'w-1/12 m-auto rounded-full bg-opacity-70 border-red-300 '
-                          : '') + (index === 2 ? getBGColor(Number(item)) : '')
-                      }
-                    >
-                      {item}
-                    </div>
-                  </td>
-                ))}
+                <td className="py-2 text-center w-1/2">{device.model}</td>
+                <td className="py-2 text-center w-1/2">
+                  <div
+                    className={`inline-block w-10 h-8 rounded-full bg-opacity-70 border-red-300 ${getBGColor(device.quantity)}`}
+                  >
+                    {device.quantity}
+                  </div>
+                </td>
               </tr>
             ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

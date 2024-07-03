@@ -3,18 +3,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 interface InputDropdownBoxProps {
-  label: string;
+  label?: string;
   placeholder: string;
   isRequired?: boolean;
   name: string;
   // data?: {name: string};
-  data?: string[];
+  data?: string[] | number[];
   value?: string;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function InputDropdownBox({
-  label,
+  label = '',
   placeholder,
   isRequired,
   name,
@@ -23,12 +23,17 @@ export default function InputDropdownBox({
   onChangeHandler,
 }: InputDropdownBoxProps) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
-  const [selectedItem, setSelectedItem] = useState<{ name: string } | null>(
-    null,
-  );
+  const [selectedItem, setSelectedItem] = useState<{
+    name: string | number;
+  } | null>(null);
   // const title = name[0].toUpperCase() + name.slice(1);
 
-  const handleSelect = (selection: string) => {
+  const [thisLabel, setThisLabel] = useState<string>(label);
+  if (thisLabel.length == 0) {
+    setThisLabel(name);
+  }
+
+  const handleSelect = (selection: string | number) => {
     detailsRef.current?.removeAttribute('open');
     setSelectedItem({ name: selection });
     onChangeHandler({
@@ -39,7 +44,7 @@ export default function InputDropdownBox({
   return (
     <div>
       <p>
-        {label}{' '}
+        {thisLabel}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <details ref={detailsRef} className="dropdown mt-2 mb-8">

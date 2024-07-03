@@ -1,10 +1,12 @@
 'use client';
 
-import { Manufacturer } from '@/entities/Manufacturer';
+// import { Manufacturer } from '@/entities/Manufacturer';
+import { Manufacturer } from '@/entities/manufacturer';
 import { Color } from '@/entities/Color';
 import { Type } from '@/entities/Type';
 import { Device } from '@/entities/Device';
-import { getAllManufacturers } from '@/services/manufacturer/getManufacturer';
+import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
+// import { getAllManufacturers } from '@/services/manufacturer/getManufacturer';
 import { getAllColors } from '@/services/color/getColor';
 import { getAllTypes } from '@/services/type/getType';
 import { InvData } from './inventory_page';

@@ -26,7 +26,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/**/*.txs",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "app/(main)/packages/[package_id]"
   ],
   "exclude": ["node_modules"]
 }

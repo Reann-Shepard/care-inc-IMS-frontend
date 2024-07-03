@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 interface InputBoxProps {
-  label: string;
+  label?: string;
   placeholder: string;
   isRequired?: boolean;
   name: string;
@@ -11,7 +11,7 @@ interface InputBoxProps {
 }
 
 export default function InputBox({
-  label,
+  label = '',
   placeholder,
   isRequired,
   name,
@@ -20,10 +20,15 @@ export default function InputBox({
 }: InputBoxProps) {
   // const title = name[0].toUpperCase() + name.slice(1);
 
+  const [thisLabel, setThisLabel] = useState<string>(label);
+  if (thisLabel.length == 0) {
+    setThisLabel(name);
+  }
+
   return (
     <div>
       <p>
-        {label}{' '}
+        {thisLabel}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <input

@@ -5,63 +5,78 @@ import InputDateBox from '@/components/inputs/InputDateBox';
 import InputBox from '@/components/inputs/InputBox';
 import InputDropdownBox from '@/components/inputs/InputDropdownBox';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
-import { set } from 'zod';
+import { Color } from '@/entities/Color';
+import { getAllColors } from '@/services/color/getColor';
+import { Manufacturer } from '@/entities/manufacturer';
+import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
+import { Type } from '@/entities/Type';
+import { getAllTypes } from '@/services/type/getType';
 
 interface newInventoryInputData {
   stockDate: string;
   manufacturer: string;
   type: string;
-  // deviceId: string;
   serialNumber1: string;
-  // serialNumber2: string;
   color: string;
 }
 
+// export default function AddInventory() {
+//   const clearInput = {
+//     stockDate: '',
+//     manufacturer: '',
+//     type: '',
+//     serialNumber1: '',
+//     color: '',
+//   };
+
+const clearInput: newInventoryInputData = {
+  stockDate: '',
+  manufacturer: '',
+  type: '',
+  serialNumber1: '',
+  color: '',
+};
 export default function AddInventory() {
-  const [newInventoryInput, setNewInventoryInput] =
-    useState<newInventoryInputData>({
-      stockDate: '',
-      manufacturer: '',
-      type: '',
-      // deviceId: '',
-      serialNumber1: '',
-      // serialNumber2: '',
-      color: '',
-    });
+  const [inputData, setInputData] = useState<newInventoryInputData>(clearInput);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
+  const [types, setTypes] = useState<Type[]>([]);
 
-  const manufacturers = [
-    'Oticon',
-    'Unitron (V.RS.7)',
-    'Unitron (V.R.7)',
-    'Signia',
-  ];
-
-  const typeItems = [
-    'Hearing Aid R',
-    'Hearing Aid L',
-    'Charger',
-    'Earmold',
-    'Remote',
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const manufacturers = await getAllManufacturers();
+        setManufacturers(manufacturers);
+      } catch (error) {
+        console.error('Error fetching manufacturers', error);
+      }
+      try {
+        const colors = await getAllColors();
+        setColors(colors);
+      } catch (error) {
+        console.error('Error fetching colors', error);
+      }
+      try {
+        const types = await getAllTypes();
+        setTypes(types);
+      } catch (error) {
+        console.error('Error fetching types', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewInventoryInput({ ...newInventoryInput, [name]: value });
+    setInputData({ ...inputData, [name]: value });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newInventoryInput.type.length > 0) {
-      console.log(newInventoryInput);
-      setNewInventoryInput({
-        stockDate: '',
-        manufacturer: '',
-        type: '',
-        // deviceId: '',
-        serialNumber1: '',
-        // serialNumber2: '',
-        color: '',
-      });
+    // if (inputData.type.length > 0) {
+    if (Object.values(inputData).every((field) => field.trim().length > 0)) {
+      console.log(inputData);
+      setInputData(clearInput);
 
       alert('Inventory added successfully');
     } else {
@@ -78,15 +93,16 @@ export default function AddInventory() {
             placeholder="Select stock date"
             isRequired
             name="stockDate"
-            value={newInventoryInput.stockDate}
+            value={inputData.stockDate}
             onChangeHandler={handleInput}
           />
           <InputDropdownBox
             label="Manufacturer"
-            placeholder="Enter manufacturer"
+            placeholder="Select manufacturer"
             isRequired
             name="manufacturer"
-            data={manufacturers}
+            value={inputData.manufacturer}
+            data={manufacturers.map((manufacturer) => manufacturer.name)}
             onChangeHandler={handleInput}
           />
 
@@ -95,42 +111,26 @@ export default function AddInventory() {
             placeholder="Select device type"
             isRequired
             name="type"
-            data={typeItems}
+            value={inputData.type}
+            data={types.map((type) => type.name)}
             onChangeHandler={handleInput}
           />
-
-          {/* <InputBox
-            label="Device ID"
-            placeholder="Enter device ID"
-            isRequired
-            name="deviceId"
-            value={newInventoryInput.deviceId}
-            onChangeHandler={handleInput}
-          /> */}
 
           <InputBox
             label="Serial Number 1"
             placeholder="Enter serial number"
             isRequired
             name="serialNumber1"
-            value={newInventoryInput.serialNumber1}
+            value={inputData.serialNumber1}
             onChangeHandler={handleInput}
           />
-
-          {/* <InputBox
-            label="Serial Number 2"
-            placeholder="Enter serial number"
-            name="serialNumber2"
-            value={newInventoryInput.serialNumber2}
-            onChangeHandler={handleInput}
-          /> */}
 
           <InputBox
             label="Color"
             placeholder="Enter color"
             isRequired
             name="color"
-            value={newInventoryInput.color}
+            value={inputData.color}
             onChangeHandler={handleInput}
           />
         </div>
