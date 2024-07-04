@@ -51,23 +51,24 @@ export default function Inventory() {
   // const uniqueModels = Array.from(
   //   new Set([...dataSet.map((device) => device.model)]),
   // );
+
   const uniqueModels = Array.from(
     new Set(dataSet.map((device) => device.model)),
   );
 
   // Sorting Function
-  // const handleSort = (sortBy: keyof InvData) => {
-  //   const sortedDevices = devices.sort((a, b) =>
-  //     a[sortBy].localeCompare(b[sortBy]),
-  //   );
-  //   setDevices([...sortedDevices]);
-  // };
   const handleSort = (sortBy: keyof InvData) => {
-    const sortedDevices = [...devices].sort((a, b) =>
+    const sortedDevices = devices.sort((a, b) =>
       a[sortBy].localeCompare(b[sortBy]),
     );
-    setDevices(sortedDevices);
+    setDevices([...sortedDevices]);
   };
+  // const handleSort = (sortBy: keyof InvData) => {
+  //   const sortedDevices = [...devices].sort((a, b) =>
+  //     a[sortBy].localeCompare(b[sortBy]),
+  //   );
+  //   setDevices(sortedDevices);
+  // };
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
@@ -98,7 +99,7 @@ export default function Inventory() {
   }, [sort]);
 
   // if (selectedModel === 'All') {
-  //   var header = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
+  //   var headers = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
   //   var ASS = devices
   //     .filter((device) => device.package === 'Yes')
   //     .map((device) => [
@@ -118,7 +119,7 @@ export default function Inventory() {
   //       device.package,
   //     ]);
   // } else {
-  //   var header = ['Color', 'Device Type', 'Serial Number', 'Package'];
+  //   var headers = ['Color', 'Device Type', 'Serial Number', 'Package'];
   //   var ASS = devices
   //     .filter((device) => device.package === 'Yes')
   //     .map((device) => [device.color, device.type, device.SN, device.package]);

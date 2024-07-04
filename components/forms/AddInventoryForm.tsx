@@ -11,6 +11,8 @@ import { Manufacturer } from '@/entities/manufacturer';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
 import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
+import { deviceToInv } from '@/components/inventory/deviceToInv';
+import { getAllDevices } from '@/services/device/getDevice';
 
 interface newInventoryInputData {
   stockDate: string;
@@ -36,11 +38,13 @@ const clearInput: newInventoryInputData = {
   serialNumber1: '',
   color: '',
 };
+
 export default function AddInventory() {
   const [inputData, setInputData] = useState<newInventoryInputData>(clearInput);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [types, setTypes] = useState<Type[]>([]);
+  const [dataSet, setDataSet] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,14 +75,33 @@ export default function AddInventory() {
     setInputData({ ...inputData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // if (inputData.type.length > 0) {
     if (Object.values(inputData).every((field) => field.trim().length > 0)) {
-      console.log(inputData);
-      setInputData(clearInput);
+      try {
+        const response = await fetch('/api/inventory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(inputData),
+        });
 
-      alert('Inventory added successfully');
+        if (response.ok) {
+          setInputData(clearInput);
+          alert('Inventory added successfully');
+          // Fetch the updated inventory list
+          const updatedInventory = await getAllDevices();
+          const transformedData = await deviceToInv(updatedInventory);
+          setDataSet(transformedData);
+        } else {
+          alert('Failed to add inventory');
+        }
+      } catch (error) {
+        console.error('Error adding inventory', error);
+        alert('Failed to add inventory');
+      }
     } else {
       alert('Please fill in all required fields');
     }
