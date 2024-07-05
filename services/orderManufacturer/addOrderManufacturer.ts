@@ -1,22 +1,19 @@
 import axios from 'axios';
 
-const updateOrderManufacturerById = async (id: number, updateData: any) => {
+const updateOrderManufacturerById = async (id: number, data: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   if (!apiUrl) {
     console.error('API URL is not found');
-    return null;
+    return;
   }
 
   try {
-    const response = await axios.patch(
-      `${apiUrl}/order-manufacturer/${id}`,
-      updateData,
-    );
-    return response.data;
+    await axios.patch(`${apiUrl}/order-manufacturer/${id}`, data);
+    console.log('Successfully updated order manufacturer');
+    console.log(data);
   } catch (e) {
-    console.error('Failed updating Order Manufacturer data: ', e);
-    return null;
+    console.error('Failed to update Order Manufacturer data: ', e);
   }
 };
 

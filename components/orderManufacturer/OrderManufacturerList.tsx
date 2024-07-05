@@ -18,14 +18,18 @@ export default function OrderManufacturerList() {
   >('All');
 
   useEffect(() => {
-    getAllOrderManufacturers()
-      .then((data) => {
+    const fetchOrderManufacturers = async () => {
+      try {
+        const data = await getAllOrderManufacturers();
+        console.log('Fetched data:', data);
         setOrderManufacturers(data);
         filterOrders(data, 'All');
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching order manufacturers:', error);
-      });
+      }
+    };
+
+    fetchOrderManufacturers();
   }, []);
 
   const filterOrders = (
@@ -36,14 +40,15 @@ export default function OrderManufacturerList() {
       setFilteredOrderManufacturers(orders);
     } else if (tab === 'Processing') {
       const filtered = orders.filter((order) =>
-        order.OrderDevices.some((od) => !od.device.stockDate),
+        order.OrderDevices.some((od) => !od.device.stockInDate),
       );
       setFilteredOrderManufacturers(filtered);
     } else if (tab === 'Delivered') {
       const filtered = orders.filter((order) =>
-        order.OrderDevices.some((od) => od.device.stockDate),
+        order.OrderDevices.some((od) => od.device.stockInDate),
       );
       setFilteredOrderManufacturers(filtered);
+      console.log(`Filtered data for ${tab} tab:`, filtered);
     }
   };
 
@@ -99,8 +104,8 @@ export default function OrderManufacturerList() {
               (od) => od.device.manufacturer?.name,
             ).join(', ');
             const stockInDates = order.OrderDevices.map((od) =>
-              od.device.stockDate
-                ? dayjs(od.device.stockDate).format('MM/DD/YYYY')
+              od.device.stockInDate
+                ? dayjs(od.device.stockInDate).format('MM/DD/YYYY')
                 : 'N/A',
             ).join(', ');
 
@@ -113,7 +118,7 @@ export default function OrderManufacturerList() {
                 <td>{stockInDates}</td>
                 <td>
                   <Link href={`/order-manufacturer/${order.id}`}>
-                    {order.OrderDevices.some((od) => od.device.stockDate) ? (
+                    {order.OrderDevices.some((od) => od.device.stockInDate) ? (
                       <button className="btn btn-outline btn-success btn-sm">
                         Delivered
                       </button>

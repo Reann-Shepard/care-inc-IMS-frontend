@@ -1,11 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { OrderManufacturer } from '@/entities/order-manufacturer';
 import { getOrderManufacturerById } from '@/services/orderManufacturer/getOrderManufacturer';
 import { Controller, useForm } from 'react-hook-form';
 import { OrderManufacturerInput } from './OrderManufacturerInput';
+import { OrderManufacturerSelector } from './OrderManufacturerSelector';
+import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
+import { getAllTypes } from '@/services/type/getType';
+import { Manufacturer } from '@/entities/manufacturer';
+import { Type } from '@/entities/Type';
+import { getAllColors } from '@/services/color/getColor';
+import { Color } from '@/entities/Color';
+import { updateOrderManufacturerById } from '@/services/orderManufacturer/addOrderManufacturer';
 
 export default function OrderManufacturerDetail() {
   const pathname = usePathname();
@@ -13,24 +21,87 @@ export default function OrderManufacturerDetail() {
   const [orderManufacturer, setOrderManufacturer] =
     useState<OrderManufacturer | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [manufacturerOptions, setManufacturerOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
+  const [typeOptions, setTypeOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
+  const [colorOptions, setColorOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
+  const [showToast, setShowToast] = useState(false);
   const { control, handleSubmit, reset } = useForm();
+  const router = useRouter();
 
   useEffect(() => {
-    if (id) {
-      getOrderManufacturerById(Number(id))
-        .then((data) => {
-          setOrderManufacturer(data);
-          reset(data);
-        })
-        .catch((error) => {
-          console.error('Error fetching order manufacturer details:', error);
-        });
-    }
+    const fetchOptions = async () => {
+      const manufacturers = await getAllManufacturers();
+      const manufacturerOptions = manufacturers.map(
+        (manufacturer: Manufacturer) => ({
+          value: manufacturer.id,
+          label: manufacturer.name,
+        }),
+      );
+
+      const types = await getAllTypes();
+      const typeOptions = types.map((type: Type) => ({
+        value: type.id,
+        label: type.name,
+      }));
+
+      const colors = await getAllColors();
+      const colorOptions = colors.map((color: Color) => ({
+        value: color.id,
+        label: color.name,
+      }));
+
+      setManufacturerOptions(manufacturerOptions);
+      setTypeOptions(typeOptions);
+      setColorOptions(colorOptions);
+
+      if (id) {
+        const data = await getOrderManufacturerById(Number(id));
+        console.log('Fetched data:', data);
+        setOrderManufacturer(data);
+        reset(data);
+      }
+    };
+
+    fetchOptions();
   }, [id, reset]);
 
-  const onSubmit = (data: any) => {
-    console.log('Updated data:', data);
-    // TODO: Save db into database
+  const onSubmit = async (data: any) => {
+    const amount = data.OrderDevices.length;
+    const updateData = {
+      ...data,
+      amount,
+      OrderDevices: data.OrderDevices.map((od: any) => ({
+        deviceId: Number(od.device.id),
+        orderManufacturerId: Number(id),
+        device: {
+          id: od.device.id,
+          serialNumber: od.device.serialNumber,
+          manufacturerId: Number(od.device.manufacturerId),
+          colorId: Number(od.device.colorId),
+          typeId: Number(od.device.typeId),
+          stockInDate: new Date().toISOString(),
+        },
+      })),
+    };
+
+    console.log('Update Data:', JSON.stringify(updateData, null, 2));
+    try {
+      await updateOrderManufacturerById(Number(id), updateData);
+      console.log('Updated data successfully');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        router.push('/order-manufacturer');
+      }, 2000);
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
   };
 
   const handleDiscard = () => {
@@ -84,6 +155,13 @@ export default function OrderManufacturerDetail() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="overflow-x-auto">
+        {showToast && (
+          <div className="toast toast-center">
+            <div className="alert alert-success">
+              <span>Orders saved successfully.</span>
+            </div>
+          </div>
+        )}
         <div className="mb-2 flex justify-center">
           <span className="text-xl font-bold">Order Manufacturer Details</span>
         </div>
@@ -130,28 +208,40 @@ export default function OrderManufacturerDetail() {
                 </td>
                 <td>
                   <Controller
-                    name={`OrderDevices[${index}].device.manufacturer.name`}
+                    name={`OrderDevices[${index}].device.manufacturerId`}
                     control={control}
                     render={({ field }) => (
-                      <OrderManufacturerInput {...field} control={control} />
+                      <OrderManufacturerSelector
+                        {...field}
+                        control={control}
+                        options={manufacturerOptions}
+                      />
                     )}
                   />
                 </td>
                 <td>
                   <Controller
-                    name={`OrderDevices[${index}].device.type.name`}
+                    name={`OrderDevices[${index}].device.typeId`}
                     control={control}
                     render={({ field }) => (
-                      <OrderManufacturerInput {...field} control={control} />
+                      <OrderManufacturerSelector
+                        {...field}
+                        control={control}
+                        options={typeOptions}
+                      />
                     )}
                   />
                 </td>
                 <td>
                   <Controller
-                    name={`OrderDevices[${index}].device.color.name`}
+                    name={`OrderDevices[${index}].device.colorId`}
                     control={control}
                     render={({ field }) => (
-                      <OrderManufacturerInput {...field} control={control} />
+                      <OrderManufacturerSelector
+                        {...field}
+                        control={control}
+                        options={colorOptions}
+                      />
                     )}
                   />
                 </td>
