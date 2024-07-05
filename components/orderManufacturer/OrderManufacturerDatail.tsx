@@ -14,6 +14,7 @@ import { Type } from '@/entities/Type';
 import { getAllColors } from '@/services/color/getColor';
 import { Color } from '@/entities/Color';
 import { updateOrderManufacturerById } from '@/services/orderManufacturer/addOrderManufacturer';
+import { fetchOptions } from '@/libs/fetch-options';
 
 export default function OrderManufacturerDetail() {
   const pathname = usePathname();
@@ -35,26 +36,8 @@ export default function OrderManufacturerDetail() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchOptions = async () => {
-      const manufacturers = await getAllManufacturers();
-      const manufacturerOptions = manufacturers.map(
-        (manufacturer: Manufacturer) => ({
-          value: manufacturer.id,
-          label: manufacturer.name,
-        }),
-      );
-
-      const types = await getAllTypes();
-      const typeOptions = types.map((type: Type) => ({
-        value: type.id,
-        label: type.name,
-      }));
-
-      const colors = await getAllColors();
-      const colorOptions = colors.map((color: Color) => ({
-        value: color.id,
-        label: color.name,
-      }));
+    const fetchData = async () => {
+      const options = await fetchOptions();
 
       setManufacturerOptions(manufacturerOptions);
       setTypeOptions(typeOptions);
@@ -68,7 +51,7 @@ export default function OrderManufacturerDetail() {
       }
     };
 
-    fetchOptions();
+    fetchData();
   }, [id, reset]);
 
   const onSubmit = async (data: any) => {
