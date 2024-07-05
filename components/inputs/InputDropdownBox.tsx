@@ -52,7 +52,7 @@ export default function InputDropdownBox({
           <input
             placeholder={placeholder}
             name={name}
-            value={value}
+            value={value || ''}
             // value={selectedItem ? selectedItem.name : placeholder}
             onChange={onChangeHandler}
             readOnly
