@@ -52,7 +52,7 @@ export default function PackageId() {
     thisDevice.manufacturerId,
     thisDevice.colorId,
     thisDevice.typeId,
-    toDate(thisDevice.stockDate),
+    toDate(thisDevice.stockInDate),
     toDate(thisDevice.sellDate ?? ''),
     thisDevice.packageId ?? '',
   ]);
