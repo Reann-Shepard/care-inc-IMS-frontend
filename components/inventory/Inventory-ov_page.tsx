@@ -1,9 +1,16 @@
+/**
+ * Inventory Overview Page Component.
+ *
+ * This component fetches and displays categorized inventory data based on device models.
+ * It allows navigation to detailed inventory lists and provides a link to add new inventory items.
+ */
+
 'use client';
-import Link from 'next/link';
+import Link from 'next/link'; // import Link from 'next/link' for client-side navigation
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { getAllDevices } from '@/services/device/getDevice';
-import { deviceToInv } from './deviceToInv';
+import { useSearchParams, useRouter } from 'next/navigation'; // import hooks for accessing url search parameters and navigation
+import { getAllDevices } from '@/services/device/getDevice'; // import function to fetch all devices
+import { deviceToInv } from './deviceToInv'; // import function to transform device data to inventory data
 
 export const metadata = {
   title: 'Inventory',
@@ -15,25 +22,17 @@ interface CategoryData {
 }
 
 export default function InventoryOVPage() {
-  const router = useRouter();
-  const [devices, setDevices] = useState<CategoryData[]>([]);
-  const searchParams = useSearchParams();
-  const selectedModel = searchParams.get('model');
+  const router = useRouter(); // initialize the router object
+  const [devices, setDevices] = useState<CategoryData[]>([]); // initialize the state for categorized inventory data
+  const searchParams = useSearchParams(); // initialize the searchParams object to access url search parameters
+  const selectedModel = searchParams.get('model'); // extract the selected model from the url search parameters
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const data = await getAllDevices();
-        const invData = await deviceToInv(data);
-        const modelCounts: { [key: string]: number } = {};
-
-        // invData.forEach((device) => {
-        //   if (modelCounts[device.model]) {
-        //     modelCounts[device.model]++;
-        //   } else {
-        //     modelCounts[device.model] = 1;
-        //   }
-        // });
+        const data = await getAllDevices(); // fetch all devices from the database
+        const invData = await deviceToInv(data); // convert device data to inventory data format using the deviceToInv function
+        const modelCounts: { [key: string]: number } = {}; // initialize an object to store model counts
 
         invData.forEach((device) => {
           modelCounts[device.model] = (modelCounts[device.model] || 0) + 1;
@@ -41,27 +40,28 @@ export default function InventoryOVPage() {
 
         const categorizedData = Object.keys(modelCounts).map((model) => ({
           model,
-          quantity: modelCounts[model],
+          quantity: modelCounts[model], // create an array of objects with model and quantity properties
         }));
 
-        setDevices(categorizedData);
+        setDevices(categorizedData); // set the state with the categorized inventory data
       } catch (error) {
-        console.error('Error fetching devices', error);
+        console.error('Error fetching devices', error); // log an error message if fetching devices fails
       }
     };
 
-    fetchDevices();
+    fetchDevices(); // Fetching devices when the component mounts
   }, []);
 
   useEffect(() => {
     if (selectedModel) {
-      router.push(`/inventory_list?model=${selectedModel}`);
+      router.push(`/inventory_list?model=${selectedModel}`); // navigate to the detailed inventory list page for the selected model
     }
   }, [selectedModel, router]);
 
-  const header = ['Model', 'Amount'];
+  const header = ['Model', 'Amount']; // define the table header
 
   const getBGColor = useCallback((quantity: number) => {
+    // function to determine the background color based on the quantity
     if (quantity <= 2) {
       return 'bg-red-300';
     } else if (quantity <= 5) {
@@ -73,7 +73,7 @@ export default function InventoryOVPage() {
 
   const handleRowClick = useCallback(
     (model: string) => {
-      router.push(`/inventory_list?model=${model}`);
+      router.push(`/inventory_list?model=${model}`); // navigate to the detailed inventory list page for the selected model
     },
     [router],
   );
@@ -81,10 +81,11 @@ export default function InventoryOVPage() {
   return (
     <div>
       <div className="flex justify-end mb-2 mr-10">
-        <Link href="/inventory/add_inventory">
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
-            +
-          </button>
+        <Link
+          href="/inventory/add_inventory"
+          className="btn px-10 font-bold text-white bg-[#54CE50]"
+        >
+          +
         </Link>
       </div>
 

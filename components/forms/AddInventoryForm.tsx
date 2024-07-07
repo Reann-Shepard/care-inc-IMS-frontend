@@ -1,3 +1,12 @@
+/**
+ * Add Inventory Form Component.
+ *
+ * This component provides a form for adding new inventory items.
+ * It fetches manufacturers, colors, and device types for dropdown selection.
+ * Upon successful form submission, it posts inventory data to the server,
+ * alerts the user of success or failure, and updates the displayed inventory list.
+ */
+
 'use client';
 import React, { useEffect, useState } from 'react';
 
@@ -13,8 +22,11 @@ import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
 import { deviceToInv } from '@/components/inventory/deviceToInv';
 import { getAllDevices } from '@/services/device/getDevice';
+import { postInventory } from '@/services/stock/postInventory';
+import { getAllInventory } from '@/services/stock/getInventory'; // If fetch inventory data needed
 
-interface newInventoryInputData {
+// Interface for new inventory input data
+export interface newInventoryInputData {
   stockDate: string;
   manufacturer: string;
   type: string;
@@ -22,15 +34,7 @@ interface newInventoryInputData {
   color: string;
 }
 
-// export default function AddInventory() {
-//   const clearInput = {
-//     stockDate: '',
-//     manufacturer: '',
-//     type: '',
-//     serialNumber1: '',
-//     color: '',
-//   };
-
+// Initial state for new inventory input data fields
 const clearInput: newInventoryInputData = {
   stockDate: '',
   manufacturer: '',
@@ -40,13 +44,14 @@ const clearInput: newInventoryInputData = {
 };
 
 export default function AddInventory() {
-  const [inputData, setInputData] = useState<newInventoryInputData>(clearInput);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
-  const [colors, setColors] = useState<Color[]>([]);
-  const [types, setTypes] = useState<Type[]>([]);
-  const [dataSet, setDataSet] = useState<any[]>([]);
+  const [inputData, setInputData] = useState<newInventoryInputData>(clearInput); // State for new inventory input data
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]); // State for manufacturers data
+  const [colors, setColors] = useState<Color[]>([]); // State for colors data
+  const [types, setTypes] = useState<Type[]>([]); // State for types data
+  const [dataSet, setDataSet] = useState<any[]>([]); // State for inventory data
 
   useEffect(() => {
+    // Fetch manufacturers, colors, and types data when the component mounts
     const fetchData = async () => {
       try {
         const manufacturers = await getAllManufacturers();
@@ -67,40 +72,34 @@ export default function AddInventory() {
         console.error('Error fetching types', error);
       }
     };
-    fetchData();
+    fetchData(); // Call the fetchData function when the component mounts
   }, []);
 
+  // Handle input change for new inventory data fields
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInputData({ ...inputData, [name]: value });
   };
 
+  // Handle form submission to add new inventory data to the server
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // if (inputData.type.length > 0) {
+    e.preventDefault(); // Prevent default form submission behavior
     if (Object.values(inputData).every((field) => field.trim().length > 0)) {
+      // Check if all fields are filled
       try {
-        const response = await fetch('/api/inventory', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(inputData),
-        });
-
-        if (response.ok) {
-          setInputData(clearInput);
-          alert('Inventory added successfully');
-          // Fetch the updated inventory list
-          const updatedInventory = await getAllDevices();
-          const transformedData = await deviceToInv(updatedInventory);
-          setDataSet(transformedData);
-        } else {
-          alert('Failed to add inventory');
-        }
-      } catch (error) {
-        console.error('Error adding inventory', error);
-        alert('Failed to add inventory');
+        await postInventory(inputData); // Post new inventory data to the server
+        console.log('Inventory added successfully');
+        setInputData(clearInput); // Clear input fields after successful submission
+        alert('Inventory added successfully');
+        // Fetch updated inventory data to refresh inventory list and overview
+        const updatedInventory = await getAllDevices(); // Fetch all devices from the server
+        const transformedData = await deviceToInv(updatedInventory); // Transform device data to inventory format
+        setDataSet(transformedData); // Set updated inventory data in state
+      } catch (error: any) {
+        console.error('Error adding inventory', error.response || error); // Log error message if adding inventory fails
+        alert(
+          `Failed to add inventory: ${error.response?.data?.message || error.message}`,
+        );
       }
     } else {
       alert('Please fill in all required fields');

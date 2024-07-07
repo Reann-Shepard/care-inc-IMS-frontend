@@ -1,14 +1,21 @@
+/**
+ * Inventory Management Page Component.
+ *
+ * This component manages and displays inventory data based on selected models.
+ * It allows sorting and filtering of inventory items, and provides a link to add new inventory items.
+ */
+
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import tempData from './temp_invData.json';
 import Table from '@/components/tables/ListTable';
 import Link from 'next/link';
 import React from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
+import { useState, useEffect, use } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { deviceToInv } from './deviceToInv';
 
+// Interface for inventory data
 export interface InvData {
   color: string;
   type: string;
@@ -18,121 +25,75 @@ export interface InvData {
 }
 
 export default function Inventory() {
-  const [devices, setDevices] = useState<InvData[]>([]);
-  const [dataSet, setDataSet] = useState<InvData[]>([]);
-  const [sort, setSort] = useState<keyof InvData | ''>();
+  const [devices, setDevices] = useState<InvData[]>([]); // State for holding filtered devices
+  const [dataSet, setDataSet] = useState<InvData[]>([]); // State for holding all devices
+  const [sort, setSort] = useState<keyof InvData | ''>(); // State for sorting key
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedModel = searchParams.get('model') || 'All';
-
-  // useEffect(() => {
-  //   getAllDevices().then(async (data) => {
-  //     setDataSet(await deviceToInv(data));
-  //     setDevices(await deviceToInv(data));
-  //   });
-  // }, []);
+  const selectedModel = searchParams.get('model') || 'All'; // Get selected model from url search params
 
   useEffect(() => {
+    // Fetch all devices and transform data to inventory format
     const fetchDevices = async () => {
       try {
         const data = await getAllDevices();
-        const transformedData = await deviceToInv(data);
-        setDataSet(transformedData);
-        setDevices(transformedData);
+        const transformedData = await deviceToInv(data); // Transform device data to inventory format
+        setDataSet(transformedData); // Set all devices
+        setDevices(transformedData); // Set filtered devices
       } catch (error) {
-        console.error('Error fetching devices', error);
+        console.error('Error fetching devices', error); // Log error if fetching devices fails
       }
     };
 
-    fetchDevices();
+    fetchDevices(); // Fetch devices when the component mounts
   }, []);
 
-  // const uniqueModels = Array.from(
-  //   new Set([...dataSet.map((device) => device.model)]),
-  // );
-
+  // Get unique models from the dataset
   const uniqueModels = Array.from(
     new Set(dataSet.map((device) => device.model)),
   );
 
   // Sorting Function
   const handleSort = (sortBy: keyof InvData) => {
+    // Handle sorting based on the selected key
     const sortedDevices = devices.sort((a, b) =>
       a[sortBy].localeCompare(b[sortBy]),
     );
-    setDevices([...sortedDevices]);
+    setDevices([...sortedDevices]); // Set sorted devices in state
   };
-  // const handleSort = (sortBy: keyof InvData) => {
-  //   const sortedDevices = [...devices].sort((a, b) =>
-  //     a[sortBy].localeCompare(b[sortBy]),
-  //   );
-  //   setDevices(sortedDevices);
-  // };
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
     if (newModel === 'All') {
+      // If model is 'All', set all devices
       setDevices([...dataSet]);
-    }
-    // else {
-    //   const newDevices = dataSet.filter((device) => device.model === newModel);
-    //   setDevices([...newDevices]);
-    // }
-    else {
+    } else {
       const filteredDevices = dataSet.filter(
-        (device) => device.model === newModel,
+        (device) => device.model === newModel, // Filter devices based on selected model
       );
       setDevices(filteredDevices);
     }
   };
 
   useEffect(() => {
-    handleModelChange(selectedModel);
-    setSort('');
+    handleModelChange(selectedModel); // Handle model change when selected model changes
+    setSort(''); // Reset sorting when model changes
   }, [selectedModel]);
 
   useEffect(() => {
     if (sort) {
-      handleSort(sort);
+      handleSort(sort); // Handle sorting when sort key changes
     }
   }, [sort]);
 
-  // if (selectedModel === 'All') {
-  //   var headers = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
-  //   var ASS = devices
-  //     .filter((device) => device.package === 'Yes')
-  //     .map((device) => [
-  //       device.model,
-  //       device.color,
-  //       device.type,
-  //       device.SN,
-  //       device.package,
-  //     ]);
-  //   var UASS = devices
-  //     .filter((device) => device.package === '')
-  //     .map((device) => [
-  //       device.model,
-  //       device.color,
-  //       device.type,
-  //       device.SN,
-  //       device.package,
-  //     ]);
-  // } else {
-  //   var headers = ['Color', 'Device Type', 'Serial Number', 'Package'];
-  //   var ASS = devices
-  //     .filter((device) => device.package === 'Yes')
-  //     .map((device) => [device.color, device.type, device.SN, device.package]);
-  //   var UASS = devices
-  //     .filter((device) => device.package === '')
-  //     .map((device) => [device.color, device.type, device.SN, device.package]);
-  // }
-
+  // Table Headers and Data
   const headers =
     selectedModel === 'All'
-      ? ['Model', 'Color', 'Device Type', 'Serial Number', 'Package']
-      : ['Color', 'Device Type', 'Serial Number', 'Package'];
+      ? ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'] // Table headers for all models
+      : ['Color', 'Device Type', 'Serial Number', 'Package']; // Table headers for selected model
 
+  // Filter devices based on package status
   const ASS = devices
     .filter((device) => device.package === 'Yes')
     .map((device) =>
@@ -196,10 +157,11 @@ export default function Inventory() {
           <div className="font-bold text-xl ">{selectedModel}</div>
         )}
         <div className="w-96 flex justify-end">
-          <Link href="/inventory/add_inventory">
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
-              +
-            </button>
+          <Link
+            href="/inventory/add_inventory"
+            className="btn px-10 font-bold text-white bg-[#54CE50]"
+          >
+            +
           </Link>
         </div>
       </div>

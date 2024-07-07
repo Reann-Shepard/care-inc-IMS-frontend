@@ -1,9 +1,11 @@
-import AddInventoryForm from '@/components/forms/AddInventoryForm';
+import AddInventoryForm from '@/components/forms/AddInventoryForm'; // Importing the AddInventoryForm component
 
 export const metadata = {
+  // Metadata for the page title
   title: 'Add Inventory',
 };
 
+// Add Inventory Page Component that renders the AddInventoryForm component
 export default function AddInventoryPage() {
   return (
     <div>
