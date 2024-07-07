@@ -7,12 +7,6 @@ import { getOrderManufacturerById } from '@/services/orderManufacturer/getOrderM
 import { Controller, useForm } from 'react-hook-form';
 import { OrderManufacturerInput } from './OrderManufacturerInput';
 import { OrderManufacturerSelector } from './OrderManufacturerSelector';
-import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
-import { getAllTypes } from '@/services/type/getType';
-import { Manufacturer } from '@/entities/manufacturer';
-import { Type } from '@/entities/Type';
-import { getAllColors } from '@/services/color/getColor';
-import { Color } from '@/entities/Color';
 import { updateOrderManufacturerById } from '@/services/orderManufacturer/addOrderManufacturer';
 import { fetchOptions } from '@/libs/fetch-options';
 
@@ -39,9 +33,9 @@ export default function OrderManufacturerDetail() {
     const fetchData = async () => {
       const options = await fetchOptions();
 
-      setManufacturerOptions(manufacturerOptions);
-      setTypeOptions(typeOptions);
-      setColorOptions(colorOptions);
+      setManufacturerOptions(options.manufacturerOptions);
+      setTypeOptions(options.typeOptions);
+      setColorOptions(options.colorOptions);
 
       if (id) {
         const data = await getOrderManufacturerById(Number(id));
@@ -177,7 +171,7 @@ export default function OrderManufacturerDetail() {
             </tr>
           </thead>
           <tbody>
-            {orderManufacturer.OrderDevices.map((order, index) => (
+            {orderManufacturer.OrderDevices.map((_, index) => (
               <tr key={index} className="hover">
                 <td>
                   <label>

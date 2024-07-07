@@ -1,7 +1,11 @@
 'use client';
 
 import { fetchOptions } from '@/libs/fetch-options';
+import { postOrderManufacturer } from '@/services/orderManufacturer/addOrderManufacturer';
+
 import { useState, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { OrderManufacturerSelector } from './OrderManufacturerSelector';
 
 interface RowData {
   manufacturer: string;
@@ -21,6 +25,7 @@ const OrderManufacturerAddOrder = () => {
   const [colorOptions, setColorOptions] = useState<
     { value: number; label: string }[]
   >([]);
+  const { handleSubmit, setValue, register } = useForm();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,16 +56,6 @@ const OrderManufacturerAddOrder = () => {
     setSelectedRows([]);
   };
 
-  const handleInputChange = (
-    index: number,
-    field: keyof RowData,
-    value: string,
-  ) => {
-    const newRows = [...rows];
-    newRows[index][field] = value;
-    setRows(newRows);
-  };
-
   const handleCheckboxChange = (index: number) => {
     setSelectedRows((prevSelectedRows) =>
       prevSelectedRows.includes(index)
@@ -68,6 +63,47 @@ const OrderManufacturerAddOrder = () => {
         : [...prevSelectedRows, index],
     );
   };
+
+  const handleSelectChange = (index: number, field: string, value: string) => {
+    setValue(`rows[${index}].${field}`, value);
+  };
+
+  const onSubmit = (data: any) => {
+    console.log('Form Data:', data);
+    const orderData = {
+      amount: rows.length,
+      orderDate: new Date().toISOString(),
+      OrderDevices: rows.map((_, index) => ({
+        device: {
+          manufacturerId: Number(data.rows[index].manufacturer),
+          colorId: Number(data.rows[index].color),
+          typeId: Number(data.rows[index].type),
+          deleted: false,
+        },
+      })),
+    };
+    console.log('Saving data:', orderData);
+    postOrderManufacturer(orderData);
+  };
+
+  // const onSubmit = async (data: any) => {
+
+  //     const orderData = {
+  //         amount: rows.length,
+  //         orderDate: new Date().toISOString(),
+  //         OrderDevices: rows.map((_, index) => ({
+  //             device: {
+  //                 manufacturerId: data[`rows[${index}].manufacturer`],
+  //                 colorId: data[`rows[${index}].color`],
+  //                 typeId: data[`rows[${index}].type`],
+  //                 deleted: false,
+  //             }
+  //         }))
+  //     };
+
+  //     console.log('Saving data:', orderData);
+  //     await postOrderManufacturer(orderData);
+  // };
 
   return (
     <div>
@@ -82,84 +118,85 @@ const OrderManufacturerAddOrder = () => {
           Remove Row
         </button>
       </div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>
-              <label>
-                <input type="checkbox" className="checkbox" />
-              </label>
-            </th>
-            <th>Manufacturer</th>
-            <th>Type</th>
-            <th>Color</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              <td>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>
                 <label>
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={selectedRows.includes(index)}
-                    onChange={() => handleCheckboxChange(index)}
-                  />
+                  <input type="checkbox" className="checkbox" />
                 </label>
-              </td>
-              <td>
-                <select
-                  value={row.manufacturer}
-                  onChange={(e) =>
-                    handleInputChange(index, 'manufacturer', e.target.value)
-                  }
-                  className="select select-bordered"
-                >
-                  {manufacturerOptions.map((option) => (
-                    <option key={option.value} value={option.label}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <select
-                  value={row.type}
-                  onChange={(e) =>
-                    handleInputChange(index, 'type', e.target.value)
-                  }
-                  className="select select-bordered"
-                >
-                  {typeOptions.map((option) => (
-                    <option key={option.value} value={option.label}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <select
-                  value={row.color}
-                  onChange={(e) =>
-                    handleInputChange(index, 'color', e.target.value)
-                  }
-                  className="select select-bordered"
-                >
-                  {colorOptions.map((option) => (
-                    <option key={option.value} value={option.label}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </td>
+              </th>
+              <th>Manufacturer</th>
+              <th>Type</th>
+              <th>Color</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="flex m-5 justify-start">
-        <button className="btn btn-info">Save</button>
-      </div>
+          </thead>
+          <tbody>
+            {rows.map((_, index) => (
+              <tr key={index}>
+                <td>
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      checked={selectedRows.includes(index)}
+                      onChange={() => handleCheckboxChange(index)}
+                    />
+                  </label>
+                </td>
+                <td>
+                  <select
+                    {...register(`rows[${index}].manufacturer`)}
+                    onChange={(e) => {
+                      handleSelectChange(index, 'manufacturer', e.target.value);
+                    }}
+                  >
+                    {manufacturerOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <select
+                    {...register(`rows[${index}].type`)}
+                    onChange={(e) =>
+                      handleSelectChange(index, 'type', e.target.value)
+                    }
+                  >
+                    {typeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <select
+                    {...register(`rows[${index}].color`)}
+                    onChange={(e) =>
+                      handleSelectChange(index, 'color', e.target.value)
+                    }
+                  >
+                    {colorOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="flex m-5 justify-start">
+          <button className="btn btn-info" type="submit">
+            Save
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

@@ -17,7 +17,7 @@ const updateOrderManufacturerById = async (id: number, data: any) => {
   }
 };
 
-const postOrderManufacturerById = async (id: number, data: any) => {
+const postOrderManufacturer = async (data: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   if (!apiUrl) {
@@ -26,7 +26,7 @@ const postOrderManufacturerById = async (id: number, data: any) => {
   }
 
   try {
-    await axios.post(`${apiUrl}/order-manufacturer/${id}`, data);
+    await axios.post(`${apiUrl}/order-manufacturer`, data);
     console.log('Successfully posted order manufacturer');
     console.log(data);
   } catch (e) {
@@ -34,4 +34,4 @@ const postOrderManufacturerById = async (id: number, data: any) => {
   }
 };
 
-export { updateOrderManufacturerById, postOrderManufacturerById };
+export { updateOrderManufacturerById, postOrderManufacturer };
