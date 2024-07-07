@@ -127,17 +127,6 @@ export default function OrderManufacturerList() {
                 <td>{dayjs(order.orderDate).format('MM/DD/YYYY')}</td>
                 <td>{stockInDates}</td>
                 <td>
-                  {/* <Link href={`/order-manufacturer/${order.id}`}>
-                    {order.OrderDevices.some((od) => od.device.stockInDate) ? (
-                      <button className="btn btn-outline btn-success btn-sm">
-                        Delivered
-                      </button>
-                    ) : (
-                      <button className="btn btn-outline btn-primary btn-sm">
-                        View Detail
-                      </button>
-                    )}
-                  </Link> */}
                   <button
                     className={`btn btn-outline btn-${isDelivered ? 'success' : 'primary'} btn-sm`}
                     onClick={() => handleViewDetailClick(order.id, isDelivered)}
