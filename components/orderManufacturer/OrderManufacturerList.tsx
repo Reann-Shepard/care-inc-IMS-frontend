@@ -5,6 +5,7 @@ import { getAllOrderManufacturers } from '@/services/orderManufacturer/getOrderM
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function OrderManufacturerList() {
   const [orderManufacturers, setOrderManufacturers] = useState<
@@ -16,6 +17,7 @@ export default function OrderManufacturerList() {
   const [activeTab, setActiveTab] = useState<
     'All' | 'Processing' | 'Delivered'
   >('All');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchOrderManufacturers = async () => {
@@ -55,6 +57,10 @@ export default function OrderManufacturerList() {
   const handleTabClick = (tab: 'All' | 'Processing' | 'Delivered') => {
     setActiveTab(tab);
     filterOrders(orderManufacturers, tab);
+  };
+
+  const handleViewDetailClick = (orderId: number, isDelivered: boolean) => {
+    router.push(`/order-manufacturer/${orderId}?delivered=${isDelivered}`);
   };
 
   return (
@@ -109,6 +115,10 @@ export default function OrderManufacturerList() {
                 : 'N/A',
             ).join(', ');
 
+            const isDelivered = order.OrderDevices.some(
+              (od) => od.device.stockInDate,
+            );
+
             return (
               <tr className="hover" key={order.id}>
                 <th>{index + 1}</th>
@@ -117,7 +127,7 @@ export default function OrderManufacturerList() {
                 <td>{dayjs(order.orderDate).format('MM/DD/YYYY')}</td>
                 <td>{stockInDates}</td>
                 <td>
-                  <Link href={`/order-manufacturer/${order.id}`}>
+                  {/* <Link href={`/order-manufacturer/${order.id}`}>
                     {order.OrderDevices.some((od) => od.device.stockInDate) ? (
                       <button className="btn btn-outline btn-success btn-sm">
                         Delivered
@@ -127,7 +137,13 @@ export default function OrderManufacturerList() {
                         View Detail
                       </button>
                     )}
-                  </Link>
+                  </Link> */}
+                  <button
+                    className={`btn btn-outline btn-${isDelivered ? 'success' : 'primary'} btn-sm`}
+                    onClick={() => handleViewDetailClick(order.id, isDelivered)}
+                  >
+                    {isDelivered ? 'Delivered' : 'View Detail'}
+                  </button>
                 </td>
               </tr>
             );

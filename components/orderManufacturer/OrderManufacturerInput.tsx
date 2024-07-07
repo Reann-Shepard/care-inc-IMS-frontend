@@ -3,11 +3,13 @@ import { UseControllerProps, useController } from 'react-hook-form';
 interface OrderManufacturerInputProps extends UseControllerProps {
   name: string;
   control: any;
+  disabled?: boolean;
 }
 
 const OrderManufacturerInput: React.FC<OrderManufacturerInputProps> = ({
   control,
   name,
+  disabled = false,
 }) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -24,6 +26,7 @@ const OrderManufacturerInput: React.FC<OrderManufacturerInputProps> = ({
       onBlur={onBlur}
       value={value}
       ref={ref}
+      disabled={disabled}
     />
   );
 };

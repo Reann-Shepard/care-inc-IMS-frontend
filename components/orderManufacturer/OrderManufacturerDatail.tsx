@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { OrderManufacturer } from '@/entities/order-manufacturer';
 import { getOrderManufacturerById } from '@/services/orderManufacturer/getOrderManufacturer';
 import { Controller, useForm } from 'react-hook-form';
@@ -26,8 +26,16 @@ export default function OrderManufacturerDetail() {
     { value: number; label: string }[]
   >([]);
   const [showToast, setShowToast] = useState(false);
-  const { control, handleSubmit, reset } = useForm();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const delivered = searchParams.get('delivered') === 'true';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +57,18 @@ export default function OrderManufacturerDetail() {
   }, [id, reset]);
 
   const onSubmit = async (data: any) => {
+    const serialNumberEmpty = data.OrderDevices.some(
+      (od: any) => !od.device.serialNumber,
+    );
+
+    if (serialNumberEmpty) {
+      setError('OrderDevices', {
+        type: 'manual',
+        message: 'Serial Number cannot be empty',
+      });
+      return;
+    }
+
     const amount = data.OrderDevices.length;
     const updateData = {
       ...data,
@@ -149,6 +169,24 @@ export default function OrderManufacturerDetail() {
           </span>
           <span>Total Order Amount: {orderManufacturer.amount}</span>
         </div>
+        {errors.OrderDevices && (
+          <div role="alert" className="alert alert-error">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Serial Number cannot be empty.</span>
+          </div>
+        )}
         <table className="table">
           <thead>
             <tr>
@@ -192,6 +230,7 @@ export default function OrderManufacturerDetail() {
                         {...field}
                         control={control}
                         options={manufacturerOptions}
+                        disabled={delivered}
                       />
                     )}
                   />
@@ -205,6 +244,7 @@ export default function OrderManufacturerDetail() {
                         {...field}
                         control={control}
                         options={typeOptions}
+                        disabled={delivered}
                       />
                     )}
                   />
@@ -218,6 +258,7 @@ export default function OrderManufacturerDetail() {
                         {...field}
                         control={control}
                         options={colorOptions}
+                        disabled={delivered}
                       />
                     )}
                   />
@@ -227,7 +268,11 @@ export default function OrderManufacturerDetail() {
                     name={`OrderDevices[${index}].device.serialNumber`}
                     control={control}
                     render={({ field }) => (
-                      <OrderManufacturerInput {...field} control={control} />
+                      <OrderManufacturerInput
+                        {...field}
+                        control={control}
+                        disabled={delivered}
+                      />
                     )}
                   />
                 </td>

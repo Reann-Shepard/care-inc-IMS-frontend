@@ -6,6 +6,7 @@ import { postOrderManufacturer } from '@/services/orderManufacturer/addOrderManu
 import { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { OrderManufacturerSelector } from './OrderManufacturerSelector';
+import { useRouter } from 'next/navigation';
 
 interface RowData {
   manufacturer: string;
@@ -26,6 +27,8 @@ const OrderManufacturerAddOrder = () => {
     { value: number; label: string }[]
   >([]);
   const { handleSubmit, setValue, register } = useForm();
+  const [showToast, setShowToast] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +71,7 @@ const OrderManufacturerAddOrder = () => {
     setValue(`rows[${index}].${field}`, value);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log('Form Data:', data);
     const orderData = {
       amount: rows.length,
@@ -83,31 +86,28 @@ const OrderManufacturerAddOrder = () => {
       })),
     };
     console.log('Saving data:', orderData);
-    postOrderManufacturer(orderData);
+    try {
+      await postOrderManufacturer(orderData);
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        router.push('/order-manufacturer');
+      });
+    } catch (e) {
+      console.error('Error Posting data: ', e);
+    }
   };
-
-  // const onSubmit = async (data: any) => {
-
-  //     const orderData = {
-  //         amount: rows.length,
-  //         orderDate: new Date().toISOString(),
-  //         OrderDevices: rows.map((_, index) => ({
-  //             device: {
-  //                 manufacturerId: data[`rows[${index}].manufacturer`],
-  //                 colorId: data[`rows[${index}].color`],
-  //                 typeId: data[`rows[${index}].type`],
-  //                 deleted: false,
-  //             }
-  //         }))
-  //     };
-
-  //     console.log('Saving data:', orderData);
-  //     await postOrderManufacturer(orderData);
-  // };
 
   return (
     <div>
       <div className="flex gap-3 m-2">
+        {showToast && (
+          <div className="toast toast-center">
+            <div className="alert alert-success">
+              <span>Orders saved successfully.</span>
+            </div>
+          </div>
+        )}
         <button className="btn btn-outline btn-accent" onClick={handleAddRow}>
           Add Row
         </button>
