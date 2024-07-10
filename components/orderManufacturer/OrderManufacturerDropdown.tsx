@@ -1,24 +1,28 @@
-import { UseControllerProps, useController } from 'react-hook-form';
+import {
+  UseControllerProps,
+  useController,
+  useFormContext,
+} from 'react-hook-form';
 
-interface OrderManufacturerSelectorProps extends UseControllerProps {
+interface OrderManufacturerDropdownProps extends UseControllerProps {
   name: string;
-  control: any;
   options: { value: string | number; label: string }[];
   disabled?: boolean;
 }
 
-const OrderManufacturerSelector: React.FC<OrderManufacturerSelectorProps> = ({
-  control,
+const OrderManufacturerDropdown: React.FC<OrderManufacturerDropdownProps> = ({
   name,
   options,
   disabled = false,
+  ...rest
 }) => {
   const {
-    field: { onChange, onBlur, value, ref },
-  } = useController({
+    control,
+    formState: { errors },
+  } = useFormContext();
+  const { field } = useController({
     name,
     control,
-    defaultValue: '',
   });
 
   const disabledClass = disabled ? 'select-disabled-black' : '';
@@ -34,13 +38,12 @@ const OrderManufacturerSelector: React.FC<OrderManufacturerSelectorProps> = ({
       </style>
       <select
         className={`select select-bordered p-2 w-full ${disabledClass}`}
-        onChange={(e) => {
-          console.log(`${e.target.value}`);
-          onChange(e.target.value);
-        }}
-        onBlur={onBlur}
-        value={value}
-        ref={ref}
+        {...field}
+        {...rest}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+        value={field.value}
+        ref={field.ref}
         disabled={disabled}
       >
         {options.map((option) => (
@@ -49,8 +52,13 @@ const OrderManufacturerSelector: React.FC<OrderManufacturerSelectorProps> = ({
           </option>
         ))}
       </select>
+      {errors[name] && (
+        <span className="text-red-500 font-medium">
+          {errors[name]?.message as string}
+        </span>
+      )}
     </>
   );
 };
 
-export { OrderManufacturerSelector };
+export { OrderManufacturerDropdown };

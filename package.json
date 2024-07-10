@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.0.3",
+    "@hookform/resolvers": "^3.9.0",
     "axios": "^1.7.2",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.2.4",

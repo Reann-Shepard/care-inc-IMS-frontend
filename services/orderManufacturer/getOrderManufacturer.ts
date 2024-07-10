@@ -34,4 +34,29 @@ const getOrderManufacturerById = async (id: number) => {
   }
 };
 
-export { getAllOrderManufacturers, getOrderManufacturerById };
+const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiUrl) {
+    console.error('API URL is not found');
+    return false;
+  }
+
+  try {
+    await axios.get(`${apiUrl}/device/check-serial-number`, {
+      params: { serialNumber },
+    });
+    return false;
+  } catch (error: any) {
+    if (error.response && error.response.status === 400) {
+      return true;
+    }
+    throw error;
+  }
+};
+
+export {
+  getAllOrderManufacturers,
+  getOrderManufacturerById,
+  checkSerialNumber,
+};

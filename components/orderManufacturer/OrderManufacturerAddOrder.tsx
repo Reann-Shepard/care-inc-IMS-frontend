@@ -2,14 +2,11 @@
 
 import { fetchOptions } from '@/libs/fetch-options';
 import { postOrderManufacturer } from '@/services/orderManufacturer/addOrderManufacturer';
-
 import { useState, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { OrderManufacturerSelector } from './OrderManufacturerSelector';
+import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 interface RowData {
-  manufacturer: string;
   type: string;
   color: string;
 }
@@ -26,6 +23,7 @@ const OrderManufacturerAddOrder = () => {
   const [colorOptions, setColorOptions] = useState<
     { value: number; label: string }[]
   >([]);
+  const [commonManufacturer, setCommonManufacturer] = useState<string>('');
   const { handleSubmit, setValue, register } = useForm();
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
@@ -45,7 +43,6 @@ const OrderManufacturerAddOrder = () => {
     setRows((prevRows) => [
       ...prevRows,
       {
-        manufacturer: '',
         type: '',
         color: '',
       },
@@ -72,27 +69,26 @@ const OrderManufacturerAddOrder = () => {
   };
 
   const onSubmit = async (data: any) => {
-    console.log('Form Data:', data);
     const orderData = {
       amount: rows.length,
       orderDate: new Date().toISOString(),
       OrderDevices: rows.map((_, index) => ({
         device: {
-          manufacturerId: Number(data.rows[index].manufacturer),
+          manufacturerId: Number(commonManufacturer),
           colorId: Number(data.rows[index].color),
           typeId: Number(data.rows[index].type),
           deleted: false,
         },
       })),
     };
-    console.log('Saving data:', orderData);
+
     try {
       await postOrderManufacturer(orderData);
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
         router.push('/order-manufacturer');
-      });
+      }, 1000);
     } catch (e) {
       console.error('Error Posting data: ', e);
     }
@@ -100,6 +96,25 @@ const OrderManufacturerAddOrder = () => {
 
   return (
     <div>
+      <div className="flex m-3 gap-2 items-center">
+        <label className="block text-sm font-medium text-gray-900">
+          Select Manufacturer:{' '}
+        </label>
+        <select
+          value={commonManufacturer}
+          onChange={(e) => setCommonManufacturer(e.target.value)}
+          className="select select-sm select-bordered w-full max-w-xs"
+        >
+          <option value="" disabled>
+            Select Manufacturer
+          </option>
+          {manufacturerOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="flex gap-3 m-2">
         {showToast && (
           <div className="toast toast-center">
@@ -108,16 +123,20 @@ const OrderManufacturerAddOrder = () => {
             </div>
           </div>
         )}
-        <button className="btn btn-outline btn-accent" onClick={handleAddRow}>
+        <button
+          className="btn btn-outline btn-sm btn-accent"
+          onClick={handleAddRow}
+        >
           Add Row
         </button>
         <button
-          className="btn btn-outline btn-error"
+          className="btn btn-outline btn-sm btn-error"
           onClick={handleRemoveRows}
         >
           Remove Row
         </button>
       </div>
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <table className="table">
           <thead>
@@ -127,7 +146,6 @@ const OrderManufacturerAddOrder = () => {
                   <input type="checkbox" className="checkbox" />
                 </label>
               </th>
-              <th>Manufacturer</th>
               <th>Type</th>
               <th>Color</th>
             </tr>
@@ -147,25 +165,14 @@ const OrderManufacturerAddOrder = () => {
                 </td>
                 <td>
                   <select
-                    {...register(`rows[${index}].manufacturer`)}
+                    {...register(`rows[${index}].type`)}
                     onChange={(e) => {
-                      handleSelectChange(index, 'manufacturer', e.target.value);
+                      handleSelectChange(index, 'type', e.target.value);
                     }}
                   >
-                    {manufacturerOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    {...register(`rows[${index}].type`)}
-                    onChange={(e) =>
-                      handleSelectChange(index, 'type', e.target.value)
-                    }
-                  >
+                    <option value="" disabled>
+                      Select Type
+                    </option>
                     {typeOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -176,10 +183,13 @@ const OrderManufacturerAddOrder = () => {
                 <td>
                   <select
                     {...register(`rows[${index}].color`)}
-                    onChange={(e) =>
-                      handleSelectChange(index, 'color', e.target.value)
-                    }
+                    onChange={(e) => {
+                      handleSelectChange(index, 'color', e.target.value);
+                    }}
                   >
+                    <option value="" disabled>
+                      Select Color
+                    </option>
                     {colorOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}

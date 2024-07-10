@@ -23,7 +23,6 @@ export default function OrderManufacturerList() {
     const fetchOrderManufacturers = async () => {
       try {
         const data = await getAllOrderManufacturers();
-        console.log('Fetched data:', data);
         setOrderManufacturers(data);
         filterOrders(data, 'All');
       } catch (error) {
@@ -106,14 +105,11 @@ export default function OrderManufacturerList() {
         </thead>
         <tbody>
           {filteredOrderManufacturers.map((order, index) => {
-            const manufacturerNames = order.OrderDevices.map(
-              (od) => od.device.manufacturer?.name,
-            ).join(', ');
-            const stockInDates = order.OrderDevices.map((od) =>
-              od.device.stockInDate
-                ? dayjs(od.device.stockInDate).format('MM/DD/YYYY')
-                : 'N/A',
-            ).join(', ');
+            const firstDevice = order.OrderDevices[0]?.device;
+            const manufacturerName = firstDevice?.manufacturer?.name || 'N/A';
+            const stockInDate = firstDevice?.stockInDate
+              ? dayjs(firstDevice.stockInDate).format('MM/DD/YYYY')
+              : 'N/A';
 
             const isDelivered = order.OrderDevices.some(
               (od) => od.device.stockInDate,
@@ -122,10 +118,10 @@ export default function OrderManufacturerList() {
             return (
               <tr className="hover" key={order.id}>
                 <th>{index + 1}</th>
-                <td>{manufacturerNames}</td>
+                <td>{manufacturerName}</td>
                 <td>{order.amount}</td>
                 <td>{dayjs(order.orderDate).format('MM/DD/YYYY')}</td>
-                <td>{stockInDates}</td>
+                <td>{stockInDate}</td>
                 <td>
                   <button
                     className={`btn btn-outline btn-${isDelivered ? 'success' : 'primary'} btn-sm`}
