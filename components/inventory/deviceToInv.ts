@@ -1,20 +1,18 @@
 'use client';
 
-// import { Manufacturer } from '@/entities/Manufacturer';
 import { Manufacturer } from '@/entities/manufacturer';
 import { Color } from '@/entities/Color';
 import { Type } from '@/entities/Type';
 import { Device } from '@/entities/Device';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
-// import { getAllManufacturers } from '@/services/manufacturer/getManufacturer';
 import { getAllColors } from '@/services/color/getColor';
 import { getAllTypes } from '@/services/type/getType';
 import { InvData } from './inventory_page';
 
 const deviceToInv = async (devices: Device[]) => {
-  var manufacturers: Manufacturer[] = [];
-  var colors: Color[] = [];
-  var types: Type[] = [];
+  let manufacturers: Manufacturer[] = [];
+  let colors: Color[] = [];
+  let types: Type[] = [];
 
   await getAllManufacturers().then((data) => {
     manufacturers = data;
@@ -34,6 +32,7 @@ const deviceToInv = async (devices: Device[]) => {
     );
     const color = colors.find((color) => color.id === device.colorId);
     const type = types.find((type) => type.id === device.typeId);
+
     return {
       color: color?.name || 'N/A',
       type: type?.name || 'N/A',

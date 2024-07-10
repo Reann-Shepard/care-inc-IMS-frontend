@@ -32,21 +32,29 @@ const postInventory = async (data: newInventoryInputData) => {
   // Constructing the inventory data object to be posted
   const inventoryData = {
     serialNumber: data.serialNumber1,
-    stockInDate: new Date(data.stockDate), // Stock date is converted to Date object
+    stockInDate: new Date(data.stockDate).toISOString(),
     // Finding the ID of the color, manufacturer, and type from the list of colors, manufacturers, and types
-    colorId: colorList.find((color) => color.name === data.color)?.id,
-    manufacturerId: manufacturerList.find(
-      (manufacturer) => manufacturer.name === data.manufacturer,
-    )?.id,
-    typeId: typeList.find((type) => type.name === data.type)?.id,
+    color: Number(colorList.find((color) => color.name === data.color)?.id),
+    manufacturerId: Number(
+      manufacturerList.find(
+        (manufacturer) => manufacturer.name === data.manufacturer,
+      )?.id,
+    ),
+    typeId: Number(typeList.find((type) => type.name === data.type)?.id),
   };
+
+  console.log('Inventory data to be added: ', inventoryData); // Log the inventory data to be added
 
   try {
     // Making a POST request to the server to add new inventory
-    const response = await axios.post(`${apiUrl}/inventory`, inventoryData);
-    console.log('New inventory added: ', response.data); // Log the response data
+    // const response = await axios.post(`${apiUrl}/inventory`, inventoryData);
+    const response = await axios.post(
+      `${apiUrl}/inventory/add_inventory`,
+      inventoryData,
+    );
+    console.log('New device added: ', response.data); // Log the response data
   } catch (error) {
-    console.error('Error adding inventory: ', error); // Log error if there is an error adding inventory
+    console.error('Error adding device: ', error); // Log error if there is an error adding inventory
   }
 };
 

@@ -44,7 +44,15 @@ const clearInput: newInventoryInputData = {
 };
 
 export default function AddInventory() {
-  const [inputData, setInputData] = useState<newInventoryInputData>(clearInput); // State for new inventory input data
+  // const [inputData, setInputData] = useState<newInventoryInputData>(clearInput); // State for new inventory input data
+  const [inputData, setInputData] = useState<newInventoryInputData>({
+    stockDate: new Date().toISOString().split('T')[0],
+    manufacturer: '',
+    type: '',
+    serialNumber1: '',
+    color: '',
+  }); // State for new inventory input data
+
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]); // State for manufacturers data
   const [colors, setColors] = useState<Color[]>([]); // State for colors data
   const [types, setTypes] = useState<Type[]>([]); // State for types data
@@ -91,10 +99,20 @@ export default function AddInventory() {
         console.log('Inventory added successfully');
         setInputData(clearInput); // Clear input fields after successful submission
         alert('Inventory added successfully');
+
         // Fetch updated inventory data to refresh inventory list and overview
         const updatedInventory = await getAllDevices(); // Fetch all devices from the server
         const transformedData = await deviceToInv(updatedInventory); // Transform device data to inventory format
         setDataSet(transformedData); // Set updated inventory data in state
+
+        // Log the submitted data for confirmation
+        console.log({
+          date: inputData.stockDate,
+          name: inputData.manufacturer,
+          type: inputData.type,
+          serialNumber1: inputData.serialNumber1,
+          color: inputData.color,
+        });
       } catch (error: any) {
         console.error('Error adding inventory', error.response || error); // Log error message if adding inventory fails
         alert(
@@ -147,12 +165,13 @@ export default function AddInventory() {
             onChangeHandler={handleInput}
           />
 
-          <InputBox
+          <InputDropdownBox
             label="Color"
-            placeholder="Enter color"
+            placeholder="Select color"
             isRequired
             name="color"
             value={inputData.color}
+            data={colors.map((color) => color.name)}
             onChangeHandler={handleInput}
           />
         </div>

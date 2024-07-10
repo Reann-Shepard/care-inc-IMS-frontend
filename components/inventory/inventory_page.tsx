@@ -9,11 +9,13 @@
 
 import Table from '@/components/tables/ListTable';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
-import { useState, useEffect, use } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { deviceToInv } from './deviceToInv';
+import SortByBtn from '@/components/buttons/SortByBtn';
+import FilterBtn from '@/components/buttons/FilterBtn';
+import { set } from 'zod';
 
 // Interface for inventory data
 export interface InvData {
@@ -28,10 +30,11 @@ export default function Inventory() {
   const [devices, setDevices] = useState<InvData[]>([]); // State for holding filtered devices
   const [dataSet, setDataSet] = useState<InvData[]>([]); // State for holding all devices
   const [sort, setSort] = useState<keyof InvData | ''>(); // State for sorting key
+  const [selectedModel, setSelectedModel] = useState<string>('All'); // State for selected model
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedModel = searchParams.get('model') || 'All'; // Get selected model from url search params
+  const modelParam = searchParams.get('model'); // Get selected model from url search params
 
   useEffect(() => {
     // Fetch all devices and transform data to inventory format
@@ -41,13 +44,15 @@ export default function Inventory() {
         const transformedData = await deviceToInv(data); // Transform device data to inventory format
         setDataSet(transformedData); // Set all devices
         setDevices(transformedData); // Set filtered devices
+
+        setSelectedModel(modelParam || 'All'); // Set selected model from url search params
       } catch (error) {
         console.error('Error fetching devices', error); // Log error if fetching devices fails
       }
     };
 
     fetchDevices(); // Fetch devices when the component mounts
-  }, []);
+  }, [modelParam]); // Fetch devices when modelParam changes
 
   // Get unique models from the dataset
   const uniqueModels = Array.from(
@@ -65,27 +70,27 @@ export default function Inventory() {
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
-    if (newModel === 'All') {
-      // If model is 'All', set all devices
-      setDevices([...dataSet]);
-    } else {
-      const filteredDevices = dataSet.filter(
-        (device) => device.model === newModel, // Filter devices based on selected model
-      );
-      setDevices(filteredDevices);
-    }
+    setSelectedModel(newModel); // Set selected model
+    router.push(`?model=${newModel}`); // Push new model to url
   };
 
   useEffect(() => {
-    handleModelChange(selectedModel); // Handle model change when selected model changes
+    if (selectedModel === 'All') {
+      setDevices([...dataSet]);
+    } else {
+      const filteredDevices = dataSet.filter(
+        (device) => device.model === selectedModel, // Filter devices based on selected model
+      );
+      setDevices(filteredDevices);
+    }
     setSort(''); // Reset sorting when model changes
-  }, [selectedModel]);
+  }, [selectedModel, dataSet]); // Update devices when selected model or dataset changes
 
   useEffect(() => {
     if (sort) {
       handleSort(sort); // Handle sorting when sort key changes
     }
-  }, [sort]);
+  }, [sort]); // Update devices when sort key changes
 
   // Table Headers and Data
   const headers =
@@ -125,7 +130,9 @@ export default function Inventory() {
               className="border rounded-lg p-1"
               value={sort}
             >
-              <option value="" disabled selected></option>
+              <option value="" disabled selected>
+                Select
+              </option>
               <option value="model">Model</option>
               <option value="color">Color</option>
               <option value="type">Device Type</option>
@@ -139,7 +146,7 @@ export default function Inventory() {
             </label>
             <select
               id="filter"
-              onChange={(e) => router.push(`?model=${e.target.value}`)}
+              onChange={(e) => handleModelChange(e.target.value)}
               className="border rounded-lg p-1"
               value={selectedModel}
             >
@@ -156,6 +163,7 @@ export default function Inventory() {
         {selectedModel !== 'All' && (
           <div className="font-bold text-xl ">{selectedModel}</div>
         )}
+
         <div className="w-96 flex justify-end">
           <Link
             href="/inventory/add_inventory"

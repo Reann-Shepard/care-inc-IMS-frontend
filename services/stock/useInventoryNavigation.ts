@@ -19,7 +19,7 @@ export function useInventoryNavigation() {
    * @param selectedModel - The model selected by the user.
    */
 
-  const pushToManufacturer = (selectedModel: string) => {
+  const pushToManufacturer = (selectedModel: string | number) => {
     router.push(`/inventory/model?model=${selectedModel}`); // navigate to the url with the selected model as a query parameter
   };
 
