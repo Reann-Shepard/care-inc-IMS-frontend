@@ -22,11 +22,12 @@
     }
   },
   "include": [
-      "next-env.d.ts",
-      "**/*.ts",
-      "**/**/*.txs",
-      ".next/types/**/*.ts",
-      "app/(main)/packages/[package_id]"
-, "components/contents/package/packageDeviceDetails.tsx"    ],
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/**/*.txs",
+    ".next/types/**/*.ts",
+    "app/(main)/packages/[package_id]",
+    "components/contents/package/packageDeviceDetails.tsx"
+  ],
   "exclude": ["node_modules"]
 }
