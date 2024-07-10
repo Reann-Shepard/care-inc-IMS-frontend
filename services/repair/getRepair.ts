@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const getAllDevices = async () => {
+const getAllRepairs = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   if (!apiUrl) {
@@ -9,12 +9,13 @@ const getAllDevices = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/device`);
+    const response = await axios.get(`${apiUrl}/repair`);
+    console.log('Repair data: ', response.data);
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Device data: ', error);
+    console.error('Failed fetching Type data: ', error);
     return [];
   }
 };
 
-export { getAllDevices };
+export { getAllRepairs };

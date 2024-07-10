@@ -10,7 +10,6 @@ const getAllTypes = async () => {
 
   try {
     const response = await axios.get(`${apiUrl}/type`);
-    console.log('Type data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Failed fetching Type data: ', error);
