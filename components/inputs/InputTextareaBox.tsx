@@ -1,5 +1,6 @@
 'use clients';
 import React, { useState } from 'react';
+import { UseFormRegister } from 'react-hook-form';
 
 interface InputTextareaBoxProps {
   label: string;
@@ -7,7 +8,7 @@ interface InputTextareaBoxProps {
   isRequired?: boolean;
   name: string;
   value?: string | number;
-  onChangeHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChangeHandler?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 export default function InputTextareaBox({
@@ -20,8 +21,8 @@ export default function InputTextareaBox({
 }: InputTextareaBoxProps) {
   return (
     <div>
-      <p>
-        {label}{' '}
+      <p className="text-sm">
+        {label ? label : name}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <textarea
@@ -30,9 +31,7 @@ export default function InputTextareaBox({
         value={value}
         onChange={onChangeHandler}
         required={isRequired}
-        // rows={2}
-        // cols={20}
-        className="mt-2 mb-8 p-3 px-4 textarea-sm textarea textarea-bordered resize-none w-full h-20"
+        className="mt-2 mb-8 p-3 px-4 textarea-sm textarea textarea-bordered resize-none w-full h-20 text-sm"
       ></textarea>
     </div>
   );

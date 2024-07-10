@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface SortByBtnProps {
   dataColumnTitles: string[]; // for display
@@ -17,16 +17,21 @@ export default function SortByBtn({
   const sortByRef = useRef<HTMLDetailsElement>(null);
 
   const handleSortBy = (sortBy: string) => {
-    sortByRef.current?.removeAttribute('open');
     onSortBy(sortBy);
   };
+
+  useEffect(() => {
+    document.addEventListener('click', () => {
+      sortByRef.current?.removeAttribute('open');
+    });
+  }, []);
 
   return (
     <div className="flex items-center">
       <div className="text-xs">Sort By: </div>
       <details ref={sortByRef} className="dropdown dropdown-hover rounded-lg">
         <summary className="m-2 pr-7 btn btn-xs select">{value}</summary>
-        <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+        <div className="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-40 text-xs">
           <ul>
             {dataColumnTitles.map((item, index) => (
               <li
