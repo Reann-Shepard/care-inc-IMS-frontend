@@ -11,8 +11,10 @@ import { Repair } from '@/entities/Repair';
 import { Manufacturer } from '@/entities/manufacturer';
 import { getAllRepairs } from '@/services/repair/getRepair';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
-import devices from '@/components/inventory/temp_invData.json';
 import { postRepair } from '@/services/repair/postRepair';
+import { getAllDevices } from '@/services/device/getDevice';
+import { Device } from '@/entities/Device';
+import { set } from 'zod';
 
 export interface alterationInputData {
   date: string;
@@ -35,16 +37,18 @@ export default function AlterationsForm() {
     shippingNumber: '',
   });
 
-  const [typeList, setTypeList] = useState<string[]>([]);
+  const [typeList, setTypeList] = useState<Type[]>([]);
   const [shipIDs, setShipIDs] = useState<string[]>([]);
   const [manufacturerList, setManufacturerList] = useState<string[]>([]);
   const [alert, setAlert] = useState('');
   const [serialCount, setSerialCount] = useState<number[]>([1]);
   const [errorMsg, setErrorMsg] = useState('');
+  const [devices, setDevices] = useState<Device[]>([]);
 
   useEffect(() => {
     getAllTypes().then((data) => {
-      setTypeList(data.map((type: Type) => type.name));
+      // setTypeList(data.map((type: Type) => type.name));
+      setTypeList(data);
     });
     getAllRepairs().then((data) => {
       setShipIDs(data.map((repair: Repair) => repair.shipId));
@@ -54,7 +58,10 @@ export default function AlterationsForm() {
         data.map((manufacturer: Manufacturer) => manufacturer.name),
       );
     });
-  }, []);
+    getAllDevices().then((data) => {
+      setDevices(data);
+    });
+  }, [inputData.shippingNumber]);
 
   useEffect(() => {
     fillTypes();
@@ -81,9 +88,10 @@ export default function AlterationsForm() {
   const fillTypes = () => {
     inputData.serialNumber.forEach((serial, index) => {
       devices.forEach(async (device) => {
-        if (serial === device.SN) {
+        if (serial === device.serialNumber) {
           let temp = [...inputData.type];
-          temp[index] = device.type;
+          temp[index] =
+            typeList.find((type) => type.id === device.typeId)?.name ?? '';
           setInputData({ ...inputData, type: temp });
         }
       });
@@ -102,11 +110,20 @@ export default function AlterationsForm() {
     }
 
     for (let i = 0; i < serialCount.length; i++) {
-      if (!inputData.type[i]) {
+      if (!inputData.serialNumber[i]) {
         control = false;
         setErrorMsg('Select device type for all devices');
       }
     }
+
+    inputData.serialNumber.forEach((serial) => {
+      if (
+        !devices.map((device: Device) => device.serialNumber).includes(serial)
+      ) {
+        control = false;
+        setErrorMsg('Serial number(s) does not exist');
+      }
+    });
 
     if (inputData.manufacturer === '' || !inputData.manufacturer) {
       control = false;
@@ -114,7 +131,7 @@ export default function AlterationsForm() {
     }
 
     if (control) {
-      postRepair(inputData);
+      await postRepair(inputData);
       console.log('Form submitted successfully: ', inputData);
       setInputData({
         date: new Date().toISOString().split('T')[0],
@@ -191,7 +208,7 @@ export default function AlterationsForm() {
                     isRequired
                     name="type"
                     value={inputData.type.at(index)}
-                    data={typeList}
+                    data={typeList.map((type: Type) => type.name)}
                     onChangeHandler={(e) => handleInput(e, index)}
                   />
                 </td>
