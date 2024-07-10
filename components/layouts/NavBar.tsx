@@ -12,6 +12,7 @@ export default function NavBar() {
     'Packages',
     'Alterations',
     'Order-Manufacturer',
+    'Color',
   ];
   const [current, setCurrent] = useState(path.replace('/', ''));
 
@@ -31,11 +32,6 @@ export default function NavBar() {
                 (item.toLocaleLowerCase() === current ? 'bg-ochre' : '')
               }
             >
-              {/* {`${item}`}
-                        {item === selected ? (
-                        <motion.div className="bg-ochre" layoutId="background" />
-                        ) : null}
-                         */}
               <Link href={`/${item.toLowerCase()}`} prefetch={false}>
                 {item}
               </Link>
