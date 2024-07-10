@@ -48,6 +48,7 @@ const ColorForm: React.FC = () => {
     }
 
     if (result) {
+      reset(data);
       router.push(`/color/${result.id}`);
     }
   };
