@@ -26,11 +26,6 @@ export default function InputDropdownBox({
     name: string | number;
   } | null>(null);
 
-  const [thisLabel, setThisLabel] = useState<string>(label);
-  if (thisLabel.length == 0) {
-    setThisLabel(name);
-  }
-
   const handleSelect = (selection: string | number) => {
     detailsRef.current?.removeAttribute('open');
     setSelectedItem({ name: selection });
@@ -47,12 +42,12 @@ export default function InputDropdownBox({
 
   return (
     <div>
-      <p>
-        {thisLabel}{' '}
+      <p className="text-sm">
+        {label ? label : name}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
-      <details ref={detailsRef} className="dropdown mt-2 mb-8">
-        <summary className="select input input-bordered btn w-80 justify-between font-normal text-sm">
+      <details ref={detailsRef} className="dropdown mt-2 mb-8 text-sm">
+        <summary className="select input input-bordered btn w-60 justify-between font-normal text-sm">
           <input
             placeholder={placeholder}
             name={name}
@@ -61,7 +56,7 @@ export default function InputDropdownBox({
             readOnly
           />
         </summary>
-        <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80">
+        <ul className="dropdown-content z-[1] menu w-60 text-xs shadow bg-base-100 rounded-box">
           {data &&
             data.map((item) => (
               <li

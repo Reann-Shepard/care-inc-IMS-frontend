@@ -1,25 +1,37 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ListTable from '@/components/tables/ListTable';
 
 import { getAllDevices } from '@/services/device/getDevice';
 import { Device } from '@/entities/Device';
 import { getThisColorName } from '@/services/color/getColor';
-import { set } from 'zod';
 import { getThisTypeName } from '@/services/type/getType';
 import { getThisManufacturerName } from '@/services/overview/getOverviewManufacturer';
-import Link from 'next/link';
 import BackBtn from '@/components/buttons/BackBtn';
+import DetailsContent from '@/components/contents/package/DetailsContent';
+import AddClientInfoForm from '@/components/forms/package/AddClientInfoForm';
+import { getPackageById } from '@/services/package/getPackage';
+import { set } from 'zod';
+import { Package } from '@/entities/Package';
+import FormBar from '@/components/forms/FormBar';
 
 export default function PackageId() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('package_id') ?? '';
   const [devices, setDevices] = useState<Device[]>([]);
-  const [data, setData] = useState<(string | number | Date | null)[][]>([]);
+  const [deviceData, setDeviceData] = useState<
+    (string | number | Date | null)[][]
+  >([]);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [packageData, setPackageData] = useState<
+    (string | number | Date | null)[][]
+  >([]);
   const [currentLocation, setCurrentLocation] = useState<string>('');
+  const [hasClient, setHasClient] = useState<boolean>(false);
+  const [addClientSection, setAddClientSection] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const dataTitle = [
+  const deviceTitle = [
     'Device ID',
     'Serial Number',
     'Manufacturer',
@@ -30,12 +42,25 @@ export default function PackageId() {
     'Package ID',
   ];
 
+  const packageTitle = [
+    'Package ID',
+    'Client ID',
+    'Fitting Date',
+    'Warranty Date',
+    'Comment',
+  ];
+
   useEffect(() => {
     const fetchDevices = async () => {
       getAllDevices().then((data) => {
         setDevices(data);
       });
-      // console.log(devices);
+
+      getPackageById(parseInt(selectedId)).then((data) => {
+        setPackages([data]);
+      });
+
+      setLoading(false);
     };
     fetchDevices();
   }, []);
@@ -55,10 +80,27 @@ export default function PackageId() {
     const current = `Package ID: ${selectedId}`;
     setCurrentLocation(current);
     const fetchData = async () => {
-      const thisPackageData = devices.filter(
+      // package
+      const packageDataResult = packages.map((thisPackage) => [
+        thisPackage.id,
+        thisPackage.clientId ? thisPackage.clientId : 'N/A',
+        thisPackage.fittingDate
+          ? toDate(thisPackage.fittingDate.toString())
+          : 'N/A',
+        thisPackage.warrantyExpiration
+          ? toDate(thisPackage.warrantyExpiration.toString())
+          : 'N/A',
+        thisPackage.comments,
+      ]) as (string | number | Date | null)[][];
+
+      console.log('packageDataResult: ', packageDataResult);
+      setPackageData(packageDataResult);
+
+      // devices
+      const thisPackageDevices = devices.filter(
         (device) => device.packageId === parseInt(selectedId),
       );
-      const data = thisPackageData.map(async (thisDevice) => [
+      const data = thisPackageDevices.map(async (thisDevice) => [
         thisDevice.id,
         thisDevice.serialNumber,
         await getThisManufacturerName(thisDevice.manufacturerId),
@@ -69,21 +111,84 @@ export default function PackageId() {
         thisDevice.packageId ?? '',
       ]);
       const resolvedData = await Promise.all(data);
-      setData(resolvedData);
+      setDeviceData(resolvedData);
     };
     fetchData().then((data) => {
       console.log(data);
     });
   }, [devices, selectedId]);
 
+  // check if the package has a client
+  useEffect(() => {
+    if (packages[0] !== undefined) {
+      if (packages[0].clientId === undefined || packages[0].clientId === null) {
+        setHasClient(false);
+      } else {
+        setHasClient(true);
+        setAddClientSection(false);
+      }
+    }
+  }, [packages]);
+
+  const handleClick = () => {
+    setAddClientSection(true);
+  };
+
   return (
     <div>
-      <BackBtn
-        backToLocation="Packages"
-        currentLocation={currentLocation}
-        pathName="/packages"
-      />
-      <ListTable header={dataTitle} data={data} />
+      <div className="flex justify-between mx-5">
+        <BackBtn
+          backToLocation="Packages"
+          currentLocation={currentLocation}
+          pathName="/packages"
+        />
+        {hasClient || addClientSection ? (
+          <button
+            className="btn btn-sm mb-8 text-white bg-[#54CE50]"
+            disabled
+            type="button"
+          >
+            Add Client
+          </button>
+        ) : (
+          <button
+            className="btn btn-sm mb-8 text-white bg-[#54CE50]"
+            onClick={handleClick}
+            type="button"
+          >
+            Add Client
+          </button>
+        )}
+      </div>
+
+      {addClientSection ? (
+        <div>
+          <FormBar title="Assign Client to the Package" />
+          <AddClientInfoForm packageId={parseInt(selectedId)} />
+        </div>
+      ) : (
+        // <Suspense fallback={<div>Loading...</div>}>
+        <div>
+          <DetailsContent
+            header={packageTitle}
+            data={packageData}
+            title="Package Information"
+          />
+          {loading && (
+            <div className="text-lg flex justify-center">Loading...</div>
+          )}
+          <div className="h-16"></div>
+          <DetailsContent
+            header={deviceTitle}
+            data={deviceData}
+            title="Device Information"
+          />
+          {loading && (
+            <div className="text-lg flex justify-center">Loading...</div>
+          )}
+        </div>
+        // {/* </Suspense> */}
+      )}
     </div>
   );
 }

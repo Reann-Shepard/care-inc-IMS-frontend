@@ -10,7 +10,7 @@ const getAllOrderCustomers = async () => {
 
   try {
     const response = await axios.get(`${apiUrl}/orderCustomer`);
-    console.log('OrderCustomer data: ', response.data);
+    // console.log('OrderCustomer data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Failed fetching OrderCustomer data: ', error);
