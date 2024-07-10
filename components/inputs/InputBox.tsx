@@ -35,7 +35,7 @@ export default function InputBox({
         type="text"
         placeholder={placeholder}
         name={name}
-        value={value}
+        value={value || ''}
         onChange={onChangeHandler}
         required={isRequired}
         className="mt-2 mb-8 text-sm input input-bordered w-80"
