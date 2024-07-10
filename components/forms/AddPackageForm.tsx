@@ -1,13 +1,6 @@
 'use client';
 import React, { useEffect, useState, useCallback, use, useMemo } from 'react';
-import {
-  Controller,
-  FormProvider,
-  set,
-  useForm,
-  useFormContext,
-  useWatch,
-} from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import ClientPackageForm from '@/components/forms/package/ClientPackageForm';
 import DeviceFormInAddPackage from '@/components/forms/package/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
@@ -25,6 +18,7 @@ import { postPackage } from '@/services/package/postPackage';
 import { Package } from '@/entities/Package';
 import { updateDevice } from '@/services/device/updateDevice';
 import MessageCard from '@/components/cards/package/MessageCard';
+import SubAddBtn from '../buttons/package/SubAddBtn';
 
 interface DeviceData {
   type: string;
@@ -99,75 +93,65 @@ export default function AddPackage() {
 
   // clear device data when device is not found and when device id input is empty
   const clearDeviceData = useCallback(() => {
-    setThisDeviceType((prev) => {
-      const updatedType = [...prev];
-      updatedType[deviceNo - 1] = '';
-      return updatedType;
-    });
-    setThisDeviceColor((prev) => {
-      const updatedColor = [...prev];
-      updatedColor[deviceNo - 1] = '';
-      return updatedColor;
-    });
-    setThisDeviceManufacturer((prev) => {
-      const updatedManufacturer = [...prev];
-      updatedManufacturer[deviceNo - 1] = '';
-      return updatedManufacturer;
-    });
+    const clearInfo = (prev: string[], newValue: string) => {
+      const updated = [...prev];
+      updated[deviceNo - 1] = newValue;
+      return updated;
+    };
+
+    setThisDeviceColor((prev) => clearInfo(prev, ''));
+    setThisDeviceManufacturer((prev) => clearInfo(prev, ''));
+    setThisDeviceType((prev) => clearInfo(prev, ''));
   }, [deviceNo]);
 
   // get device info when device id is input
   useEffect(() => {
-    if (getEachDeviceId) {
-      const thisDeviceInfo = allDevices.find(
-        (device) => device.id === parseInt(getEachDeviceId),
-      );
-      if (thisDeviceInfo) {
-        // setThisDeviceLen(true);
-        setThisDevice(thisDeviceInfo);
-        const newColor = allColors.find(
-          (color) => color.id === thisDeviceInfo.colorId,
-        );
-        const newManufacturer = allManufacturers.find(
-          (manufacturer) => manufacturer.id === thisDeviceInfo.manufacturerId,
-        );
-        const newDeviceType = allTypeItems.find(
-          (type) => type.id === thisDeviceInfo.typeId,
-        );
-
-        setThisDeviceColor((prev) => {
-          const updatedColor = [...prev];
-          updatedColor[deviceNo - 1] = newColor?.name || '';
-          return updatedColor;
-        });
-        setThisDeviceManufacturer((prev) => {
-          const updatedManufacturer = [...prev];
-          updatedManufacturer[deviceNo - 1] = newManufacturer?.name || '';
-          return updatedManufacturer;
-        });
-        setThisDeviceType((prev) => {
-          const updatedType = [...prev];
-          updatedType[deviceNo - 1] = newDeviceType?.name || '';
-          return updatedType;
-        });
-        setHasUnknownWarning(false);
-
-        if (thisDeviceInfo.packageId || thisDeviceInfo.sellDate) {
-          setHasUnavailableWarning(true);
-        } else {
-          setHasUnavailableWarning(false);
-        }
-      } else {
-        // setThisDeviceLen(false);
-        clearDeviceData();
-        setHasUnknownWarning(true);
-        setHasUnavailableWarning(false);
-        // console.log('Device ID not found')
-      }
-    } else {
-      // setThisDeviceLen(false);
+    if (!getEachDeviceId) {
       clearDeviceData();
       setHasUnknownWarning(false);
+      setHasUnavailableWarning(false);
+      return;
+    }
+
+    const thisDeviceInfo = allDevices.find(
+      (device) => device.id === parseInt(getEachDeviceId),
+    );
+
+    if (!thisDeviceInfo) {
+      clearDeviceData();
+      setHasUnknownWarning(true);
+      setHasUnavailableWarning(false);
+      return;
+    }
+
+    setThisDevice(thisDeviceInfo);
+
+    const newColor = allColors.find(
+      (color) => color.id === thisDeviceInfo.colorId,
+    );
+    const newManufacturer = allManufacturers.find(
+      (manufacturer) => manufacturer.id === thisDeviceInfo.manufacturerId,
+    );
+    const newDeviceType = allTypeItems.find(
+      (type) => type.id === thisDeviceInfo.typeId,
+    );
+
+    const updatedInfo = (prev: string[], newValue: string) => {
+      const updated = [...prev];
+      updated[deviceNo - 1] = newValue;
+      return updated;
+    };
+
+    setThisDeviceColor((prev) => updatedInfo(prev, newColor?.name || ''));
+    setThisDeviceManufacturer((prev) =>
+      updatedInfo(prev, newManufacturer?.name || ''),
+    );
+    setThisDeviceType((prev) => updatedInfo(prev, newDeviceType?.name || ''));
+    setHasUnknownWarning(false);
+
+    if (thisDeviceInfo.packageId || thisDeviceInfo.sellDate) {
+      setHasUnavailableWarning(true);
+    } else {
       setHasUnavailableWarning(false);
     }
   }, [getEachDeviceId]);
@@ -261,21 +245,9 @@ export default function AddPackage() {
           !hasUnknownWarning &&
           !hasUnavailableWarning &&
           getEachDeviceId ? (
-            <button
-              className="btn btn-sm text-white bg-[#54CE50]"
-              type="button"
-              onClick={handleAddDevice}
-            >
-              Add Device
-            </button>
+            <SubAddBtn btnName="Add Device" handleClick={handleAddDevice} />
           ) : (
-            <button
-              className="btn btn-sm text-white bg-[#54CE50]"
-              type="button"
-              disabled
-            >
-              Add Device
-            </button>
+            <SubAddBtn btnName="Add Device" disabled />
           )}
 
           <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
@@ -285,13 +257,7 @@ export default function AddPackage() {
               clientsData={allClients.map((client) => client.id)}
             />
           ) : (
-            <button
-              className="btn btn-sm mb-8 text-white bg-[#54CE50]"
-              type="button"
-              onClick={handleClientInfo}
-            >
-              Add Client
-            </button>
+            <SubAddBtn btnName="Add Client" handleClick={handleClientInfo} />
           )}
 
           <SubmitAndCancelDiv cancelPath="./" />

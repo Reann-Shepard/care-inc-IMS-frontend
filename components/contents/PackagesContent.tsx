@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import AddBtn from '../buttons/AddBtn';
 import { set } from 'zod';
 import { all } from 'axios';
+import { toDate } from '@/components/contents/package/toDate';
 
 const ListTable = lazy(() => import('../tables/ListTable'));
 
@@ -121,45 +122,32 @@ export default function PackagesContent() {
 
   const fittingDateFilterData = (value: string) => {
     let filteredData: Package[] = [];
-    if (value.length === 7) {
-      allPackages.filter((eachPackage) => {
-        if (
-          eachPackage.fittingDate !== undefined &&
-          eachPackage.fittingDate !== null
-        ) {
-          const fittingDate = toDate(eachPackage.fittingDate.toString()).slice(
-            0,
-            7,
-          );
-          if (fittingDate === value) {
-            filteredData.push(eachPackage);
-          } else {
-            setHasFilterResult(false);
-          }
-        }
-      });
-      return filteredData;
-    } else if (value.length === 10) {
-      allPackages.filter((eachPackage) => {
-        if (
-          eachPackage.fittingDate !== undefined &&
-          eachPackage.fittingDate !== null
-        ) {
-          const fittingDate = toDate(eachPackage.fittingDate.toString());
-          if (fittingDate === value) {
-            filteredData.push(eachPackage);
-          } else {
-            setHasFilterResult(false);
-          }
-        }
-      });
-      return filteredData;
-    } else {
+
+    const valueLength = value.length; // to check if the input value is for month or date
+
+    if (valueLength !== 7 && valueLength !== 10) {
       setFilteredDataFilterValue('');
       setPackages(allPackages);
-      // set no result message
       return [];
     }
+
+    allPackages.filter((eachPackage) => {
+      if (
+        eachPackage.fittingDate !== undefined &&
+        eachPackage.fittingDate !== null
+      ) {
+        const fittingDate = toDate(eachPackage.fittingDate.toString()).slice(
+          0,
+          valueLength,
+        );
+        if (fittingDate === value) {
+          filteredData.push(eachPackage);
+        } else {
+          setHasFilterResult(false); // show no result message
+        }
+      }
+    });
+    return filteredData;
   };
 
   useEffect(() => {
@@ -185,12 +173,15 @@ export default function PackagesContent() {
         }
       } else {
         if (sortBy !== 'orderDate') {
+          // orderDate is currently sorted in the front-end
           sortedFilteredData = await getAllPackagesSortedFiltered(sortBy);
         }
       }
+
       if (filteredDataFilterValue.length > 0) {
         sortedFilteredData = fittingDateFilterData(filteredDataFilterValue);
       }
+
       if (sortedFilteredData !== undefined) {
         setPackages(sortedFilteredData);
       }
@@ -199,7 +190,8 @@ export default function PackagesContent() {
   }, [sortBy, selectedFilters, filteredDataFilterValue]);
 
   // convert date to string
-  const toDate = (date: string | Date): string => {
+  const toDate = (date: string | Date | undefined): string => {
+    if (!date) return '';
     if (typeof date === 'string') {
       return date.split('T')[0];
     } else if (date instanceof Date) {

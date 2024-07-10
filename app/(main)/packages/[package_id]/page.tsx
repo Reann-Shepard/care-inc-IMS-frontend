@@ -14,6 +14,8 @@ import { getPackageById } from '@/services/package/getPackage';
 import { set } from 'zod';
 import { Package } from '@/entities/Package';
 import FormBar from '@/components/forms/FormBar';
+import SubAddBtn from '@/components/buttons/package/SubAddBtn';
+import { toDate } from '@/components/contents/package/toDate';
 
 export default function PackageId() {
   const searchParams = useSearchParams();
@@ -65,16 +67,16 @@ export default function PackageId() {
     fetchDevices();
   }, []);
 
-  const toDate = (date: string | Date | undefined): string => {
-    if (!date) return '';
-    if (typeof date === 'string') {
-      return date.split('T')[0];
-    } else if (date instanceof Date) {
-      return date.toISOString().split('T')[0];
-    } else {
-      throw new Error('Invalid date format.');
-    }
-  };
+  // const toDate = (date: string | Date | undefined): string => {
+  //   if (!date) return '';
+  //   if (typeof date === 'string') {
+  //     return date.split('T')[0];
+  //   } else if (date instanceof Date) {
+  //     return date.toISOString().split('T')[0];
+  //   } else {
+  //     throw new Error('Invalid date format.');
+  //   }
+  // };
 
   useEffect(() => {
     const current = `Package ID: ${selectedId}`;
@@ -143,21 +145,9 @@ export default function PackageId() {
           pathName="/packages"
         />
         {hasClient || addClientSection ? (
-          <button
-            className="btn btn-sm mb-8 text-white bg-[#54CE50]"
-            disabled
-            type="button"
-          >
-            Add Client
-          </button>
+          <SubAddBtn btnName="Add Client" disabled />
         ) : (
-          <button
-            className="btn btn-sm mb-8 text-white bg-[#54CE50]"
-            onClick={handleClick}
-            type="button"
-          >
-            Add Client
-          </button>
+          <SubAddBtn btnName="Add Client" handleClick={handleClick} />
         )}
       </div>
 
