@@ -1,6 +1,24 @@
+/**
+ * Inventory Management Page Component.
+ *
+ * This component manages and displays inventory data based on selected models.
+ * It allows sorting and filtering of inventory items, and provides a link to add new inventory items.
+ */
+
 'use client';
 
-export interface CategoryData {
+import Table from '@/components/tables/ListTable';
+import Link from 'next/link';
+import React, { useState, useEffect, use } from 'react';
+import { getAllDevices } from '@/services/device/getDevice';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { deviceToInv } from './deviceToInv';
+import SortByBtn from '@/components/buttons/SortByBtn';
+import FilterBtn from '@/components/buttons/FilterBtn';
+import { set } from 'zod';
+
+// Interface for inventory data
+export interface InvData {
   color: string;
   type: string;
   SN: string;
@@ -8,108 +26,94 @@ export interface CategoryData {
   package: string;
 }
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import tempData from './temp_invData.json';
-import Table from '@/components/tables/ListTable';
-import Link from 'next/link';
-import { set } from 'zod';
-import React from 'react';
-const dataSet: CategoryData[] = tempData;
-const ADataSet: CategoryData[] = tempData.filter(
-  (device) => device.package === '1',
-);
-const UADataSet: CategoryData[] = tempData.filter(
-  (device) => device.package === '0',
-);
-
 export default function Inventory() {
+  const [devices, setDevices] = useState<InvData[]>([]); // State for holding filtered devices
+  const [dataSet, setDataSet] = useState<InvData[]>([]); // State for holding all devices
+  const [sort, setSort] = useState<keyof InvData | ''>(); // State for sorting key
+  const [selectedModel, setSelectedModel] = useState<string>('All'); // State for selected model
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedModel = searchParams.get('model') || 'All';
+  const modelParam = searchParams.get('model'); // Get selected model from url search params
 
-  // const [devices, setDevices] = useState<CategoryData[]>(dataSet);
-  const [Adevices, setAdevices] = useState<CategoryData[]>(ADataSet);
-  const [UAdevices, setUAdevices] = useState<CategoryData[]>(UADataSet);
-  const [devices, setDevices] = useState<CategoryData[]>([
-    ...UAdevices,
-    ...Adevices,
-  ]);
+  useEffect(() => {
+    // Fetch all devices and transform data to inventory format
+    const fetchDevices = async () => {
+      try {
+        const data = await getAllDevices();
+        const transformedData = await deviceToInv(data); // Transform device data to inventory format
+        setDataSet(transformedData); // Set all devices
+        setDevices(transformedData); // Set filtered devices
+
+        setSelectedModel(modelParam || 'All'); // Set selected model from url search params
+      } catch (error) {
+        console.error('Error fetching devices', error); // Log error if fetching devices fails
+      }
+    };
+
+    fetchDevices(); // Fetch devices when the component mounts
+  }, [modelParam]); // Fetch devices when modelParam changes
+
+  // Get unique models from the dataset
   const uniqueModels = Array.from(
-    new Set([...dataSet.map((device) => device.model)]),
+    new Set(dataSet.map((device) => device.model)),
   );
-  const [sort, setSort] = useState<keyof CategoryData | ''>();
 
   // Sorting Function
-  const handleSort = (sortBy: keyof CategoryData) => {
-    const sortedADevices = devices
-      .filter((device) => device.package === '1')
-      .sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    const sortedUADevices = devices
-      .filter((device) => device.package === '0')
-      .sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    setDevices([...sortedUADevices, ...sortedADevices]);
+  const handleSort = (sortBy: keyof InvData) => {
+    // Handle sorting based on the selected key
+    const sortedDevices = devices.sort((a, b) =>
+      a[sortBy].localeCompare(b[sortBy]),
+    );
+    setDevices([...sortedDevices]); // Set sorted devices in state
   };
-
-  // Filtering Function
-  // const handleFilter = (filterBy: keyof CategoryData, filterValue: string) => {
-  //   const filteredDevices = devices.filter(
-  //     (device) => device[filterBy] === filterValue,
-  //   );
-  //   setDevices(filteredDevices);
-  // };
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
-    if (newModel === 'All') {
-      setDevices([...UADataSet, ...ADataSet]);
-    } else {
-      const newADevices = ADataSet.filter(
-        (device) => device.model === newModel,
-      );
-      const newUADevices = UADataSet.filter(
-        (device) => device.model === newModel,
-      );
-      setDevices([...newUADevices, ...newADevices]);
-    }
+    setSelectedModel(newModel); // Set selected model
+    router.push(`?model=${newModel}`); // Push new model to url
   };
 
   useEffect(() => {
-    handleModelChange(selectedModel);
-    setSort('');
-  }, [selectedModel]);
+    if (selectedModel === 'All') {
+      setDevices([...dataSet]);
+    } else {
+      const filteredDevices = dataSet.filter(
+        (device) => device.model === selectedModel, // Filter devices based on selected model
+      );
+      setDevices(filteredDevices);
+    }
+    setSort(''); // Reset sorting when model changes
+  }, [selectedModel, dataSet]); // Update devices when selected model or dataset changes
 
   useEffect(() => {
     if (sort) {
-      handleSort(sort);
+      handleSort(sort); // Handle sorting when sort key changes
     }
-  }, [sort]);
+  }, [sort]); // Update devices when sort key changes
 
-  if (selectedModel === 'All') {
-    var header = ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'];
-    var data = devices.map((device) => [
-      device.model,
-      device.color,
-      device.type,
-      device.SN,
-      device.package,
-    ]);
-  } else {
-    var header = ['Color', 'Device Type', 'Serial Number', 'Package'];
-    var data = devices.map((device) => [
-      device.color,
-      device.type,
-      device.SN,
-      device.package,
-    ]);
-  }
+  // Table Headers and Data
+  const headers =
+    selectedModel === 'All'
+      ? ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'] // Table headers for all models
+      : ['Color', 'Device Type', 'Serial Number', 'Package']; // Table headers for selected model
 
-  // const data = devices.map((device) => [
-  //   device.color,
-  //   device.type,
-  //   device.SN,
-  //   device.package,
-  // ]);
+  // Filter devices based on package status
+  const ASS = devices
+    .filter((device) => device.package === 'Yes')
+    .map((device) =>
+      selectedModel === 'All'
+        ? [device.model, device.color, device.type, device.SN, device.package]
+        : [device.color, device.type, device.SN, device.package],
+    );
+
+  const UASS = devices
+    .filter((device) => device.package === '')
+    .map((device) =>
+      selectedModel === 'All'
+        ? [device.model, device.color, device.type, device.SN, device.package]
+        : [device.color, device.type, device.SN, device.package],
+    );
 
   return (
     <>
@@ -117,15 +121,18 @@ export default function Inventory() {
         <div className="flex space-x-4">
           <div>
             <label htmlFor="sort" className="mr-2">
-              Sort by:
+              {' '}
+              Sort by:{' '}
             </label>
             <select
               id="sort"
-              onChange={(e) => setSort(e.target.value as keyof CategoryData)}
+              onChange={(e) => setSort(e.target.value as keyof InvData)}
               className="border rounded-lg p-1"
               value={sort}
             >
-              <option value="" disabled selected></option>
+              <option value="" disabled selected>
+                Select
+              </option>
               <option value="model">Model</option>
               <option value="color">Color</option>
               <option value="type">Device Type</option>
@@ -134,18 +141,20 @@ export default function Inventory() {
           </div>
           <div>
             <label htmlFor="filter" className="mr-2">
-              Filter:
+              {' '}
+              Filter:{' '}
             </label>
             <select
               id="filter"
-              onChange={(e) => router.push(`?model=${e.target.value}`)}
+              onChange={(e) => handleModelChange(e.target.value)}
               className="border rounded-lg p-1"
               value={selectedModel}
             >
               <option value="All">All</option>
               {uniqueModels.map((model) => (
                 <option key={model} value={model}>
-                  {model}
+                  {' '}
+                  {model}{' '}
                 </option>
               ))}
             </select>
@@ -154,17 +163,19 @@ export default function Inventory() {
         {selectedModel !== 'All' && (
           <div className="font-bold text-xl ">{selectedModel}</div>
         )}
+
         <div className="w-96 flex justify-end">
-          <Link href="/inventory/add_inventory">
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-12 rounded">
-              +
-            </button>
+          <Link
+            href="/inventory/add_inventory"
+            className="btn px-10 font-bold text-white bg-[#54CE50]"
+          >
+            +
           </Link>
         </div>
       </div>
 
       <div>
-        <Table header={header} data={data} />
+        <Table header={headers} data={[...UASS, ...ASS]} />
       </div>
     </>
   );

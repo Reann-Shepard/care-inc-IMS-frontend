@@ -10,7 +10,6 @@ const getAllDevices = async () => {
 
   try {
     const response = await axios.get(`${apiUrl}/device`);
-    console.log('Device data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Failed fetching Device data: ', error);

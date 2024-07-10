@@ -10,7 +10,6 @@ const getAllColors = async () => {
 
   try {
     const response = await axios.get(`${apiUrl}/color`);
-    console.log('Color data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Failed fetching Color data: ', error);
