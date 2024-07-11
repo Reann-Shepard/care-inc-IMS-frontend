@@ -18,27 +18,20 @@ export default function InputBox({
   value,
   onChangeHandler,
 }: InputBoxProps) {
-  // const title = name[0].toUpperCase() + name.slice(1);
-
-  const [thisLabel, setThisLabel] = useState<string>(label);
-  if (thisLabel.length == 0) {
-    setThisLabel(name);
-  }
-
   return (
     <div>
-      <p>
-        {thisLabel}{' '}
+      <p className="text-sm">
+        {label ? label : name}{' '}
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <input
         type="text"
         placeholder={placeholder}
         name={name}
-        value={value}
+        value={value || ''}
         onChange={onChangeHandler}
         required={isRequired}
-        className="mt-2 mb-8 text-sm input input-bordered w-80"
+        className="mt-2 mb-8 text-sm input input-bordered w-60"
       />
     </div>
   );

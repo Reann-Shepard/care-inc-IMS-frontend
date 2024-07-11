@@ -12,9 +12,9 @@ export default function ListTable({
 }: listTableProps) {
   return (
     <div>
-      <table className="table border-2">
+      <table className="table table-sm border-2">
         <thead>
-          <tr className="text-lg text-black bg-gray-200 text-center">
+          <tr className="text-black text-sm bg-gray-200 text-center">
             {header.map((item) => (
               <th key={item}>{item}</th>
             ))}
@@ -25,7 +25,7 @@ export default function ListTable({
             data.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className="text-lg text-center hover"
+                className="text-center hover"
                 onClick={() => onClick(row)}
               >
                 {row.map((item, colIndex) => (

@@ -24,10 +24,10 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
     "**/**/*.txs",
     ".next/types/**/*.ts",
-    "app/(main)/packages/[package_id]"
+    "app/(main)/packages/[package_id]",
+    "components/contents/package/packageDeviceDetails.tsx"
   ],
   "exclude": ["node_modules"]
 }

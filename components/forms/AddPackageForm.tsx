@@ -1,9 +1,8 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-
-import InputDateBox from '@/components/inputs/InputDateBox';
-import InputDropdownBox from '@/components/inputs/InputDropdownBox';
-import DeviceFormInAddPackage from '@/components/forms/DeviceFormInAddPackage';
+import React, { useEffect, useState, useCallback, use, useMemo } from 'react';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import ClientPackageForm from '@/components/forms/package/ClientPackageForm';
+import DeviceFormInAddPackage from '@/components/forms/package/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
 import { Color } from '@/entities/Color';
 import { getAllColors } from '@/services/color/getColor';
@@ -13,226 +12,257 @@ import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
 import { Client } from '@/entities/Client';
 import { getAllClients } from '@/services/client/getClient';
-import ClientPackageForm from './ClientPackageForm';
+import { Device } from '@/entities/Device';
+import { getAllDevices } from '@/services/device/getDevice';
+import { postPackage } from '@/services/package/postPackage';
+import { Package } from '@/entities/Package';
+import { updateDevice } from '@/services/device/updateDevice';
+import MessageCard from '@/components/cards/package/MessageCard';
+import SubAddBtn from '../buttons/package/SubAddBtn';
 
 interface DeviceData {
   type: string;
   deviceId: string;
 }
 
-interface ClientPackageData {
-  clientID: string;
+interface newPackageInputData {
+  clientId: string;
   fittingDate: string;
   warrantyDate: string;
   comment: string;
-}
-interface newPackageInputData {
-  stockDate: string;
-  manufacturer: string;
-  color: string;
-  clientPackage?: ClientPackageData;
-  device1: DeviceData;
-  device2: DeviceData;
-  device3: DeviceData;
-  device4: DeviceData;
+  devices: DeviceData[];
 }
 
-type deviceKey = 'device1' | 'device2' | 'device3' | 'device4';
+type NewPackageInput = Omit<Package, 'id'>;
 
 export default function AddPackage() {
+  const form = useForm<newPackageInputData>();
+  const { reset, handleSubmit } = form;
+
   const clearData = {
-    stockDate: '',
-    manufacturer: '',
-    color: '',
     clientPackage: {
-      clientID: '',
+      clientId: '',
       fittingDate: '',
       warrantyDate: '',
       comment: '',
     },
-    device1: {
-      type: '',
-      deviceId: '',
-    },
-    device2: {
-      type: '',
-      deviceId: '',
-    },
-    device3: {
-      type: '',
-      deviceId: '',
-    },
-    device4: {
-      type: '',
-      deviceId: '',
-    },
+    devices: [{ type: '', deviceId: '' }],
   };
-  const [inputData, setInputData] = useState<newPackageInputData>(clearData);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
-  const [colors, setColors] = useState<Color[]>([]);
-  const [clients, setClients] = useState<Client[]>([]); // [Client, setClientItems
-  const [typeItems, setTypeItems] = useState<Type[]>([]);
 
+  const [allClients, setAllClients] = useState<Client[]>([]);
+  const [allTypeItems, setAllTypeItems] = useState<Type[]>([]);
+  const [allDevices, setAllDevices] = useState<Device[]>([]);
+  const [allManufacturers, setAllManufacturers] = useState<Manufacturer[]>([]);
+  const [allColors, setAllColors] = useState<Color[]>([]);
+  const [deviceNo, setDeviceNo] = useState<number>(1);
+  const [clientInfo, setClientInfo] = useState<boolean>(false);
+  const [thisDevice, setThisDevice] = useState<Device>();
+  const [thisDeviceColor, setThisDeviceColor] = useState<string[]>([]);
+  const [thisDeviceManufacturer, setThisDeviceManufacturer] = useState<
+    string[]
+  >([]);
+  const [thisDeviceType, setThisDeviceType] = useState<string[]>([]);
+  const [hasUnavailableWarning, setHasUnavailableWarning] =
+    useState<boolean>(false); // if package id or sell date is found in the device
+  const [hasUnknownWarning, setHasUnknownWarning] = useState<boolean>(false); // if device id is not found
+
+  // fetch data
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const manufacturers = await getAllManufacturers();
-        setManufacturers(manufacturers);
-      } catch (error) {
-        console.error('Failed fetching Manufacturer data', error);
-      }
-      try {
-        const colors = await getAllColors();
-        setColors(colors);
-      } catch (error) {
-        console.error('Failed fetching Color data', error);
-      }
-      try {
-        const clients = await getAllClients();
-        setClients(clients);
-      } catch (error) {
-        console.error('Failed fetching Client data', error);
-      }
-      try {
-        const types = await getAllTypes();
-        setTypeItems(types);
-      } catch (error) {
-        console.error('Failed fetching Type data', error);
-      }
+      const [clients, types, devices, manufacturers, colors] =
+        await Promise.all([
+          getAllClients(),
+          getAllTypes(),
+          getAllDevices(),
+          getAllManufacturers(),
+          getAllColors(),
+        ]);
+      setAllClients(clients);
+      setAllTypeItems(types);
+      setAllDevices(devices);
+      setAllManufacturers(manufacturers);
+      setAllColors(colors);
     };
     fetchData();
   }, []);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputData({ ...inputData, [name]: value });
-  };
+  const getEachDeviceId = useWatch({
+    control: form.control,
+    name: `devices.${deviceNo - 1}.deviceId`,
+  });
 
-  const handleClientPackageInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    if (inputData.clientPackage) {
-      const { name, value } = e.target;
-      setInputData({
-        ...inputData,
-        clientPackage: {
-          ...inputData.clientPackage,
-          [name]: value,
-        },
-      });
+  // clear device data when device is not found and when device id input is empty
+  const clearDeviceData = useCallback(() => {
+    const clearInfo = (prev: string[], newValue: string) => {
+      const updated = [...prev];
+      updated[deviceNo - 1] = newValue;
+      return updated;
+    };
+
+    setThisDeviceColor((prev) => clearInfo(prev, ''));
+    setThisDeviceManufacturer((prev) => clearInfo(prev, ''));
+    setThisDeviceType((prev) => clearInfo(prev, ''));
+  }, [deviceNo]);
+
+  // get device info when device id is input
+  useEffect(() => {
+    if (!getEachDeviceId) {
+      clearDeviceData();
+      setHasUnknownWarning(false);
+      setHasUnavailableWarning(false);
+      return;
     }
-  };
 
-  const handleDeviceInput = (
-    deviceNum: deviceKey,
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = e.target;
-    setInputData({
-      ...inputData,
-      [deviceNum]: {
-        ...inputData[deviceNum],
-        [name]: value,
-      },
-    });
-  };
+    const thisDeviceInfo = allDevices.find(
+      (device) => device.id === parseInt(getEachDeviceId),
+    );
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (inputData.device1.type.length > 0) {
-      console.log(inputData);
-      setInputData(clearData);
+    if (!thisDeviceInfo) {
+      clearDeviceData();
+      setHasUnknownWarning(true);
+      setHasUnavailableWarning(false);
+      return;
+    }
 
-      alert('Form submitted');
+    setThisDevice(thisDeviceInfo);
+
+    const newColor = allColors.find(
+      (color) => color.id === thisDeviceInfo.colorId,
+    );
+    const newManufacturer = allManufacturers.find(
+      (manufacturer) => manufacturer.id === thisDeviceInfo.manufacturerId,
+    );
+    const newDeviceType = allTypeItems.find(
+      (type) => type.id === thisDeviceInfo.typeId,
+    );
+
+    const updatedInfo = (prev: string[], newValue: string) => {
+      const updated = [...prev];
+      updated[deviceNo - 1] = newValue;
+      return updated;
+    };
+
+    setThisDeviceColor((prev) => updatedInfo(prev, newColor?.name || ''));
+    setThisDeviceManufacturer((prev) =>
+      updatedInfo(prev, newManufacturer?.name || ''),
+    );
+    setThisDeviceType((prev) => updatedInfo(prev, newDeviceType?.name || ''));
+    setHasUnknownWarning(false);
+
+    if (thisDeviceInfo.packageId || thisDeviceInfo.sellDate) {
+      setHasUnavailableWarning(true);
     } else {
-      alert('Please select a device type');
+      setHasUnavailableWarning(false);
+    }
+  }, [getEachDeviceId]);
+
+  const onSubmit = async (data: newPackageInputData) => {
+    console.log('len: ', deviceNo);
+    try {
+      console.log('all input: ', data);
+      // console.log('client: ', data.clientId);
+      // console.log('all input - client Id: ', data['clientPackage']?.clientId);
+      if (hasUnknownWarning || hasUnavailableWarning) {
+        alert(
+          'This Device ID cannot be assigned to the package. Please check the device ID.',
+        );
+      } else {
+        const packageData: NewPackageInput = {
+          clientId: data.clientId ? parseInt(data.clientId) : undefined,
+          fittingDate: data.fittingDate
+            ? new Date(data.fittingDate).toISOString()
+            : undefined,
+          warrantyExpiration: data.warrantyDate
+            ? new Date(data.warrantyDate).toISOString()
+            : undefined,
+          comments: data.comment ?? null,
+        };
+
+        const response = await postPackage(packageData);
+
+        for (let i = 0; i < deviceNo; i++) {
+          await updateDevice(parseInt(data.devices[i].deviceId), {
+            packageId: response.id,
+          });
+        }
+
+        reset(clearData);
+        setDeviceNo(1);
+        setThisDeviceColor([]);
+        setThisDeviceManufacturer([]);
+        setThisDeviceType([]);
+        alert('Form submitted');
+      }
+    } catch (error) {
+      console.error('Failed to submit form: ', error);
     }
   };
+
+  const handleAddDevice = useCallback(() => {
+    if (deviceNo < 4) {
+      setDeviceNo((getDeviceNo) => getDeviceNo + 1);
+    }
+  }, [deviceNo]);
+
+  const handleClientInfo = useCallback(() => {
+    setClientInfo(true);
+  }, []);
 
   return (
-    <div>
-      <form className="w-fit" onSubmit={handleSubmit}>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <InputDateBox
-                  label="Stock Date"
-                  placeholder="Select date"
-                  isRequired
-                  name="stockDate"
-                  value={inputData.stockDate}
-                  onChangeHandler={handleInput}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <InputDropdownBox
-                  label="Manufacturer"
-                  placeholder="Select manufacturer"
-                  isRequired
-                  name="manufacturer"
-                  value={inputData.manufacturer}
-                  data={manufacturers.map((manufacturer) => manufacturer.name)}
-                  onChangeHandler={handleInput}
-                />
-              </td>
-              <td className="pl-12">
-                <InputDropdownBox
-                  label="Color"
-                  placeholder="Enter color"
-                  isRequired
-                  name="color"
-                  value={inputData.color}
-                  data={colors.map((color) => color.name)}
-                  onChangeHandler={handleInput}
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <FormProvider {...form}>
+      <div>
+        <form className="w-fit" onSubmit={handleSubmit(onSubmit)}>
+          <p className="text-xl font-bold">Device Information</p>
+          {Array.from({ length: deviceNo }).map((_, index) => (
+            <React.Fragment key={index}>
+              <DeviceFormInAddPackage
+                key={index}
+                index={index}
+                listTitle={`Device ${index + 1}:`}
+                // typeData={allTypeItems.map((type) => type.name)}
+                deviceType={thisDeviceType[index] || ''}
+                deviceColor={thisDeviceColor[index] || ''}
+                deviceManufacturer={thisDeviceManufacturer[index] || ''}
+              />
+            </React.Fragment>
+          ))}
+          {hasUnknownWarning ? (
+            <MessageCard
+              shape="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              alertType="alert-error"
+              message="Device ID is not found."
+            />
+          ) : null}
+          {hasUnavailableWarning ? (
+            <MessageCard
+              shape="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              alertType="alert-warning"
+              message="Warning: This device is not available to be assigned to the package."
+            />
+          ) : null}
 
-        <ClientPackageForm
-          clientIDValue={inputData.clientPackage?.clientID ?? ''}
-          clientsData={clients.map((client) => client.id)}
-          fittingDateValue={inputData.clientPackage?.fittingDate ?? ''}
-          warrantyDateValue={inputData.clientPackage?.warrantyDate ?? ''}
-          commentValue={inputData.clientPackage?.comment ?? ''}
-          onChangeHandler={handleClientPackageInput}
-        />
+          {deviceNo < 4 &&
+          !hasUnknownWarning &&
+          !hasUnavailableWarning &&
+          getEachDeviceId ? (
+            <SubAddBtn btnName="Add Device" handleClick={handleAddDevice} />
+          ) : (
+            <SubAddBtn btnName="Add Device" disabled />
+          )}
 
-        <DeviceFormInAddPackage
-          listTitle="Device 1:"
-          typeData={typeItems.map((type) => type.name)}
-          type={inputData.device1.type}
-          deviceId={inputData.device1.deviceId}
-          onChangeHandler={(e) => handleDeviceInput('device1' as deviceKey, e)}
-        />
-        <DeviceFormInAddPackage
-          listTitle="Device 2:"
-          typeData={typeItems.map((type) => type.name)}
-          type={inputData.device2.type}
-          deviceId={inputData.device2.deviceId}
-          onChangeHandler={(e) => handleDeviceInput('device2' as deviceKey, e)}
-        />
-        <DeviceFormInAddPackage
-          listTitle="Device 3:"
-          typeData={typeItems.map((type) => type.name)}
-          type={inputData.device3.type}
-          deviceId={inputData.device3.deviceId}
-          onChangeHandler={(e) => handleDeviceInput('device3' as deviceKey, e)}
-        />
-        <DeviceFormInAddPackage
-          listTitle="Device 4:"
-          typeData={typeItems.map((type) => type.name)}
-          type={inputData.device4.type}
-          deviceId={inputData.device4.deviceId}
-          onChangeHandler={(e) => handleDeviceInput('device4' as deviceKey, e)}
-        />
+          <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
 
-        <SubmitAndCancelDiv cancelPath="./" />
-      </form>
-    </div>
+          {clientInfo ? (
+            <ClientPackageForm
+              clientsData={allClients.map((client) => client.id)}
+            />
+          ) : (
+            <SubAddBtn btnName="Add Client" handleClick={handleClientInfo} />
+          )}
+
+          <SubmitAndCancelDiv cancelPath="./" />
+        </form>
+      </div>
+    </FormProvider>
   );
 }
