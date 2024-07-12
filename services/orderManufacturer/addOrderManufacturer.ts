@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const updateOrderManufacturerById = async (id: number, data: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -9,7 +10,11 @@ const updateOrderManufacturerById = async (id: number, data: any) => {
   }
 
   try {
-    await axios.patch(`${apiUrl}/order-manufacturer/${id}`, data);
+    await axios.patch(`${apiUrl}/order-manufacturer/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log('Successfully updated order manufacturer');
     console.log(data);
   } catch (e) {
@@ -19,6 +24,7 @@ const updateOrderManufacturerById = async (id: number, data: any) => {
 
 const postOrderManufacturer = async (data: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -26,7 +32,11 @@ const postOrderManufacturer = async (data: any) => {
   }
 
   try {
-    await axios.post(`${apiUrl}/order-manufacturer`, data);
+    await axios.post(`${apiUrl}/order-manufacturer`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log('Successfully posted order manufacturer');
     console.log(data);
   } catch (e) {
