@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const getAllInventory = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL; // API URL from environment variables
+  const token = localStorage.getItem('access_token'); // Access token from local storage
 
   if (!apiUrl) {
     // Check if API URL is defined
@@ -18,7 +19,11 @@ const getAllInventory = async () => {
 
   try {
     // Making a GET request to the server to fetch all inventory data
-    const response = await axios.get(`${apiUrl}/inventory`);
+    const response = await axios.get(`${apiUrl}/inventory`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Send the access token with the request
+      },
+    });
     console.log('Inventory data: ', response.data); // Log the inventory data
     return response.data; // Return the inventory data
   } catch (error) {

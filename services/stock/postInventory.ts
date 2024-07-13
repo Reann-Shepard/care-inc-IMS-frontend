@@ -18,6 +18,7 @@ import { Type } from '@/entities/Type';
 
 const postInventory = async (data: newInventoryInputData) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL; // API URL from environment variables
+  const token = localStorage.getItem('access_token'); // Access token from local storage
   // Fetching all manufacturers, colors, and types from the server to get their IDs
   const manufacturerList: Manufacturer[] = await getAllManufacturers();
   const colorList: Color[] = await getAllColors();
@@ -51,6 +52,11 @@ const postInventory = async (data: newInventoryInputData) => {
     const response = await axios.post(
       `${apiUrl}/inventory/add_inventory`,
       inventoryData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send the access token with the request
+        },
+      },
     );
     console.log('New device added: ', response.data); // Log the response data
   } catch (error) {

@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const getAllPackages = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -10,7 +11,11 @@ const getAllPackages = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/package`);
+    const response = await axios.get(`${apiUrl}/package`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     // console.log('Package data: ', response.data);
     return response.data;
   } catch (error) {
@@ -21,6 +26,7 @@ const getAllPackages = async () => {
 
 const getPackageById = async (id: number) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -28,7 +34,11 @@ const getPackageById = async (id: number) => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/package/${id}`);
+    const response = await axios.get(`${apiUrl}/package/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     // console.log('Package data: ', response.data);
     return response.data;
   } catch (error) {
@@ -39,6 +49,7 @@ const getPackageById = async (id: number) => {
 
 const getAllPackagesSortedFiltered = async (sortBy = '', filterBy = {}) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -50,6 +61,9 @@ const getAllPackagesSortedFiltered = async (sortBy = '', filterBy = {}) => {
       params: {
         sortBy,
         ...filterBy,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
     // console.log('Package data: ', response.data);

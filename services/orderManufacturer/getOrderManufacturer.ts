@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const getAllOrderManufacturers = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -9,7 +10,11 @@ const getAllOrderManufacturers = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/order-manufacturer`);
+    const response = await axios.get(`${apiUrl}/order-manufacturer`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (e) {
     console.error('Failed fetching Order Manufacturer data: ', e);
@@ -19,6 +24,7 @@ const getAllOrderManufacturers = async () => {
 
 const getOrderManufacturerById = async (id: number) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -26,7 +32,11 @@ const getOrderManufacturerById = async (id: number) => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/order-manufacturer/${id}`);
+    const response = await axios.get(`${apiUrl}/order-manufacturer/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (e) {
     console.error('Failed fetching Order Manufacturer data: ', e);
@@ -36,6 +46,7 @@ const getOrderManufacturerById = async (id: number) => {
 
 const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -45,6 +56,9 @@ const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
   try {
     await axios.get(`${apiUrl}/device/check-serial-number`, {
       params: { serialNumber },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return false;
   } catch (error: any) {
