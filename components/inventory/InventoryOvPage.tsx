@@ -10,7 +10,7 @@ import Link from 'next/link'; // import Link from 'next/link' for client-side na
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'; // import hooks for accessing url search parameters and navigation
 import { getAllDevices } from '@/services/device/getDevice'; // import function to fetch all devices
-import { deviceToInv } from './deviceToInv'; // import function to transform device data to inventory data
+import { deviceToInv } from '../../services/device/deviceToInv'; // import function to transform device data to inventory data
 
 export const metadata = {
   title: 'Inventory',

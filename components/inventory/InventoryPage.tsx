@@ -12,7 +12,7 @@ import Link from 'next/link';
 import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { deviceToInv } from './deviceToInv';
+import { deviceToInv } from '../../services/device/deviceToInv';
 import SortByBtn from '@/components/buttons/SortByBtn';
 import FilterBtn from '@/components/buttons/FilterBtn';
 import { set } from 'zod';

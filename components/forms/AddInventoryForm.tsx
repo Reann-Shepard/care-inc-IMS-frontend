@@ -20,13 +20,13 @@ import { Manufacturer } from '@/entities/manufacturer';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
 import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
-import { deviceToInv } from '@/components/inventory/deviceToInv';
+import { deviceToInv } from '@/services/device/deviceToInv';
 import { getAllDevices } from '@/services/device/getDevice';
 import { postInventory } from '@/services/stock/postInventory';
 import { getAllInventory } from '@/services/stock/getInventory'; // If fetch inventory data needed
 
 // Interface for new inventory input data
-export interface newInventoryInputData {
+interface newInventoryInputData {
   stockDate: string;
   manufacturer: string;
   type: string;
