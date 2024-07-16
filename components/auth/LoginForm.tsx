@@ -17,10 +17,9 @@ const LoginForm = () => {
     const password = formData.get('password') as string;
 
     const success = await handlePostSignIn(username, password);
-    console.log('Login success:', success);
+
     if (success) {
-      console.log('Navigating to /inventory');
-      router.push('/inventory');
+      router.push('/');
     }
   };
 
