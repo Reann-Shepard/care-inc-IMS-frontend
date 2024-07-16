@@ -19,6 +19,8 @@ import { Package } from '@/entities/Package';
 import { updateDevice } from '@/services/device/updateDevice';
 import MessageCard from '@/components/cards/package/MessageCard';
 import SubAddBtn from '../buttons/package/SubAddBtn';
+import { all } from 'axios';
+import { set } from 'zod';
 
 interface DeviceData {
   type: string;
@@ -54,7 +56,7 @@ export default function AddPackage() {
   const [allDevices, setAllDevices] = useState<Device[]>([]);
   const [allManufacturers, setAllManufacturers] = useState<Manufacturer[]>([]);
   const [allColors, setAllColors] = useState<Color[]>([]);
-  const [deviceNo, setDeviceNo] = useState<number>(1);
+  const [deviceAmount, setDeviceAmount] = useState<number>(1);
   const [clientInfo, setClientInfo] = useState<boolean>(false);
   const [thisDevice, setThisDevice] = useState<Device>();
   const [thisDeviceColor, setThisDeviceColor] = useState<string[]>([]);
@@ -62,6 +64,7 @@ export default function AddPackage() {
     string[]
   >([]);
   const [thisDeviceType, setThisDeviceType] = useState<string[]>([]);
+  const [modifiedIndex, setModifiedIndex] = useState<number>(0);
   const [hasUnavailableWarning, setHasUnavailableWarning] =
     useState<boolean>(false); // if package id or sell date is found in the device
   const [hasUnknownWarning, setHasUnknownWarning] = useState<boolean>(false); // if device id is not found
@@ -86,27 +89,33 @@ export default function AddPackage() {
     fetchData();
   }, []);
 
+  // handle modifying device index
+  const handleGetIndex = useCallback((index: number) => {
+    setModifiedIndex(index);
+  }, []);
+
   const getEachDeviceId = useWatch({
     control: form.control,
-    name: `devices.${deviceNo - 1}.deviceId`,
+    name: `devices.${modifiedIndex}.deviceId`,
   });
 
   // clear device data when device is not found and when device id input is empty
   const clearDeviceData = useCallback(() => {
     const clearInfo = (prev: string[], newValue: string) => {
       const updated = [...prev];
-      updated[deviceNo - 1] = newValue;
+      updated[modifiedIndex] = newValue;
       return updated;
     };
 
     setThisDeviceColor((prev) => clearInfo(prev, ''));
     setThisDeviceManufacturer((prev) => clearInfo(prev, ''));
     setThisDeviceType((prev) => clearInfo(prev, ''));
-  }, [deviceNo]);
+  }, [deviceAmount, modifiedIndex]);
 
   // get device info when device id is input
   useEffect(() => {
     if (!getEachDeviceId) {
+      // no device id input
       clearDeviceData();
       setHasUnknownWarning(false);
       setHasUnavailableWarning(false);
@@ -118,6 +127,7 @@ export default function AddPackage() {
     );
 
     if (!thisDeviceInfo) {
+      // device id not found
       clearDeviceData();
       setHasUnknownWarning(true);
       setHasUnavailableWarning(false);
@@ -138,7 +148,7 @@ export default function AddPackage() {
 
     const updatedInfo = (prev: string[], newValue: string) => {
       const updated = [...prev];
-      updated[deviceNo - 1] = newValue;
+      updated[modifiedIndex] = newValue;
       return updated;
     };
 
@@ -147,6 +157,7 @@ export default function AddPackage() {
       updatedInfo(prev, newManufacturer?.name || ''),
     );
     setThisDeviceType((prev) => updatedInfo(prev, newDeviceType?.name || ''));
+
     setHasUnknownWarning(false);
 
     if (thisDeviceInfo.packageId || thisDeviceInfo.sellDate) {
@@ -154,19 +165,11 @@ export default function AddPackage() {
     } else {
       setHasUnavailableWarning(false);
     }
-  }, [getEachDeviceId]);
+  }, [getEachDeviceId, modifiedIndex]);
 
   const onSubmit = async (data: newPackageInputData) => {
-    console.log('len: ', deviceNo);
     try {
-      console.log('all input: ', data);
-      // console.log('client: ', data.clientId);
-      // console.log('all input - client Id: ', data['clientPackage']?.clientId);
-      if (hasUnknownWarning || hasUnavailableWarning) {
-        alert(
-          'This Device ID cannot be assigned to the package. Please check the device ID.',
-        );
-      } else {
+      if (!hasUnavailableWarning && !hasUnknownWarning) {
         const packageData: NewPackageInput = {
           clientId: data.clientId ? parseInt(data.clientId) : undefined,
           fittingDate: data.fittingDate
@@ -180,14 +183,14 @@ export default function AddPackage() {
 
         const response = await postPackage(packageData);
 
-        for (let i = 0; i < deviceNo; i++) {
+        for (let i = 0; i < deviceAmount; i++) {
           await updateDevice(parseInt(data.devices[i].deviceId), {
             packageId: response.id,
           });
         }
 
         reset(clearData);
-        setDeviceNo(1);
+        setDeviceAmount(1);
         setThisDeviceColor([]);
         setThisDeviceManufacturer([]);
         setThisDeviceType([]);
@@ -199,66 +202,104 @@ export default function AddPackage() {
   };
 
   const handleAddDevice = useCallback(() => {
-    if (deviceNo < 4) {
-      setDeviceNo((getDeviceNo) => getDeviceNo + 1);
+    if (deviceAmount < 4) {
+      setDeviceAmount((getDeviceAmount) => getDeviceAmount + 1);
     }
-  }, [deviceNo]);
+  }, [deviceAmount]);
+
+  const handleRemoveDevice = useCallback(() => {
+    if (deviceAmount > 1) {
+      setDeviceAmount((getDeviceAmount) => getDeviceAmount - 1);
+    }
+  }, [deviceAmount]);
 
   const handleClientInfo = useCallback(() => {
     setClientInfo(true);
   }, []);
+
+  const handleRemoveClient = useCallback(() => {
+    setClientInfo(false);
+    // clean client data
+    form.setValue('clientId', '');
+    form.setValue('fittingDate', '');
+    form.setValue('warrantyDate', '');
+    form.setValue('comment', '');
+  }, [form]);
 
   return (
     <FormProvider {...form}>
       <div>
         <form className="w-fit" onSubmit={handleSubmit(onSubmit)}>
           <p className="text-xl font-bold">Device Information</p>
-          {Array.from({ length: deviceNo }).map((_, index) => (
-            <React.Fragment key={index}>
-              <DeviceFormInAddPackage
-                key={index}
-                index={index}
-                listTitle={`Device ${index + 1}:`}
-                // typeData={allTypeItems.map((type) => type.name)}
-                deviceType={thisDeviceType[index] || ''}
-                deviceColor={thisDeviceColor[index] || ''}
-                deviceManufacturer={thisDeviceManufacturer[index] || ''}
-              />
-            </React.Fragment>
-          ))}
-          {hasUnknownWarning ? (
-            <MessageCard
-              shape="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              alertType="alert-error"
-              message="Device ID is not found."
+          {Array.from({ length: deviceAmount }).map((_, index) => (
+            <DeviceFormInAddPackage
+              key={index}
+              index={index}
+              listTitle={`Device ${index + 1}:`}
+              // typeData={allTypeItems.map((type) => type.name)}
+              deviceType={thisDeviceType[index] || ''}
+              deviceColor={thisDeviceColor[index] || ''}
+              deviceManufacturer={thisDeviceManufacturer[index] || ''}
+              onClickHandler={() => handleGetIndex(index)}
             />
-          ) : null}
+          ))}
+
+          {deviceAmount === 1 ? (
+            <SubAddBtn btnName="Add Device" handleClick={handleAddDevice} />
+          ) : (
+            <React.Fragment>
+              {deviceAmount < 4 ? (
+                <div className="flex gap-2">
+                  <SubAddBtn
+                    btnName="Remove"
+                    handleClick={handleRemoveDevice}
+                  />
+                  <SubAddBtn
+                    btnName="Add Device"
+                    handleClick={handleAddDevice}
+                  />
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <SubAddBtn
+                    btnName="Remove"
+                    handleClick={handleRemoveDevice}
+                  />
+                  <SubAddBtn btnName="Add Device" disabled />
+                </div>
+              )}
+            </React.Fragment>
+          )}
+
+          <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
+          {clientInfo ? (
+            <div>
+              <ClientPackageForm
+                clientsData={allClients.map((client) => client.id)}
+              />
+              <SubAddBtn
+                btnName="Remove Client Information"
+                handleClick={handleRemoveClient}
+              />
+            </div>
+          ) : (
+            <SubAddBtn btnName="Add Client" handleClick={handleClientInfo} />
+          )}
+
           {hasUnavailableWarning ? (
             <MessageCard
               shape="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               alertType="alert-warning"
-              message="Warning: This device is not available to be assigned to the package."
+              message={`Warning: Device is not available to be assigned to the package.`}
             />
           ) : null}
-
-          {deviceNo < 4 &&
-          !hasUnknownWarning &&
-          !hasUnavailableWarning &&
-          getEachDeviceId ? (
-            <SubAddBtn btnName="Add Device" handleClick={handleAddDevice} />
-          ) : (
-            <SubAddBtn btnName="Add Device" disabled />
-          )}
-
-          <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
-
-          {clientInfo ? (
-            <ClientPackageForm
-              clientsData={allClients.map((client) => client.id)}
+          {hasUnknownWarning ? (
+            <MessageCard
+              shape="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              alertType="alert-error"
+              message={`Error: Device ID is not found.`}
             />
-          ) : (
-            <SubAddBtn btnName="Add Client" handleClick={handleClientInfo} />
-          )}
+          ) : null}
 
           <SubmitAndCancelDiv cancelPath="./" />
         </form>

@@ -7,11 +7,10 @@ import DeviceDetailsInfo from '../../inputs/package/DeviceDetailsInfo';
 interface DeviceDataProps {
   index: number;
   listTitle: string;
-  // typeData?: string[];
   deviceType?: string;
   deviceColor?: string;
   deviceManufacturer?: string;
-  // onChangeHandler?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClickHandler?: () => void;
 }
 
 export default function DeviceFormInAddPackage({
@@ -22,6 +21,7 @@ export default function DeviceFormInAddPackage({
   deviceColor,
   deviceManufacturer,
   // onChangeHandler=()=>{},
+  onClickHandler,
 }: DeviceDataProps) {
   const { control } = useFormContext();
 
@@ -34,7 +34,7 @@ export default function DeviceFormInAddPackage({
           </td>
         </tr>
         <tr>
-          <td>
+          <td onClick={onClickHandler}>
             <Controller
               control={control}
               name={`devices.${index}.deviceId`}
@@ -60,23 +60,6 @@ export default function DeviceFormInAddPackage({
               value={deviceType || ''}
               index={index}
             />
-            {/* <Controller 
-              control={control}
-              name={`devices.${index}.type`}
-              defaultValue={''}
-              render={({ field }) => (
-                <InputDropdownBox
-                  label="Type"
-                  placeholder="Select type"
-                  name={`devices.${index}.type`}
-                  data={typeData}
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                />
-                
-              )}
-              rules={{ required: true }}
-            /> */}
           </td>
         </tr>
         <tr>
