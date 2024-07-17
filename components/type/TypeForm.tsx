@@ -1,26 +1,25 @@
 'use client';
-import { Color } from '@/entities/Color';
-import {
-  getColorById,
-  postColor,
-  updateColor,
-} from '@/services/color/getColor';
+
+import { Manufacturer } from '@/entities/manufacturer';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { InputWithUseForm } from '../inputs/InputWithUseForm';
 import DiscardModal from '../discard/DisCardModal';
+import { Type } from '@/entities/Type';
+import { getTypeById, postType, updateType } from '@/services/type/getType';
 
-const ColorForm: React.FC = () => {
-  const [color, setColor] = useState<Color | null>(null);
+const TypeForm: React.FC = () => {
+  const [type, setType] = useState<Type | null>(null);
   const router = useRouter();
   const pathName = usePathname();
   const id = pathName.split('/').pop();
-  const isNew = !id || id === 'new-color';
+  const isNew = !id || id === 'new-type';
 
-  const methods = useForm<Color>({
-    defaultValues: color || { name: '' },
+  const methods = useForm<Manufacturer>({
+    defaultValues: type || { name: '' },
   });
+
   const {
     handleSubmit,
     reset,
@@ -28,46 +27,47 @@ const ColorForm: React.FC = () => {
   } = methods;
 
   useEffect(() => {
-    if (id && id !== 'new-color') {
-      const fetchColor = async () => {
-        const data = await getColorById(Number(id));
-        setColor(data);
+    if (id && id !== 'new-type') {
+      const fetchType = async () => {
+        const data = await getTypeById(Number(id));
+        setType(data);
         reset(data);
       };
 
-      fetchColor();
+      fetchType();
     }
   }, [id, reset]);
 
-  const onSubmit: SubmitHandler<Color> = async (data: Color) => {
+  const onSubmit = async (data: Manufacturer) => {
     let result;
     if (!isNew) {
-      result = await updateColor(Number(id), data);
+      result = await updateType(Number(id), data);
     }
     if (isNew) {
-      result = await postColor(data);
+      result = await postType(data);
     }
-
     if (result) {
       reset(data);
-      router.push(`/color/${result.id}`);
+      router.push(`/type/${result.id}`);
     }
   };
 
   const handleDiscard = () => {
-    if (color) {
-      reset(color);
+    if (type) {
+      reset(type);
     } else {
       reset();
     }
-    (document.getElementById('discard_modal') as HTMLDialogElement)?.close(); // Close the modal
+
+    (document.getElementById('discard_modal') as HTMLDialogElement)?.close();
   };
+
   return (
     <div className="flex justify-center min-h-screen mt-8">
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <InputWithUseForm name="name" label="Color Name" required />
+            <InputWithUseForm name="name" label="Type" required />
           </div>
           {isDirty ? (
             <div className="text-right mt-4">
@@ -101,4 +101,4 @@ const ColorForm: React.FC = () => {
   );
 };
 
-export { ColorForm };
+export default TypeForm;

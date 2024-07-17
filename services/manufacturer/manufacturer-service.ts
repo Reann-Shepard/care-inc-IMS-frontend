@@ -1,7 +1,7 @@
-import { Type } from '@/entities/Type';
+import { Manufacturer } from '@/entities/manufacturer';
 import axios from 'axios';
 
-const getAllTypes = async () => {
+const getAllManufacturers = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
@@ -11,43 +11,19 @@ const getAllTypes = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/type`, {
+    const response = await axios.get(`${apiUrl}/manufacturer`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Type data: ', error);
+    console.error('Failed fetching Manufacturer data: ', error);
     return [];
   }
 };
 
-const getThisTypeName = async (id: number) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const token = localStorage.getItem('access_token');
-
-  if (!apiUrl) {
-    console.error('API URL is not found');
-    return [];
-  }
-
-  try {
-    const response = await axios.get(`${apiUrl}/type/${String(id)}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const typeName = response.data.name;
-    console.log('Type Id-', id, ' data: ', typeName);
-    return typeName;
-  } catch (error) {
-    console.error('Failed fetching Type Id-', id, ' data: ', error);
-    return [];
-  }
-};
-
-const getTypeById = async (id: number) => {
+const getManufacturerById = async (id: number) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
@@ -57,19 +33,19 @@ const getTypeById = async (id: number) => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/type/${id}`, {
+    const response = await axios.get(`${apiUrl}/manufacturer/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Type data: ', error);
+    console.error('Failed fetching Manufacturer data: ', error);
     return null;
   }
 };
 
-const postType = async (data: Type) => {
+const postManufacturer = async (data: Manufacturer) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
@@ -79,19 +55,19 @@ const postType = async (data: Type) => {
   }
 
   try {
-    const response = await axios.post(`${apiUrl}/type`, data, {
+    const response = await axios.post(`${apiUrl}/manufacturer`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Type data: ', error);
+    console.error('Failed creating Manufacturer data: ', error);
     return null;
   }
 };
 
-const updateType = async (id: number, data: Type) => {
+const updateManufacturer = async (id: number, data: Manufacturer) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
@@ -101,16 +77,21 @@ const updateType = async (id: number, data: Type) => {
   }
 
   try {
-    const response = await axios.put(`${apiUrl}/type/${id}`, data, {
+    const response = await axios.put(`${apiUrl}/manufacturer/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Type data: ', error);
+    console.error('Failed updating Manufacturer data: ', error);
     return null;
   }
 };
 
-export { getAllTypes, getThisTypeName, getTypeById, postType, updateType };
+export {
+  getAllManufacturers,
+  getManufacturerById,
+  postManufacturer,
+  updateManufacturer,
+};
