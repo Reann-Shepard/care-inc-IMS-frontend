@@ -13,7 +13,7 @@ export default function PackageList() {
     getPackgeCountByMfr().then((data) => {
       setPackages(data);
     });
-  });
+  }, []);
 
   return (
     <div>

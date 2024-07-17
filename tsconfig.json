@@ -24,7 +24,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/**/*.txs",
+    "**/*.tsx",
+    "**/**/*.tsx",
     ".next/types/**/*.ts",
     "app/(main)/packages/[package_id]",
     "components/contents/package/packageDeviceDetails.tsx"

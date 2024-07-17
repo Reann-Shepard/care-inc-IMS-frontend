@@ -4,6 +4,7 @@ import axios from 'axios';
 // Patch
 const updatePackage = async (id: number, data: Partial<Package>) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -11,7 +12,11 @@ const updatePackage = async (id: number, data: Partial<Package>) => {
   }
 
   try {
-    const response = await axios.patch(`${apiUrl}/package/${id}`, data);
+    const response = await axios.patch(`${apiUrl}/package/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Failed fetching Package data: ', error);

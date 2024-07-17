@@ -1,14 +1,20 @@
 'use client';
 
+import { usePostSignIn } from '@/services/auth/auth-service';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const router = useRouter();
+  const { handleLogout } = usePostSignIn();
 
   const handleLogoClick = () => {
     router.push('/overview');
+  };
+
+  const handleLogoutClick = async () => {
+    await handleLogout();
+    router.push('/auth/login');
   };
 
   return (
@@ -36,9 +42,9 @@ export default function Header() {
       </div>
       <div className="flex items-end h-16">
         <div>
-          <Link href={'/'} className="text-white">
+          <button onClick={handleLogoutClick} className="text-white">
             Logout
-          </Link>
+          </button>
         </div>
       </div>
     </div>

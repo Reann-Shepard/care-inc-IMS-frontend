@@ -10,8 +10,9 @@ export default function NavBar() {
     'Overview',
     'Inventory',
     'Packages',
-    'Customers',
     'Alterations',
+    'Order-Manufacturer',
+    'Color',
   ];
   const [current, setCurrent] = useState(path.replace('/', ''));
 
@@ -22,7 +23,7 @@ export default function NavBar() {
   return (
     <div className="navbar bg-base-100 items-center justify-center">
       <div className="navbar-start flex justify-start w-full">
-        <ul className="menu menu-horizontal px-1 my-2 space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 xl:space-x-10 2xl:space-x-10">
+        <ul className="menu menu-horizontal px-1 my-2 space-x-1 sm:space-x-2 md:space-x-3 lg:space-x-4 xl:space-x-6 2xl:space-x-8">
           {navItems.map((item, index) => (
             <li
               key={index}
@@ -31,11 +32,6 @@ export default function NavBar() {
                 (item.toLocaleLowerCase() === current ? 'bg-ochre' : '')
               }
             >
-              {/* {`${item}`}
-                        {item === selected ? (
-                        <motion.div className="bg-ochre" layoutId="background" />
-                        ) : null}
-                         */}
               <Link href={`/${item.toLowerCase()}`} prefetch={false}>
                 {item}
               </Link>

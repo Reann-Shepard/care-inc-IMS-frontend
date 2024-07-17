@@ -1,7 +1,9 @@
+import { Color } from '@/entities/Color';
 import axios from 'axios';
 
 const getAllColors = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -9,7 +11,11 @@ const getAllColors = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/color`);
+    const response = await axios.get(`${apiUrl}/color`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Failed fetching Color data: ', error);
@@ -19,6 +25,7 @@ const getAllColors = async () => {
 
 const getThisColorName = async (id: number) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
@@ -26,7 +33,11 @@ const getThisColorName = async (id: number) => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/color/${String(id)}`);
+    const response = await axios.get(`${apiUrl}/color/${String(id)}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const colorName = response.data.name;
     console.log('Color Id-', id, ' data: ', colorName);
     return colorName;
@@ -36,4 +47,70 @@ const getThisColorName = async (id: number) => {
   }
 };
 
-export { getAllColors, getThisColorName };
+const getColorById = async (id: number) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
+
+  if (!apiUrl) {
+    console.error('API URL is not found');
+    return null;
+  }
+
+  try {
+    const response = await axios.get(`${apiUrl}/color/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed fetching Color data: ', error);
+    return null;
+  }
+};
+
+const postColor = async (data: Color) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
+
+  if (!apiUrl) {
+    console.error('API URL is not found');
+    return null;
+  }
+
+  try {
+    const response = await axios.post(`${apiUrl}/color`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed creating Color data: ', error);
+    return null;
+  }
+};
+
+const updateColor = async (id: number, data: Color) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
+
+  if (!apiUrl) {
+    console.error('API URL is not found');
+    return null;
+  }
+
+  try {
+    const response = await axios.put(`${apiUrl}/color/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed updating Color data: ', error);
+    return null;
+  }
+};
+
+export { getAllColors, getThisColorName, getColorById, postColor, updateColor };

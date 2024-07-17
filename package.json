@@ -13,12 +13,14 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.0.3",
+    "@hookform/resolvers": "^3.9.0",
     "axios": "^1.7.2",
+    "dayjs": "^1.11.11",
     "framer-motion": "^11.2.4",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "^7.52.0",
+    "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.23.1",
     "zod": "^3.23.8"
   },
