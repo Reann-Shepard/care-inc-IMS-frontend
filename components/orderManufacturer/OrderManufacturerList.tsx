@@ -94,13 +94,17 @@ export default function OrderManufacturerList() {
       </div>
       <table className="table">
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Manufacturers</th>
-            <th>Amount</th>
-            <th>Order Date</th>
-            <th>Stock In Date</th>
-            <th>Actions</th>
+          <tr className="bg-gray-200">
+            <th className="text-base text-black font-semibold">#</th>
+            <th className="text-base text-black font-semibold">
+              Manufacturers
+            </th>
+            <th className="text-base text-black font-semibold">Amount</th>
+            <th className="text-base text-black font-semibold">Order Date</th>
+            <th className="text-base text-black font-semibold">
+              Stock In Date
+            </th>
+            <th className="text-base text-black font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody>

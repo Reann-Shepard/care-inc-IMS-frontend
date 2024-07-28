@@ -65,8 +65,8 @@ const OrderManufacturerDetailTable: React.FC<
       </div>
       <table className="table">
         <thead>
-          <tr>
-            <th>
+          <tr className="bg-gray-200">
+            <th className="text-base text-black font-semibold">
               <label>
                 <input
                   type="checkbox"
@@ -79,9 +79,11 @@ const OrderManufacturerDetailTable: React.FC<
                 />
               </label>
             </th>
-            <th>Type</th>
-            <th>Color</th>
-            <th>Serial Number</th>
+            <th className="text-base text-black font-semibold">Type</th>
+            <th className="text-base text-black font-semibold">Color</th>
+            <th className="text-base text-black font-semibold">
+              Serial Number
+            </th>
           </tr>
         </thead>
         <tbody>

@@ -140,14 +140,14 @@ const OrderManufacturerAddOrder = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <table className="table">
           <thead>
-            <tr>
-              <th>
+            <tr className="bg-gray-200">
+              <th className="text-base text-black font-semibold">
                 <label>
                   <input type="checkbox" className="checkbox" />
                 </label>
               </th>
-              <th>Type</th>
-              <th>Color</th>
+              <th className="text-base text-black font-semibold">Type</th>
+              <th className="text-base text-black font-semibold">Color</th>
             </tr>
           </thead>
           <tbody>
