@@ -58,10 +58,9 @@ const OrderManufacturerDetailTable: React.FC<
     <div>
       <div className="flex m-2 gap-3">
         <span>Manufacturer: </span>
-        <OrderManufacturerTextInput
-          name={`OrderDevices[0].device.manufacturer.name`}
-          disabled={true}
-        />
+        <span className="font-bold">
+          {orderManufacturer.OrderDevices[0].device.manufacturer?.name}
+        </span>
       </div>
       <table className="table">
         <thead>
@@ -117,7 +116,7 @@ const OrderManufacturerDetailTable: React.FC<
                 <td>
                   <OrderManufacturerTextInput
                     name={`OrderDevices[${index}].device.serialNumber`}
-                    required
+                    // required
                     disabled={delivered}
                   />
                 </td>

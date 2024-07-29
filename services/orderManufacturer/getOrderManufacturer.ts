@@ -44,13 +44,15 @@ const getOrderManufacturerById = async (id: number) => {
   }
 };
 
-const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
+const checkSerialNumber = async (
+  serialNumber: string,
+): Promise<string | null> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
   if (!apiUrl) {
     console.error('API URL is not found');
-    return false;
+    return 'API URL is not found';
   }
 
   try {
@@ -60,12 +62,12 @@ const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return false;
+    return null;
   } catch (error: any) {
     if (error.response && error.response.status === 400) {
-      return true;
+      return error.response.data.message;
     }
-    throw error;
+    throw new Error('An unexpected error occurred');
   }
 };
 

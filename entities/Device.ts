@@ -22,16 +22,17 @@ export interface Device {
 export const deviceSchema = z.object({
   id: z.number(),
   serialNumber: z
-    .string({ required_error: 'Serial Number must be entered!' })
-    .toLowerCase()
+    .string({ message: 'Serial Number must be entered!' })
+    .toUpperCase()
     .trim()
+    .min(1, { message: 'Serial Number must be entered!' })
     .refine(
       async (serialNumber) => {
-        const isDuplicate = await checkSerialNumber(serialNumber);
-        return !isDuplicate;
+        const errorMessage = await checkSerialNumber(serialNumber);
+        return !errorMessage;
       },
       {
-        message: 'Serial Number already exists',
+        message: 'Serial Number already exists!!',
       },
     ),
   manufacturerId: z.number(),
