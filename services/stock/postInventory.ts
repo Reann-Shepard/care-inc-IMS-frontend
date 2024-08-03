@@ -9,6 +9,7 @@ import { getAllTypes } from '../type/getType';
 import { Manufacturer } from '@/entities/manufacturer';
 import { Color } from '@/entities/Color';
 import { Type } from '@/entities/Type';
+import { color } from 'framer-motion';
 
 /**
  * Function to post new inventory data to the server.
@@ -32,16 +33,18 @@ const postInventory = async (data: newInventoryInputData) => {
 
   // Constructing the inventory data object to be posted
   const inventoryData = {
-    serialNumber: data.serialNumber1,
+    serialNumber: data.serialNumber,
     stockInDate: new Date(data.stockDate).toISOString(),
     // Finding the ID of the color, manufacturer, and type from the list of colors, manufacturers, and types
-    color: Number(colorList.find((color) => color.name === data.color)?.id),
+    // color: Number(colorList.find((color) => color.name === data.color)?.id),
+    color: Number(data.color),
     manufacturerId: Number(
       manufacturerList.find(
         (manufacturer) => manufacturer.name === data.manufacturer,
       )?.id,
     ),
-    typeId: Number(typeList.find((type) => type.name === data.type)?.id),
+    // typeId: Number(typeList.find((type) => type.name === data.type)?.id),
+    typeId: Number(data.type),
   };
 
   console.log('Inventory data to be added: ', inventoryData); // Log the inventory data to be added
