@@ -4,6 +4,7 @@ import { Type } from '@/entities/Type';
 import { getAllTypes } from '@/services/type/getType';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import AddBtn from '../buttons/AddBtn';
 
 export default function TypeList() {
   const [data, setData] = useState<Type[]>([]);
@@ -21,17 +22,15 @@ export default function TypeList() {
 
   return (
     <>
-      <div className="overflow-x-auto mx-10 mt-5">
-        <div className="text-right">
-          <Link href="type/new-type">
-            <button className="btn btn-outline btn-success">Add Type</button>
-          </Link>
+      <div className="overflow-x-auto mt-5">
+        <div className="text-right mx-10">
+          <AddBtn pathName="type/new-type" element="Type" />
         </div>
-        <table className="table max-w-3xl mx-auto">
+        <table className="table mt-5">
           <thead>
             <tr>
               {tableHeader.map((header, index) => (
-                <th key={index} className="text-base text-center bg-gray-300">
+                <th key={index} className="text-black text-center bg-gray-200">
                   {header}
                 </th>
               ))}

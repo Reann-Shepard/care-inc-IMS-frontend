@@ -12,9 +12,9 @@ export default function ListTable({
 }: listTableProps) {
   return (
     <div>
-      <table className="table table-sm border-2">
+      <table className="table">
         <thead>
-          <tr className="text-black text-sm bg-gray-200 text-center">
+          <tr className="text-black bg-gray-200 text-center">
             {header.map((item) => (
               <th key={item}>{item}</th>
             ))}

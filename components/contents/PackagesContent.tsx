@@ -251,7 +251,7 @@ export default function PackagesContent() {
 
   return (
     <div>
-      <div className="flex m-10 justify-between">
+      <div className="flex m-5 justify-between">
         <div className="flex items-center">
           <SortByBtn
             dataColumnTitles={sortByHeader}
@@ -269,7 +269,7 @@ export default function PackagesContent() {
             fittingDateFilterValue={filteredDataFilterValue}
           />
         </div>
-        <AddBtn pathName="/packages/add_package" />
+        <AddBtn pathName="/packages/add_package" element="Package" />
       </div>
       <div className="overflow-x-auto">
         {/* <Suspense fallback={<div>Loading...</div>}> */}
