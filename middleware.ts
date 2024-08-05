@@ -91,7 +91,7 @@ async function refreshAccessToken(request: NextRequest, refreshToken: string) {
       responseWithCookie.cookies.set('access_token', newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 15 * 60 * 1000,
+        maxAge: 30 * 60 * 1000,
       });
       return responseWithCookie;
     }
