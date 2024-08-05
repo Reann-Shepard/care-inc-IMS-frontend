@@ -6,7 +6,7 @@ const PUBLIC_PATH = ['/auth/login', '/unauthorized'];
 interface JwtPayload {
   sub: string;
   name: string;
-  role: string;
+  roles: string;
 }
 
 export async function middleware(request: NextRequest) {
@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
     const isValidToken = await verifyAccessToken(token);
     if (isValidToken) {
       const role = getRoleFromToken(token);
+      console.log('Role:', role);
       if (isAuthorized(pathname, role)) {
         return NextResponse.next();
       } else {
@@ -102,7 +103,7 @@ async function refreshAccessToken(request: NextRequest, refreshToken: string) {
 function getRoleFromToken(token: string): string | null {
   try {
     const decodedToken = jwtDecode<JwtPayload>(token);
-    return decodedToken.role;
+    return decodedToken.roles;
   } catch (error) {
     return null;
   }
