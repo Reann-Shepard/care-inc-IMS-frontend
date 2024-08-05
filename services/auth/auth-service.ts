@@ -16,10 +16,17 @@ const signIn = async (username: string, password: string) => {
       { withCredentials: true },
     );
 
-    const access_token = response.headers['authorization'];
-    const refresh_token = response.headers['x-refresh-token'];
+    // const access_token = response.headers['authorization'];
+    // const refresh_token = response.headers['x-refresh-token'];
+    const { access_token, refresh_token } = response.data;
+    console.log('SignIn successful. Tokens received:', {
+      access_token,
+      refresh_token,
+    });
+
     return { access_token, refresh_token, ...response.data };
   } catch (error) {
+    console.log('Error during signIn:', error);
     throw error;
   }
 };
@@ -35,11 +42,15 @@ const usePostSignIn = () => {
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
 
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+      console.log('Access token and refresh token saved to localStorage');
+
       return true;
     } catch (err: any) {
       setError(
         err.response?.data?.message || 'An error occurred. Please try again.',
       );
+      console.log('Error during handlePostSignIn:', err);
       return false;
     }
   };
@@ -53,10 +64,15 @@ const usePostSignIn = () => {
       await axios.post(`${apiUrl}/auth/logout`, {}, { withCredentials: true });
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      delete axios.defaults.headers.common['Authorization'];
+      console.log(
+        'Logged out successfully and tokens removed from localStorage',
+      );
     } catch (err: any) {
       setError(
         err.response?.data?.message || 'An error occurred. Please try again.',
       );
+      console.log('Error during handleLogout:', err);
     }
   };
   return {

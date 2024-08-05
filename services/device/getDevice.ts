@@ -1,20 +1,8 @@
-import axios from 'axios';
+import apiClient from '../auth/axios-interceptor';
 
 const getAllDevices = async () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const token = localStorage.getItem('access_token');
-
-  if (!apiUrl) {
-    console.error('API URL is not found');
-    return [];
-  }
-
   try {
-    const response = await axios.get(`${apiUrl}/device`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get('/device');
     return response.data;
   } catch (error) {
     console.error('Failed fetching Device data: ', error);
