@@ -16,8 +16,6 @@ const signIn = async (username: string, password: string) => {
       { withCredentials: true },
     );
 
-    // const access_token = response.headers['authorization'];
-    // const refresh_token = response.headers['x-refresh-token'];
     const { access_token, refresh_token } = response.data;
     console.log('SignIn successful. Tokens received:', {
       access_token,
