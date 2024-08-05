@@ -5,6 +5,8 @@ import { postOrderManufacturer } from '@/services/orderManufacturer/addOrderManu
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PostOrderManufacturerSchema } from '@/entities/order-manufacturer';
 
 interface RowData {
   type: string;
@@ -24,9 +26,21 @@ const OrderManufacturerAddOrder = () => {
     { value: number; label: string }[]
   >([]);
   const [commonManufacturer, setCommonManufacturer] = useState<string>('');
-  const { handleSubmit, setValue, register } = useForm();
+  const {
+    handleSubmit,
+    setValue,
+    register,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(PostOrderManufacturerSchema),
+  });
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
   const router = useRouter();
+
+  watch('commonManufacturer');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,7 +78,7 @@ const OrderManufacturerAddOrder = () => {
     );
   };
 
-  const handleSelectChange = (index: number, field: string, value: string) => {
+  const handleSelectChange = (index: number, field: string, value: number) => {
     setValue(`rows[${index}].${field}`, value);
   };
 
@@ -84,6 +98,7 @@ const OrderManufacturerAddOrder = () => {
 
     try {
       await postOrderManufacturer(orderData);
+      setToastMessage('Orders saved successfully.');
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
@@ -91,7 +106,21 @@ const OrderManufacturerAddOrder = () => {
       }, 1000);
     } catch (e) {
       console.error('Error Posting data: ', e);
+      setToastMessage('Failed to save orders');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
+  };
+
+  const onFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rows.length === 0) {
+      setToastMessage('Please add at least one row before saving.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+    handleSubmit(onSubmit)();
   };
 
   return (
@@ -101,25 +130,29 @@ const OrderManufacturerAddOrder = () => {
           Select Manufacturer:{' '}
         </label>
         <select
-          value={commonManufacturer}
-          onChange={(e) => setCommonManufacturer(e.target.value)}
           className="select select-sm select-bordered w-full max-w-xs"
+          {...register('commonManufacturer', { valueAsNumber: true })}
         >
-          <option value="" disabled>
-            Select Manufacturer
-          </option>
+          <option value="">Select Manufacturer</option>
           {manufacturerOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
+        {errors.commonManufacturer && (
+          <span className="text-red-500">
+            {errors.commonManufacturer.message as string}
+          </span>
+        )}
       </div>
       <div className="flex gap-3 m-2">
         {showToast && (
-          <div className="toast toast-center">
-            <div className="alert alert-success">
-              <span>Orders saved successfully.</span>
+          <div className="toast toast-bottom toast-center fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50">
+            <div
+              className={`alert ${toastMessage.startsWith('Please') ? 'alert-error' : 'alert-success'}`}
+            >
+              {toastMessage}
             </div>
           </div>
         )}
@@ -137,7 +170,7 @@ const OrderManufacturerAddOrder = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onFormSubmit}>
         <table className="table">
           <thead>
             <tr className="bg-gray-200">
@@ -151,54 +184,90 @@ const OrderManufacturerAddOrder = () => {
             </tr>
           </thead>
           <tbody>
-            {rows.map((_, index) => (
-              <tr key={index}>
-                <td>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={selectedRows.includes(index)}
-                      onChange={() => handleCheckboxChange(index)}
-                    />
-                  </label>
-                </td>
-                <td>
-                  <select
-                    {...register(`rows[${index}].type`)}
-                    onChange={(e) => {
-                      handleSelectChange(index, 'type', e.target.value);
-                    }}
-                  >
-                    <option value="" disabled>
-                      Select Type
-                    </option>
-                    {typeOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
+            {rows.map((_, index) => {
+              const { onChange: onTypeChange, ...restType } = register(
+                `rows[${index}].type`,
+                { valueAsNumber: true },
+              );
+              const { onChange: onColorChange, ...restColor } = register(
+                `rows[${index}].color`,
+                { valueAsNumber: true },
+              );
+              return (
+                <tr key={index}>
+                  <td>
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={selectedRows.includes(index)}
+                        onChange={() => handleCheckboxChange(index)}
+                      />
+                    </label>
+                  </td>
+                  <td>
+                    <select
+                      {...restType}
+                      onChange={(e) => {
+                        onTypeChange(e);
+                        handleSelectChange(
+                          index,
+                          'type',
+                          Number(e.target.value),
+                        );
+                      }}
+                      className="select select-sm select-bordered w-full max-w-xs"
+                    >
+                      <option value="" disabled>
+                        Select Type
                       </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    {...register(`rows[${index}].color`)}
-                    onChange={(e) => {
-                      handleSelectChange(index, 'color', e.target.value);
-                    }}
-                  >
-                    <option value="" disabled>
-                      Select Color
-                    </option>
-                    {colorOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
+                      {typeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.rows &&
+                      (errors.rows as any)[index] &&
+                      (errors.rows as any)[index].type && (
+                        <span className="text-red-500">
+                          {(errors.rows as any)[index].type.message as string}
+                        </span>
+                      )}
+                  </td>
+                  <td>
+                    <select
+                      {...restColor}
+                      onChange={(e) => {
+                        onColorChange(e);
+                        handleSelectChange(
+                          index,
+                          'color',
+                          Number(e.target.value),
+                        );
+                      }}
+                      className="select select-sm select-bordered w-full max-w-xs"
+                    >
+                      <option value="" disabled>
+                        Select Color
                       </option>
-                    ))}
-                  </select>
-                </td>
-              </tr>
-            ))}
+                      {colorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.rows &&
+                      (errors.rows as any)[index] &&
+                      (errors.rows as any)[index].color && (
+                        <span className="text-red-500">
+                          {(errors.rows as any)[index].color.message as string}
+                        </span>
+                      )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div className="flex m-5 justify-start">

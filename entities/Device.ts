@@ -41,3 +41,13 @@ export const deviceSchema = z.object({
   stockInDate: z.string().nullish(),
   sellDate: z.string().nullish(),
 });
+
+// export const postDeviceSchema = z.object({
+//   id: z.number(),
+//   serialNumber: z.string(),
+//   manufacturerId: z.number(),
+//   colorId: z.number(),
+//   typeId: z.number(),
+//   stockInDate: z.string().nullish(),
+//   sellDate: z.string().nullish(),
+// });

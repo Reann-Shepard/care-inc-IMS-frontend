@@ -21,3 +21,28 @@ export const updateOrderManufacturerSchema = z.object({
     }),
   ),
 });
+
+export const PostOrderManufacturerSchema = z.object({
+  commonManufacturer: z
+    .number({
+      required_error: 'Manufacturer must be selected',
+      invalid_type_error: 'Manufacturer must be selected',
+    })
+    .nonnegative('Manufacturer must be selected'),
+  rows: z.array(
+    z.object({
+      type: z
+        .number({
+          required_error: 'Type must be selected',
+          invalid_type_error: 'Type must be a number',
+        })
+        .nonnegative('Type must be selected'),
+      color: z
+        .number({
+          required_error: 'Color must be selected',
+          invalid_type_error: 'Color must be a number',
+        })
+        .nonnegative('Color must be selected'),
+    }),
+  ),
+});
