@@ -1,4 +1,4 @@
-import { FormProvider, useForm } from 'react-hook-form';
+import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import {
@@ -36,6 +36,10 @@ const OrderManufacturerForm: React.FC<OrderManufacturerFormProps> = ({
 
   const { handleSubmit, reset } = methods;
 
+  const onError = (errors: FieldErrors<OrderManufacturer>) => {
+    console.log('form errors', errors);
+  };
+
   useEffect(() => {
     reset(initialValue, { keepDirty: false });
   }, [orderManufacturer]);
@@ -46,8 +50,8 @@ const OrderManufacturerForm: React.FC<OrderManufacturerFormProps> = ({
 
   return (
     <FormProvider {...methods}>
-      <OrderManufacturerDetailTable orderManufacturer={orderManufacturer} />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, onError)}>
+        <OrderManufacturerDetailTable orderManufacturer={orderManufacturer} />
         <div className="fixed bottom-5 left-0 right-0 flex justify-between mx-5 mt-4 ">
           <div>
             <button type="submit" className="btn btn-outline btn-info">
