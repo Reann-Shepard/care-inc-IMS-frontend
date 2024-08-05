@@ -55,14 +55,8 @@ const usePostSignIn = () => {
   };
 
   const handleLogout = async () => {
-    // const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    // if (!apiUrl) {
-    //   throw new Error('API URL is not defined in environment variables');
-    // }
-
     try {
       await apiClient.post('/auth/logout', {}, { withCredentials: true });
-      // await axios.post(`${apiUrl}/auth/logout`, {}, { withCredentials: true });
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       delete axios.defaults.headers.common['Authorization'];
