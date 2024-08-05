@@ -90,17 +90,19 @@ const getOrderManufacturerById = async (id: number) => {
   }
 };
 
-const checkSerialNumber = async (serialNumber: string): Promise<boolean> => {
+const checkSerialNumber = async (
+  serialNumber: string,
+): Promise<string | null> => {
   try {
     await apiClient.get('/device/check-serial-number', {
       params: { serialNumber },
     });
-    return false;
+    return null;
   } catch (error: any) {
     if (error.response && error.response.status === 400) {
-      return true;
+      return error.response.data.message;
     }
-    throw error;
+    throw new Error('An unexpected error occurred');
   }
 };
 
