@@ -1,11 +1,11 @@
 import React, { memo, useEffect } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import InputBox from '../../inputs/InputBox';
-import InputDropdownBox from '../../inputs/InputDropdownBox';
 import DeviceDetailsInfo from '../../inputs/package/DeviceDetailsInfo';
 
 interface DeviceDataProps {
   index: number;
+  deviceId?: number;
   listTitle: string;
   deviceType?: string;
   deviceColor?: string;
@@ -15,6 +15,7 @@ interface DeviceDataProps {
 
 export default function DeviceFormInAddPackage({
   index,
+  deviceId,
   listTitle,
   // typeData,
   deviceType,
@@ -38,7 +39,7 @@ export default function DeviceFormInAddPackage({
             <Controller
               control={control}
               name={`devices.${index}.deviceId`}
-              defaultValue={''}
+              defaultValue={deviceId ? deviceId : ''}
               render={({ field }) => (
                 <InputBox
                   label="Device ID"
@@ -58,7 +59,7 @@ export default function DeviceFormInAddPackage({
               label="Type"
               placeholder="Type"
               value={deviceType || ''}
-              index={index}
+              // index={index}
             />
           </td>
         </tr>
@@ -69,7 +70,7 @@ export default function DeviceFormInAddPackage({
               label="Color"
               placeholder="Color"
               value={deviceColor || ''}
-              index={index}
+              // index={index}
             />
           </td>
           <td className="pl-12">
@@ -78,7 +79,7 @@ export default function DeviceFormInAddPackage({
               label="Manufacturer"
               placeholder="Manufacturer"
               value={deviceManufacturer || ''}
-              index={index}
+              // index={index}
             />
           </td>
         </tr>

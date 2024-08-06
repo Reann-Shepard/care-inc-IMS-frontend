@@ -15,7 +15,7 @@ export default function DetailsContent({
   return (
     <div>
       <div className="flex justify-center">
-        <div className="mx-6 my-3 px-5 py-2  w-fit rounded-xl">
+        <div className="mx-6 mb-3 px-5 pb-2  w-fit rounded-xl">
           <p className="font-bold underline md:underline-offset-4">{title}</p>
         </div>
       </div>

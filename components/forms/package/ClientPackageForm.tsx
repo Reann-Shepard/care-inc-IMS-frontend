@@ -6,6 +6,12 @@ import { Controller, UseFormRegister, useFormContext } from 'react-hook-form';
 
 interface ClientPackageDataProps {
   clientsData: number[];
+  clientInfo?: {
+    clientId: string;
+    fittingDate: string;
+    warrantyDate: string;
+    comment?: string;
+  };
   onChangeHandler?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -13,6 +19,12 @@ interface ClientPackageDataProps {
 
 export default function ClientPackageForm({
   clientsData,
+  clientInfo = {
+    clientId: '',
+    fittingDate: '',
+    warrantyDate: '',
+    comment: '',
+  },
   onChangeHandler = () => {},
 }: ClientPackageDataProps) {
   const { control } = useFormContext();
@@ -25,7 +37,7 @@ export default function ClientPackageForm({
             <Controller
               control={control}
               name="clientId"
-              defaultValue={''}
+              defaultValue={clientInfo.clientId}
               render={({ field }) => (
                 <InputDropdownBox
                   label="Client ID"
@@ -46,7 +58,7 @@ export default function ClientPackageForm({
             <Controller
               control={control}
               name="fittingDate"
-              defaultValue={''}
+              defaultValue={clientInfo.fittingDate}
               render={({ field }) => (
                 <InputDateBox
                   label="Fitting Date"
@@ -64,7 +76,7 @@ export default function ClientPackageForm({
             <Controller
               control={control}
               name="warrantyDate"
-              defaultValue={''}
+              defaultValue={clientInfo.warrantyDate}
               render={({ field }) => (
                 <InputDateBox
                   label="Warranty Date"
@@ -84,7 +96,7 @@ export default function ClientPackageForm({
             <Controller
               control={control}
               name="comment"
-              defaultValue={''}
+              defaultValue={clientInfo.comment && clientInfo.comment}
               render={({ field }) => (
                 <InputTextareaBox
                   label="Comment"

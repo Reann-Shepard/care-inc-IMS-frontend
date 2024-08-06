@@ -1,8 +1,5 @@
 'use client';
-import Link from 'next/link';
-// import { useRouter } from 'next/router';
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-// import ListTable from '../tables/ListTable';
 import SortByBtn from '../buttons/SortByBtn';
 import FilterBtn from '../buttons/FilterBtn';
 import { Package } from '../../entities/Package';
@@ -15,8 +12,6 @@ import { getAllOrderCustomers } from '../../services/orderCustomer/getOrderCusto
 import { useRouter } from 'next/navigation';
 import AddBtn from '../buttons/AddBtn';
 import { set } from 'zod';
-import { all } from 'axios';
-import { toDate } from '@/components/contents/package/toDate';
 
 const ListTable = lazy(() => import('../tables/ListTable'));
 
@@ -283,7 +278,9 @@ export default function PackagesContent() {
           onClick={handleRowClick}
         />
         {loading && (
-          <div className="text-lg flex justify-center">Loading...</div>
+          <div className="text-lg flex justify-center my-2">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
         )}
         {!hasFilterResult && (
           <div className="text-lg flex justify-center">No result</div>

@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useCallback, use, useMemo } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import ClientPackageForm from '@/components/forms/package/ClientPackageForm';
-import DeviceFormInAddPackage from '@/components/forms/package/DeviceFormInAddPackage';
 import SubmitAndCancelDiv from '@/components/buttons/SubmitAndCancelDiv';
 import { Color } from '@/entities/Color';
 import { getAllColors } from '@/services/color/getColor';
@@ -17,10 +16,22 @@ import { getAllDevices } from '@/services/device/getDevice';
 import { postPackage } from '@/services/package/postPackage';
 import { Package } from '@/entities/Package';
 import { updateDevice } from '@/services/device/updateDevice';
-import MessageCard from '@/components/cards/package/MessageCard';
+import MessageCard from '@/components/cards/MessageCard';
 import SubAddBtn from '../buttons/package/SubAddBtn';
-import { all } from 'axios';
-import { set } from 'zod';
+import SubSubmitAndCancelBtn from '../buttons/package/SubSubmitAndCancelBtn';
+import DeviceInfoInPackageForm from './package/DeviceInfoInPackageForm';
+
+interface AddPackageFormProps {
+  deviceListLength: number;
+  subPage?: boolean;
+  currentPackage?: number;
+  handleSubCancelBtn?: () => void;
+  handleSubSubmitBtn?: () => void;
+  onSuccessfulSubmit?: (
+    hasSuccessfulCard: boolean,
+    successMessage: string,
+  ) => void;
+}
 
 interface DeviceData {
   type: string;
@@ -37,7 +48,14 @@ interface newPackageInputData {
 
 type NewPackageInput = Omit<Package, 'id'>;
 
-export default function AddPackage() {
+export default function AddPackage({
+  deviceListLength,
+  subPage,
+  currentPackage,
+  handleSubCancelBtn,
+  handleSubSubmitBtn,
+  onSuccessfulSubmit,
+}: AddPackageFormProps) {
   const form = useForm<newPackageInputData>();
   const { reset, handleSubmit } = form;
 
@@ -50,7 +68,7 @@ export default function AddPackage() {
     },
     devices: [{ type: '', deviceId: '' }],
   };
-
+  const deviceAvailabilityAmount = 4;
   const [allClients, setAllClients] = useState<Client[]>([]);
   const [allTypeItems, setAllTypeItems] = useState<Type[]>([]);
   const [allDevices, setAllDevices] = useState<Device[]>([]);
@@ -64,10 +82,20 @@ export default function AddPackage() {
     string[]
   >([]);
   const [thisDeviceType, setThisDeviceType] = useState<string[]>([]);
-  const [modifiedIndex, setModifiedIndex] = useState<number>(0);
+  const [modifyingIndex, setModifyingIndex] = useState<number>(0);
   const [hasUnavailableWarning, setHasUnavailableWarning] =
     useState<boolean>(false); // if package id or sell date is found in the device
   const [hasUnknownWarning, setHasUnknownWarning] = useState<boolean>(false); // if device id is not found
+  const [hasDuplicateWarning, setHasDuplicateWarning] =
+    useState<boolean>(false); // if device id is already in the form
+  const [duplicateDeviceId, setDuplicatedDeviceId] = useState<string[]>([]);
+  const [warningDeviceId, setWarningDeviceId] = useState<string[]>([]);
+  const [errorDeviceId, setErrorDeviceId] = useState<string[]>([]);
+  const [hasSuccessfulCard, setHasSuccessfulCard] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  document.addEventListener('click', () => {
+    setHasSuccessfulCard(false);
+  });
 
   // fetch data
   useEffect(() => {
@@ -87,89 +115,23 @@ export default function AddPackage() {
       setAllColors(colors);
     };
     fetchData();
-  }, []);
+    document.removeEventListener('click', () => {
+      setHasSuccessfulCard(false);
+    });
+  }, [hasSuccessfulCard, successMessage, onSuccessfulSubmit]);
 
   // handle modifying device index
   const handleGetIndex = useCallback((index: number) => {
-    setModifiedIndex(index);
+    setModifyingIndex(index);
   }, []);
-
-  const getEachDeviceId = useWatch({
-    control: form.control,
-    name: `devices.${modifiedIndex}.deviceId`,
-  });
-
-  // clear device data when device is not found and when device id input is empty
-  const clearDeviceData = useCallback(() => {
-    const clearInfo = (prev: string[], newValue: string) => {
-      const updated = [...prev];
-      updated[modifiedIndex] = newValue;
-      return updated;
-    };
-
-    setThisDeviceColor((prev) => clearInfo(prev, ''));
-    setThisDeviceManufacturer((prev) => clearInfo(prev, ''));
-    setThisDeviceType((prev) => clearInfo(prev, ''));
-  }, [deviceAmount, modifiedIndex]);
-
-  // get device info when device id is input
-  useEffect(() => {
-    if (!getEachDeviceId) {
-      // no device id input
-      clearDeviceData();
-      setHasUnknownWarning(false);
-      setHasUnavailableWarning(false);
-      return;
-    }
-
-    const thisDeviceInfo = allDevices.find(
-      (device) => device.id === parseInt(getEachDeviceId),
-    );
-
-    if (!thisDeviceInfo) {
-      // device id not found
-      clearDeviceData();
-      setHasUnknownWarning(true);
-      setHasUnavailableWarning(false);
-      return;
-    }
-
-    setThisDevice(thisDeviceInfo);
-
-    const newColor = allColors.find(
-      (color) => color.id === thisDeviceInfo.colorId,
-    );
-    const newManufacturer = allManufacturers.find(
-      (manufacturer) => manufacturer.id === thisDeviceInfo.manufacturerId,
-    );
-    const newDeviceType = allTypeItems.find(
-      (type) => type.id === thisDeviceInfo.typeId,
-    );
-
-    const updatedInfo = (prev: string[], newValue: string) => {
-      const updated = [...prev];
-      updated[modifiedIndex] = newValue;
-      return updated;
-    };
-
-    setThisDeviceColor((prev) => updatedInfo(prev, newColor?.name || ''));
-    setThisDeviceManufacturer((prev) =>
-      updatedInfo(prev, newManufacturer?.name || ''),
-    );
-    setThisDeviceType((prev) => updatedInfo(prev, newDeviceType?.name || ''));
-
-    setHasUnknownWarning(false);
-
-    if (thisDeviceInfo.packageId || thisDeviceInfo.sellDate) {
-      setHasUnavailableWarning(true);
-    } else {
-      setHasUnavailableWarning(false);
-    }
-  }, [getEachDeviceId, modifiedIndex]);
 
   const onSubmit = async (data: newPackageInputData) => {
     try {
-      if (!hasUnavailableWarning && !hasUnknownWarning) {
+      if (
+        !hasUnavailableWarning &&
+        !hasUnknownWarning &&
+        !hasDuplicateWarning
+      ) {
         const packageData: NewPackageInput = {
           clientId: data.clientId ? parseInt(data.clientId) : undefined,
           fittingDate: data.fittingDate
@@ -182,6 +144,8 @@ export default function AddPackage() {
         };
 
         const response = await postPackage(packageData);
+        setHasSuccessfulCard(true);
+        setSuccessMessage(`Package ID ${response.id} is successfully created.`);
 
         for (let i = 0; i < deviceAmount; i++) {
           await updateDevice(parseInt(data.devices[i].deviceId), {
@@ -194,24 +158,42 @@ export default function AddPackage() {
         setThisDeviceColor([]);
         setThisDeviceManufacturer([]);
         setThisDeviceType([]);
-        alert('Form submitted');
       }
     } catch (error) {
       console.error('Failed to submit form: ', error);
     }
   };
 
-  const handleAddDevice = useCallback(() => {
-    if (deviceAmount < 4) {
-      setDeviceAmount((getDeviceAmount) => getDeviceAmount + 1);
+  const onSubmitSubPage = async () => {
+    let currentDeviceId;
+    let ids: string[] = [];
+    try {
+      if (
+        !hasUnavailableWarning &&
+        !hasUnknownWarning &&
+        !hasDuplicateWarning
+      ) {
+        for (let i = 0; i < deviceAmount; i++) {
+          currentDeviceId = form.getValues(`devices.${i}.deviceId`);
+          await updateDevice(Number(currentDeviceId), {
+            packageId: currentPackage,
+          });
+          ids.push(currentDeviceId);
+        }
+        if (onSuccessfulSubmit) {
+          onSuccessfulSubmit(
+            true,
+            `Device ID ${ids} are successfully added to package ID ${currentPackage}.`,
+          );
+        }
+      }
+      if (handleSubSubmitBtn) {
+        handleSubSubmitBtn();
+      }
+    } catch (error) {
+      console.error('Failed to submit form: ', error);
     }
-  }, [deviceAmount]);
-
-  const handleRemoveDevice = useCallback(() => {
-    if (deviceAmount > 1) {
-      setDeviceAmount((getDeviceAmount) => getDeviceAmount - 1);
-    }
-  }, [deviceAmount]);
+  };
 
   const handleClientInfo = useCallback(() => {
     setClientInfo(true);
@@ -229,79 +211,89 @@ export default function AddPackage() {
   return (
     <FormProvider {...form}>
       <div>
-        <form className="w-fit" onSubmit={handleSubmit(onSubmit)}>
-          <p className="text-xl font-bold">Device Information</p>
-          {Array.from({ length: deviceAmount }).map((_, index) => (
-            <DeviceFormInAddPackage
-              key={index}
-              index={index}
-              listTitle={`Device ${index + 1}:`}
-              // typeData={allTypeItems.map((type) => type.name)}
-              deviceType={thisDeviceType[index] || ''}
-              deviceColor={thisDeviceColor[index] || ''}
-              deviceManufacturer={thisDeviceManufacturer[index] || ''}
-              onClickHandler={() => handleGetIndex(index)}
-            />
-          ))}
-
-          {deviceAmount === 1 ? (
-            <SubAddBtn btnName="Add Device" handleClick={handleAddDevice} />
-          ) : (
-            <React.Fragment>
-              {deviceAmount < 4 ? (
-                <div className="flex gap-2">
-                  <SubAddBtn
-                    btnName="Remove"
-                    handleClick={handleRemoveDevice}
+        <form
+          className="w-fit"
+          onSubmit={
+            subPage ? handleSubmit(onSubmitSubPage) : handleSubmit(onSubmit)
+          }
+        >
+          <DeviceInfoInPackageForm
+            form={form}
+            allDevices={allDevices}
+            allTypeItems={allTypeItems}
+            allColors={allColors}
+            allManufacturers={allManufacturers}
+            modifyingIndex={modifyingIndex}
+            handleGetIndex={handleGetIndex}
+            setThisDevice={setThisDevice}
+            thisDeviceColor={thisDeviceColor}
+            setThisDeviceColor={setThisDeviceColor}
+            thisDeviceManufacturer={thisDeviceManufacturer}
+            setThisDeviceManufacturer={setThisDeviceManufacturer}
+            thisDeviceType={thisDeviceType}
+            setThisDeviceType={setThisDeviceType}
+            deviceAmount={deviceAmount}
+            setDeviceAmount={setDeviceAmount}
+            deviceAvailabilityAmount={deviceAvailabilityAmount}
+            deviceListLength={deviceListLength}
+            setHasDuplicateWarning={setHasDuplicateWarning}
+            setDuplicatedDeviceId={setDuplicatedDeviceId}
+            setHasUnknownWarning={setHasUnknownWarning}
+            setErrorDeviceId={setErrorDeviceId}
+            setHasUnavailableWarning={setHasUnavailableWarning}
+            setWarningDeviceId={setWarningDeviceId}
+          />
+          {!subPage && (
+            <div>
+              <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
+              {clientInfo ? (
+                <div>
+                  <ClientPackageForm
+                    clientsData={allClients.map((client) => client.id)}
                   />
                   <SubAddBtn
-                    btnName="Add Device"
-                    handleClick={handleAddDevice}
+                    btnName="Remove Client Information"
+                    handleClick={handleRemoveClient}
                   />
                 </div>
               ) : (
-                <div className="flex gap-2">
-                  <SubAddBtn
-                    btnName="Remove"
-                    handleClick={handleRemoveDevice}
-                  />
-                  <SubAddBtn btnName="Add Device" disabled />
-                </div>
+                <SubAddBtn
+                  btnName="Add Client"
+                  handleClick={handleClientInfo}
+                />
               )}
-            </React.Fragment>
-          )}
-
-          <p className="text-xl font-bold mb-8 mt-10">Client Information</p>
-          {clientInfo ? (
-            <div>
-              <ClientPackageForm
-                clientsData={allClients.map((client) => client.id)}
-              />
-              <SubAddBtn
-                btnName="Remove Client Information"
-                handleClick={handleRemoveClient}
-              />
             </div>
-          ) : (
-            <SubAddBtn btnName="Add Client" handleClick={handleClientInfo} />
+          )}
+          <div className="h-10"></div>
+
+          {hasDuplicateWarning && (
+            <MessageCard
+              alertType="alert-warning"
+              message={`Warning: Device ID ${duplicateDeviceId} is already in the form.`}
+            />
+          )}
+          {hasUnavailableWarning && (
+            <MessageCard
+              alertType="alert-warning"
+              message={`Warning: Device ID ${warningDeviceId} is not available to be assigned to the package.`}
+            />
+          )}
+          {hasUnknownWarning && (
+            <MessageCard
+              alertType="alert-error"
+              message={`Error: Device ID ${errorDeviceId} is not found.`}
+            />
           )}
 
-          {hasUnavailableWarning ? (
-            <MessageCard
-              shape="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              alertType="alert-warning"
-              message={`Warning: Device is not available to be assigned to the package.`}
-            />
-          ) : null}
-          {hasUnknownWarning ? (
-            <MessageCard
-              shape="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              alertType="alert-error"
-              message={`Error: Device ID is not found.`}
-            />
-          ) : null}
+          {hasSuccessfulCard && (
+            <MessageCard alertType="alert-success" message={successMessage} />
+          )}
 
-          <SubmitAndCancelDiv cancelPath="./" />
+          {subPage && handleSubCancelBtn ? (
+            <SubSubmitAndCancelBtn handlePath={handleSubCancelBtn} />
+          ) : (
+            <SubmitAndCancelDiv cancelPath="./" />
+          )}
         </form>
       </div>
     </FormProvider>
