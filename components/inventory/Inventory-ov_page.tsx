@@ -11,6 +11,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'; // import hooks for accessing url search parameters and navigation
 import { getAllDevices } from '@/services/device/getDevice'; // import function to fetch all devices
 import { deviceToInv } from './deviceToInv'; // import function to transform device data to inventory data
+import AddBtn from '../buttons/AddBtn';
 
 export const metadata = {
   title: 'Inventory',
@@ -80,19 +81,14 @@ export default function InventoryOVPage() {
 
   return (
     <div>
-      <div className="flex justify-end mb-2 mr-10">
-        <Link
-          href="/inventory/add_inventory"
-          className="btn px-10 font-bold text-white bg-[#54CE50]"
-        >
-          +
-        </Link>
+      <div className="flex justify-end mb-5 mr-10">
+        <AddBtn pathName="/inventory/add_inventory" element="Inventory" />
       </div>
 
       <div className="flex justify-center">
-        <table className="table border-2 min-w-full">
+        <table className="table">
           <thead>
-            <tr className="text-lg text-black bg-gray-200 text-center">
+            <tr className="text-black bg-gray-200 text-center">
               {header.map((item) => (
                 <th key={item} className="py-2">
                   {item}
@@ -104,13 +100,13 @@ export default function InventoryOVPage() {
             {devices.map((device, index) => (
               <tr
                 key={index}
-                className="text-lg text-center hover:bg-gray-100 cursor-pointer"
+                className="text-center hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleRowClick(device.model)}
               >
                 <td className="py-2 text-center w-1/2">{device.model}</td>
                 <td className="py-2 text-center w-1/2">
                   <div
-                    className={`inline-block w-10 h-8 rounded-full bg-opacity-70 border-red-300 ${getBGColor(device.quantity)}`}
+                    className={`inline-block w-8 h-6 rounded-full bg-opacity-70 border-red-300 ${getBGColor(device.quantity)}`}
                   >
                     {device.quantity}
                   </div>

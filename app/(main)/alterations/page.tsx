@@ -1,16 +1,13 @@
-import AlterationsForm from '@/components/forms/AlterationsForm';
+import AlterationsContent from '@/components/contents/AlterationsContent';
 
 export const metadata = {
   title: 'Alterations',
 };
 
-export default function Alterations() {
+export default function Packages() {
   return (
     <div>
-      <div className="w-full h-10 my-5 bg-gray-200 "></div>
-      <div className="mt-20 flex justify-center">
-        <AlterationsForm />
-      </div>
+      <AlterationsContent />
     </div>
   );
 }
