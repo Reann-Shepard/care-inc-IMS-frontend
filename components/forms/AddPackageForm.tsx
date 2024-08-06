@@ -20,9 +20,10 @@ import MessageCard from '@/components/cards/MessageCard';
 import SubAddBtn from '../buttons/package/SubAddBtn';
 import SubSubmitAndCancelBtn from '../buttons/package/SubSubmitAndCancelBtn';
 import DeviceInfoInPackageForm from './package/DeviceInfoInPackageForm';
+import { setTime } from 'react-datepicker/dist/date_utils';
 
 interface AddPackageFormProps {
-  deviceListLength: number;
+  deviceListLength?: number;
   subPage?: boolean;
   currentPackage?: number;
   handleSubCancelBtn?: () => void;
@@ -58,6 +59,9 @@ export default function AddPackage({
 }: AddPackageFormProps) {
   const form = useForm<newPackageInputData>();
   const { reset, handleSubmit } = form;
+  if (deviceListLength === undefined) {
+    deviceListLength = 0;
+  }
 
   const clearData = {
     clientPackage: {
@@ -93,9 +97,6 @@ export default function AddPackage({
   const [errorDeviceId, setErrorDeviceId] = useState<string[]>([]);
   const [hasSuccessfulCard, setHasSuccessfulCard] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
-  document.addEventListener('click', () => {
-    setHasSuccessfulCard(false);
-  });
 
   // fetch data
   useEffect(() => {
@@ -115,9 +116,6 @@ export default function AddPackage({
       setAllColors(colors);
     };
     fetchData();
-    document.removeEventListener('click', () => {
-      setHasSuccessfulCard(false);
-    });
   }, [hasSuccessfulCard, successMessage, onSuccessfulSubmit]);
 
   // handle modifying device index
@@ -158,6 +156,12 @@ export default function AddPackage({
         setThisDeviceColor([]);
         setThisDeviceManufacturer([]);
         setThisDeviceType([]);
+
+        if (hasSuccessfulCard) {
+          setTimeout(() => {
+            setHasSuccessfulCard(false);
+          }, 5000);
+        }
       }
     } catch (error) {
       console.error('Failed to submit form: ', error);

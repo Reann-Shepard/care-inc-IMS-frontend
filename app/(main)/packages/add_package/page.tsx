@@ -10,7 +10,7 @@ export default function AddPackage() {
     <div>
       <FormBar title="Add New Package" />
       <div className="mt-16 flex justify-center">
-        <AddPackageForm deviceListLength={0} />
+        <AddPackageForm />
       </div>
     </div>
   );
