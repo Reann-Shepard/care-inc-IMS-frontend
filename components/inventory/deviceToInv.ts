@@ -38,7 +38,7 @@ const deviceToInv = async (devices: Device[]) => {
       type: type?.name || 'N/A',
       SN: device.serialNumber || 'N/A',
       model: manufacturer?.name || 'N/A',
-      package: device.packageId ? 'Yes' : '',
+      package: device.packageId ? '🟢' : '',
     };
   });
 

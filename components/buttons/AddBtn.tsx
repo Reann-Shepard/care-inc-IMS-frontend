@@ -2,16 +2,14 @@ import Link from 'next/link';
 
 interface AddBtnProps {
   pathName: string;
+  element: string;
 }
 
-export default function AdBtn({ pathName }: AddBtnProps) {
+export default function AddBtn({ pathName, element }: AddBtnProps) {
   return (
     <div>
-      <Link
-        href={pathName}
-        className="btn px-10 font-bold text-white bg-[#54CE50]"
-      >
-        +
+      <Link href={pathName}>
+        <button className="btn btn-outline btn-success">+ Add {element}</button>
       </Link>
     </div>
   );
