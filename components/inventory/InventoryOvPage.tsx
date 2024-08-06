@@ -124,13 +124,6 @@
 //   );
 // }
 
-/**
- * Inventory Overview Page Component.
- *
- * This component fetches and displays categorized inventory data based on device models.
- * It allows navigation to detailed inventory lists and provides a link to add new inventory items.
- */
-
 'use client';
 import Link from 'next/link'; // import Link from 'next/link' for client-side navigation
 import React, { useEffect, useState, useCallback } from 'react';
@@ -178,16 +171,18 @@ export default function InventoryOVPage() {
     fetchDevices(); // Fetching devices when the component mounts
   }, []);
 
+  // navigate to the detailed inventory list page for the selected model
   useEffect(() => {
     if (selectedModel) {
-      router.push(`/inventory_list?model=${selectedModel}`); // navigate to the detailed inventory list page for the selected model
+      router.push(`/inventory_list?model=${selectedModel}`);
     }
   }, [selectedModel, router]);
 
-  const header = ['Model', 'Amount']; // define the table header
+  // define the table header
+  const header = ['Model', 'Amount'];
 
+  // function to determine the background color based on the quantity
   const getBGColor = useCallback((quantity: number) => {
-    // function to determine the background color based on the quantity
     if (quantity <= 2) {
       return 'bg-red-300';
     } else if (quantity <= 5) {
@@ -197,17 +192,19 @@ export default function InventoryOVPage() {
     }
   }, []);
 
+  // navigate to the detailed inventory list page for the selected model
   const handleRowClick = useCallback(
     (model: string) => {
-      router.push(`/inventory_list?model=${model}`); // navigate to the detailed inventory list page for the selected model
+      router.push(`/inventory_list?model=${model}`);
     },
     [router],
   );
 
+  // calculate the total devices amount
   const totalDevicesAmount = devices.reduce(
     (acc, device) => acc + device.quantity,
     0,
-  ); // calculate the total devices amount
+  );
 
   return (
     <div>

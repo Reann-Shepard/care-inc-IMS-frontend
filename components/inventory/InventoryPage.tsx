@@ -99,7 +99,7 @@ export default function Inventory() {
       : ['Color', 'Device Type', 'Serial Number', 'Package']; // Table headers for selected model
 
   // Filter devices based on package status
-  const ASS = devices
+  const asg = devices
     .filter((device) => device.package === 'Yes')
     .map((device) =>
       selectedModel === 'All'
@@ -107,7 +107,7 @@ export default function Inventory() {
         : [device.color, device.type, device.SN, device.package],
     );
 
-  const UASS = devices
+  const uasg = devices
     .filter((device) => device.package === '')
     .map((device) =>
       selectedModel === 'All'
@@ -133,16 +133,15 @@ export default function Inventory() {
               <option value="" disabled selected>
                 Select
               </option>
-              <option value="model">Model</option>
+              {/* <option value="model">Model</option> */}
               <option value="color">Color</option>
               <option value="type">Device Type</option>
-              <option value="SN">Serial Number</option>
             </select>
           </div>
           <div>
             <label htmlFor="filter" className="mr-2">
               {' '}
-              Filter:{' '}
+              Filter by Model:{' '}
             </label>
             <select
               id="filter"
@@ -175,7 +174,7 @@ export default function Inventory() {
       </div>
 
       <div>
-        <Table header={headers} data={[...UASS, ...ASS]} />
+        <Table header={headers} data={[...uasg, ...asg]} />
       </div>
     </>
   );
