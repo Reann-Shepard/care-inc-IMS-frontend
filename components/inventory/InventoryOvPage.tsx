@@ -220,13 +220,13 @@ export default function InventoryOVPage() {
         </Link>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mx-24">
         <div className="w-2/3">
           <table className="table border-2 min-w-full">
             <thead>
               <tr className="text-lg text-black bg-gray-200">
                 {header.map((item) => (
-                  <th key={item} className="py-2 px-48 w-1/2">
+                  <th key={item} className="py-2 px-36 w-1/2">
                     {item}
                   </th>
                 ))}
@@ -239,8 +239,8 @@ export default function InventoryOVPage() {
                   className="text-lg hover:bg-gray-100 cursor-pointer"
                   onClick={() => handleRowClick(device.model)}
                 >
-                  <td className="py-2 px-48 w-1/2">{device.model}</td>
-                  <td className="py-2 px-48 w-1/2">
+                  <td className="py-2 px-36 w-1/2">{device.model}</td>
+                  <td className="py-2 px-40 w-1/2">
                     <div
                       className={`inline-block w-10 h-8 rounded-full bg-opacity-70 border-red-300 text-center ${getBGColor(device.quantity)}`}
                     >
@@ -252,10 +252,13 @@ export default function InventoryOVPage() {
             </tbody>
           </table>
         </div>
-        <div className="w-1/3 flex justify-center">
-          <div className="p-24 rounded-lg border-2 text-center">
-            <div className="text-xl mt-0 font-bold">Total Devices</div>
-            <div className="text-3xl mt-2">{totalDevicesAmount}</div>
+
+        <div className="w-1/3 flex justify-center ">
+          <div className="rounded-lg border-none text-center px-20 ">
+            <div className="bg-gray-100 px-6 p-3">
+              <div className="text-xl font-bold">Total Devices</div>
+            </div>
+            <div className="text-8xl font-bold mt-12">{totalDevicesAmount}</div>
           </div>
         </div>
       </div>
