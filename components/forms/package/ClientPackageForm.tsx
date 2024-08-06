@@ -1,8 +1,8 @@
-import React, { memo } from 'react';
+import React, { useState } from 'react';
 import InputDropdownBox from '../../inputs/InputDropdownBox';
 import InputDateBox from '../../inputs/InputDateBox';
 import InputTextareaBox from '../../inputs/InputTextareaBox';
-import { Controller, UseFormRegister, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 interface ClientPackageDataProps {
   clientsData: number[];
@@ -21,7 +21,7 @@ export default function ClientPackageForm({
   clientsData,
   clientInfo = {
     clientId: '',
-    fittingDate: '',
+    fittingDate: new Date().toISOString().split('T')[0],
     warrantyDate: '',
     comment: '',
   },
@@ -29,87 +29,95 @@ export default function ClientPackageForm({
 }: ClientPackageDataProps) {
   const { control } = useFormContext();
 
+  if (clientInfo.fittingDate) {
+    const futureDate = new Date(clientInfo.fittingDate);
+    futureDate.setFullYear(futureDate.getFullYear() + 3);
+    clientInfo.warrantyDate = futureDate.toISOString().split('T')[0];
+  }
+
   return (
-    <table>
-      <tbody>
-        <tr>
-          <td>
-            <Controller
-              control={control}
-              name="clientId"
-              defaultValue={clientInfo.clientId}
-              render={({ field }) => (
-                <InputDropdownBox
-                  label="Client ID"
-                  placeholder="Select client ID"
-                  name="clientId"
-                  data={clientsData}
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                  isRequired
-                />
-              )}
-              rules={{ required: true }}
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <Controller
-              control={control}
-              name="fittingDate"
-              defaultValue={clientInfo.fittingDate}
-              render={({ field }) => (
-                <InputDateBox
-                  label="Fitting Date"
-                  placeholder="Select date"
-                  name="fittingDate"
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                  isRequired
-                />
-              )}
-              rules={{ required: true }}
-            />
-          </td>
-          <td className="pl-12">
-            <Controller
-              control={control}
-              name="warrantyDate"
-              defaultValue={clientInfo.warrantyDate}
-              render={({ field }) => (
-                <InputDateBox
-                  label="Warranty Date"
-                  placeholder="Select date"
-                  name="warrantyDate"
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                  isRequired
-                />
-              )}
-              rules={{ required: true }}
-            />
-          </td>
-        </tr>
-        <tr>
-          <td colSpan={2}>
-            <Controller
-              control={control}
-              name="comment"
-              defaultValue={clientInfo.comment && clientInfo.comment}
-              render={({ field }) => (
-                <InputTextareaBox
-                  label="Comment"
-                  placeholder="Enter comment"
-                  name="comment"
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                />
-              )}
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <Controller
+                control={control}
+                name="clientId"
+                defaultValue={clientInfo.clientId}
+                render={({ field }) => (
+                  <InputDropdownBox
+                    label="Client ID"
+                    placeholder="Select client ID"
+                    name="clientId"
+                    data={clientsData}
+                    value={field.value}
+                    onChangeHandler={field.onChange}
+                    isRequired
+                  />
+                )}
+                rules={{ required: true }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Controller
+                control={control}
+                name="fittingDate"
+                defaultValue={clientInfo.fittingDate}
+                render={({ field }) => (
+                  <InputDateBox
+                    label="Fitting Date"
+                    placeholder="Select date"
+                    name="fittingDate"
+                    value={field.value}
+                    onChangeHandler={field.onChange}
+                    isRequired
+                  />
+                )}
+                rules={{ required: true }}
+              />
+            </td>
+            <td className="pl-12">
+              <Controller
+                control={control}
+                name="warrantyDate"
+                defaultValue={clientInfo.warrantyDate}
+                render={({ field }) => (
+                  <InputDateBox
+                    label="Warranty Date"
+                    placeholder="Select date"
+                    name="warrantyDate"
+                    value={field.value}
+                    onChangeHandler={field.onChange}
+                    isRequired
+                  />
+                )}
+                rules={{ required: true }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              <Controller
+                control={control}
+                name="comment"
+                defaultValue={clientInfo.comment && clientInfo.comment}
+                render={({ field }) => (
+                  <InputTextareaBox
+                    label="Comment"
+                    placeholder="Enter comment"
+                    name="comment"
+                    value={field.value}
+                    onChangeHandler={field.onChange}
+                  />
+                )}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }
