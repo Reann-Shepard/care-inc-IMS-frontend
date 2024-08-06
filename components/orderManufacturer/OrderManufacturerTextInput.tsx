@@ -19,33 +19,31 @@ const OrderManufacturerTextInput: React.FC<OrderManufacturerTextInputProps> = ({
     control,
     formState: { errors },
   } = useFormContext();
-  const { field } = useController({
+  const { field, fieldState } = useController({
     name,
     control,
   });
 
-  console.log('Field error:', name, errors[name]);
+  const error = fieldState.error;
 
   return (
-    <div>
+    <div className="relative">
       <input
         {...field}
         {...rest}
         name={name}
-        value={field.value}
+        value={field.value || ''}
         type={type}
         onChange={field.onChange}
         onBlur={field.onBlur}
         ref={field.ref}
         disabled={disabled}
-        style={{ borderColor: errors[name] ? 'red' : 'black' }}
+        style={{ borderColor: error ? 'red' : 'black' }}
+        className="input-sm m-2"
       />
-      {errors[name] && (
-        <span
-          className="text-red-500 font-medium"
-          style={{ zIndex: 10, position: 'relative' }}
-        >
-          {errors[name]?.message as string}
+      {error && (
+        <span className="text-red-500 font-medium absolute -bottom-3 left-0">
+          {error.message}
         </span>
       )}
     </div>

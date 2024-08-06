@@ -58,15 +58,14 @@ const OrderManufacturerDetailTable: React.FC<
     <div>
       <div className="flex m-2 gap-3">
         <span>Manufacturer: </span>
-        <OrderManufacturerTextInput
-          name={`OrderDevices[0].device.manufacturer.name`}
-          disabled={true}
-        />
+        <span className="font-bold">
+          {orderManufacturer.OrderDevices[0].device.manufacturer?.name}
+        </span>
       </div>
       <table className="table">
         <thead>
-          <tr>
-            <th>
+          <tr className="bg-gray-200">
+            <th className="text-base text-black font-semibold">
               <label>
                 <input
                   type="checkbox"
@@ -79,9 +78,11 @@ const OrderManufacturerDetailTable: React.FC<
                 />
               </label>
             </th>
-            <th>Type</th>
-            <th>Color</th>
-            <th>Serial Number</th>
+            <th className="text-base text-black font-semibold">Type</th>
+            <th className="text-base text-black font-semibold">Color</th>
+            <th className="text-base text-black font-semibold">
+              Serial Number
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -115,7 +116,7 @@ const OrderManufacturerDetailTable: React.FC<
                 <td>
                   <OrderManufacturerTextInput
                     name={`OrderDevices[${index}].device.serialNumber`}
-                    required
+                    // required
                     disabled={delivered}
                   />
                 </td>

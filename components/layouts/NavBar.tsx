@@ -12,7 +12,9 @@ export default function NavBar() {
     'Packages',
     'Alterations',
     'Order-Manufacturer',
+    'Manufacturer',
     'Color',
+    'Type',
   ];
   const [current, setCurrent] = useState(path.replace('/', ''));
 
