@@ -2,7 +2,7 @@ export const metadata = {
   title: 'Inventory',
 };
 
-import Inventory from '@/components/inventory/Inventory-ov_page'; // Importing the Inventory component
+import Inventory from '@/components/inventory/InventoryOvPage'; // Importing the Inventory component
 import { Suspense } from 'react'; // Importing the Suspense component from React for lazy loading
 
 // Inventory Overview Page Component that renders the Inventory component inside a Suspense component

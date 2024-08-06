@@ -1,5 +1,5 @@
 import React from 'react';
-import Inventory from '@/components/inventory/inventory_page';
+import Inventory from '@/components/inventory/InventoryPage';
 import { Suspense } from 'react';
 
 // Inventory Page Component that renders the Inventory component inside a Suspense component
