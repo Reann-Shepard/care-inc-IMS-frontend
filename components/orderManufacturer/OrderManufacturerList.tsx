@@ -101,7 +101,7 @@ export default function OrderManufacturerList() {
   };
 
   return (
-    <div className="overflow-x-auto mt-5">
+    <div className="overflow-x-auto mt-5 mx-5">
       <div className="flex justify-between mx-8 mb-5">
         <div className="relative">
           <span>Filter By: </span>

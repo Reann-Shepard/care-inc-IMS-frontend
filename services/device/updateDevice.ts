@@ -13,32 +13,6 @@ const updateDevice = async (id: number, data: Partial<Device>) => {
   }
 };
 
-// const removeDevicePackageId = async (id: number) => {
-//   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-//   const token = localStorage.getItem('access_token');
-
-//   if (!apiUrl) {
-//     console.error('API URL is not found');
-//     return [];
-//   }
-
-//   try {
-//     const response = await axios.patch(
-//       `${apiUrl}/device/${id}/remove-package-id-null`,
-//       {},
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       },
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Failed updating Device data: ', error);
-//     return [];
-//   }
-// };
-
 const removeDevicePackageId = async (id: number) => {
   try {
     const response = await apiClient.patch(
