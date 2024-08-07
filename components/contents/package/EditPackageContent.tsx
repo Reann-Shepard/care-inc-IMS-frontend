@@ -30,7 +30,7 @@ export default function EditPackageContent({
     'Comment',
   ];
   const deviceTitle = [
-    'Device ID',
+    // 'Device ID',
     'Serial Number',
     'Manufacturer',
     'Color',
