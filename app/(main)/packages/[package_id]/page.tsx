@@ -30,10 +30,16 @@ export default function PackageId() {
   const router = useRouter();
   const clearClientInfoData = {
     clientId: '',
-    fittingDate: '',
+    fittingDate: new Date().toISOString().split('T')[0],
     warrantyDate: '',
     comment: '',
   };
+  if (clearClientInfoData.fittingDate) {
+    const futureDate = new Date(clearClientInfoData.fittingDate);
+    futureDate.setFullYear(futureDate.getFullYear() + 3);
+    clearClientInfoData.warrantyDate = futureDate.toISOString().split('T')[0];
+  }
+
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('package_id') ?? '';
   const [devices, setDevices] = useState<Device[]>([]);
