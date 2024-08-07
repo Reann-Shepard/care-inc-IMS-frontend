@@ -13,9 +13,6 @@ import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { deviceToInv } from '@/services/device/deviceToInv';
-import SortByBtn from '@/components/buttons/SortByBtn';
-import FilterBtn from '@/components/buttons/FilterBtn';
-import { set } from 'zod';
 
 // Interface for inventory data
 export interface InvData {
@@ -43,8 +40,7 @@ export default function Inventory() {
         const data = await getAllDevices();
         const transformedData = await deviceToInv(data); // Transform device data to inventory format
         setDataSet(transformedData); // Set all devices
-        setDevices(transformedData); // Set filtered devices
-
+        setDevices([...transformedData]); // Set filtered devices
         setSelectedModel(modelParam || 'All'); // Set selected model from url search params
       } catch (error) {
         console.error('Error fetching devices', error); // Log error if fetching devices fails
@@ -100,7 +96,7 @@ export default function Inventory() {
 
   // Filter devices based on package status
   const asg = devices
-    .filter((device) => device.package === 'Yes')
+    .filter((device) => device.package === '🟢')
     .map((device) =>
       selectedModel === 'All'
         ? [device.model, device.color, device.type, device.SN, device.package]
