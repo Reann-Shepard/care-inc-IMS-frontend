@@ -116,14 +116,14 @@ export default function Inventory() {
       <div className="flex justify-between items-center mb-5 mx-5">
         <div className="flex space-x-4">
           <div>
-            <label htmlFor="sort" className="mr-2">
+            <label htmlFor="sort" className="mr-2 text-xs">
               {' '}
               Sort by:{' '}
             </label>
             <select
               id="sort"
               onChange={(e) => setSort(e.target.value as keyof InvData)}
-              className="border rounded-lg p-1"
+              className="border rounded-lg p-1 text-xs font-semibold"
               value={sort}
             >
               <option value="" disabled selected>
@@ -135,14 +135,14 @@ export default function Inventory() {
             </select>
           </div>
           <div>
-            <label htmlFor="filter" className="mr-2">
+            <label htmlFor="filter" className="mr-2 text-xs">
               {' '}
               Filter by Model:{' '}
             </label>
             <select
               id="filter"
               onChange={(e) => handleModelChange(e.target.value)}
-              className="border rounded-lg p-1"
+              className="border rounded-lg p-1 text-xs font-semibold"
               value={selectedModel}
             >
               <option value="All">All</option>
