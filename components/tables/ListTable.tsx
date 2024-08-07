@@ -104,7 +104,7 @@ export default function ListTable({
     <div>
       <table className="table table-sm border-2 w-full">
         <thead>
-          <tr className="text-black text-sm bg-gray-200 text-center">
+          <tr className="text-black bg-gray-200 text-center">
             {header.map((item) => (
               <th key={item} className="p-2">
                 {item}

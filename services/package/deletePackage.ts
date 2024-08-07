@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const getAllRepairs = async () => {
+const deletePackage = async (id: number) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem('access_token');
 
@@ -10,17 +10,16 @@ const getAllRepairs = async () => {
   }
 
   try {
-    const response = await axios.get(`${apiUrl}/repair`, {
+    const response = await axios.delete(`${apiUrl}/package/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Repair data: ', response.data);
     return response.data;
   } catch (error) {
-    console.error('Failed fetching Type data: ', error);
+    console.error('Failed fetching Package data: ', error);
     return [];
   }
 };
 
-export { getAllRepairs };
+export { deletePackage };

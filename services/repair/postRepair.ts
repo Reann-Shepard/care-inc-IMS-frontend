@@ -7,6 +7,8 @@ import { Device } from '@/entities/Device';
 
 const postRepair = async (data: alterationInputData) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem('access_token');
+
   const manufacturerList: Manufacturer[] = await getAllManufacturers();
   const deviceList: Device[] = await getAllDevices();
 
@@ -34,7 +36,11 @@ const postRepair = async (data: alterationInputData) => {
   };
 
   try {
-    const response = await axios.post(`${apiUrl}/repair`, repairData);
+    const response = await axios.post(`${apiUrl}/repair`, repairData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log('New repair added: ', response.data);
   } catch (error) {
     console.error('Error adding repair: ', error);
