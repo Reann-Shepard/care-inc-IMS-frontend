@@ -23,7 +23,8 @@ import { getAllTypes } from '@/services/type/getType';
 import { postInventory } from '@/services/stock/postInventory';
 import { getAllDevices } from '@/services/device/getDevice';
 import { deviceToInv } from '@/services/device/deviceToInv';
-import MessageCard from '@/components/cards/package/MessageCard'; // Import MessageCard component
+import MessageCard from '../cards/MessageCard';
+// import MessageCard from '@/components/cards/package/MessageCard';
 
 interface newInventoryInputData {
   stockDate: string;
@@ -209,7 +210,7 @@ export default function AddInventory() {
               />
               {errors.serialNumber && (
                 <MessageCard
-                  shape="M12 8v4m-2-2h4"
+                  // shape="M12 8v4m-2-2h4"
                   alertType="bg-red-400"
                   message={errors.serialNumber}
                 />
@@ -237,7 +238,7 @@ export default function AddInventory() {
           {successMessage && (
             <div className="mb-4">
               <MessageCard
-                shape="M12 8v4m-2-2h4"
+                // shape="M12 8v4m-2-2h4"
                 alertType="bg-green-400"
                 message={successMessage}
               />
@@ -246,7 +247,7 @@ export default function AddInventory() {
 
           {errors.general && (
             <MessageCard
-              shape="M12 8v4m-2-2h4"
+              // shape="M12 8v4m-2-2h4"
               alertType="bg-red-400"
               message={errors.general}
             />
