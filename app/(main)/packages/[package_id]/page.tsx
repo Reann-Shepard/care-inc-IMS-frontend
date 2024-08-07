@@ -189,13 +189,9 @@ export default function PackageId() {
   }, [hasAlertCard, alertMessage, messageAlertType]);
 
   const handleDeviceRemove = async (index: number) => {
-    if (
-      deviceData[index][1] !== null &&
-      deviceData.length > 1 &&
-      deviceData[index][1]
-    ) {
+    if (deviceData.length > 1 && deviceData[index][1]) {
       const response = await removeDevicePackageId(
-        deviceData[index][1].toString(),
+        deviceData[index][1]!.toString(),
       );
       setDeviceListUpdate(true);
       if (response.id) {
