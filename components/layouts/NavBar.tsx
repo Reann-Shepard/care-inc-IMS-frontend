@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function NavBar() {
@@ -16,10 +15,16 @@ export default function NavBar() {
     'Color',
     'Type',
   ];
-  const [current, setCurrent] = useState(path.replace('/', ''));
+
+  const getCurrentPath = () => {
+    const basePath = path.split('/')[1];
+    return basePath.toLowerCase();
+  };
+
+  const [current, setCurrent] = useState(getCurrentPath());
 
   useEffect(() => {
-    setCurrent(path.replace('/', ''));
+    setCurrent(getCurrentPath());
   }, [path]);
 
   return (

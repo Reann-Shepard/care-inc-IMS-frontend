@@ -22,11 +22,11 @@ export default function ColorList() {
 
   return (
     <>
-      <div className="overflow-x-auto mt-5">
-        <div className="text-right mx-10">
+      <div className="overflow-x-auto mt-5 mx-5">
+        <div className="text-right">
           <AddBtn pathName="color/new-color" element="Color" />
         </div>
-        <table className="table mt-5">
+        <table className="table table-sm border-2 mt-5">
           <thead>
             <tr>
               {tableHeader.map((header, index) => (
