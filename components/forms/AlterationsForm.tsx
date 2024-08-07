@@ -14,11 +14,14 @@ import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer
 import { postRepair } from '@/services/repair/postRepair';
 import { getAllDevices } from '@/services/device/getDevice';
 import { Device } from '@/entities/Device';
-import { set } from 'zod';
+import { Client } from '@/entities/Client';
+import { getAllClients } from '@/services/client/getClient';
+import { Package } from '@/entities/Package';
+import { getAllPackages } from '@/services/package/getPackage';
 
 export interface alterationInputData {
   date: string;
-  customerID: string;
+  customerID: string | number;
   manufacturer: string;
   serialNumber: string[];
   type: string[];
@@ -39,11 +42,13 @@ export default function AlterationsForm() {
 
   const [typeList, setTypeList] = useState<Type[]>([]);
   const [shipIDs, setShipIDs] = useState<string[]>([]);
-  const [manufacturerList, setManufacturerList] = useState<string[]>([]);
+  const [manufacturerList, setManufacturerList] = useState<Manufacturer[]>([]);
   const [alert, setAlert] = useState('');
   const [serialCount, setSerialCount] = useState<number[]>([1]);
   const [errorMsg, setErrorMsg] = useState('');
   const [devices, setDevices] = useState<Device[]>([]);
+  const [clientList, setClientList] = useState<Client[]>([]);
+  const [packageList, setPackageList] = useState<Package[]>([]);
 
   useEffect(() => {
     getAllTypes().then((data) => {
@@ -54,12 +59,16 @@ export default function AlterationsForm() {
       setShipIDs(data.map((repair: Repair) => repair.shipId));
     });
     getAllManufacturers().then((data) => {
-      setManufacturerList(
-        data.map((manufacturer: Manufacturer) => manufacturer.name),
-      );
+      setManufacturerList(data);
     });
     getAllDevices().then((data) => {
       setDevices(data);
+    });
+    getAllClients().then((data) => {
+      setClientList(data);
+    });
+    getAllPackages().then((data) => {
+      setPackageList(data);
     });
   }, [inputData.shippingNumber]);
 
@@ -92,7 +101,25 @@ export default function AlterationsForm() {
           let temp = [...inputData.type];
           temp[index] =
             typeList.find((type) => type.id === device.typeId)?.name ?? '';
-          setInputData({ ...inputData, type: temp });
+          let tempM =
+            manufacturerList.find((m) => m.id === device.manufacturerId)
+              ?.name ?? '';
+          if (device.packageId) {
+            let tempC =
+              clientList.find(
+                (c) =>
+                  c.id ===
+                  packageList.find((p) => p.id === device.packageId)?.clientId,
+              )?.id ?? '';
+            setInputData({
+              ...inputData,
+              type: temp,
+              manufacturer: tempM,
+              customerID: tempC,
+            });
+          } else {
+            setInputData({ ...inputData, type: temp, manufacturer: tempM });
+          }
         }
       });
     });
@@ -171,7 +198,9 @@ export default function AlterationsForm() {
                   placeholder="Enter customer ID"
                   isRequired
                   name="customerID"
-                  value={inputData.customerID}
+                  value={
+                    inputData.customerID ? inputData.customerID.toString() : ''
+                  }
                   onChangeHandler={(e) => handleInput(e)}
                 />
               </td>
@@ -184,7 +213,9 @@ export default function AlterationsForm() {
                   isRequired
                   name="manufacturer"
                   value={inputData.manufacturer}
-                  data={manufacturerList}
+                  data={manufacturerList.map(
+                    (manufacturer: Manufacturer) => manufacturer.name,
+                  )}
                   onChangeHandler={(e) => handleInput(e)}
                 />
               </td>
