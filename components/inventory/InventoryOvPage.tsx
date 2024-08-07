@@ -48,7 +48,7 @@ export default function InventoryOVPage() {
   // navigate to the detailed inventory list page for the selected model
   useEffect(() => {
     if (selectedModel) {
-      router.push(`/inventory_list?model=${selectedModel}`);
+      router.push(`/inventory/inventory_list?model=${selectedModel}`);
     }
   }, [selectedModel, router]);
 
@@ -69,7 +69,7 @@ export default function InventoryOVPage() {
   // navigate to the detailed inventory list page for the selected model
   const handleRowClick = useCallback(
     (model: string) => {
-      router.push(`/inventory_list?model=${model}`);
+      router.push(`/inventory/inventory_list?model=${model}`);
     },
     [router],
   );
