@@ -1,23 +1,39 @@
 'use client';
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-
 import { getAllDevices } from '@/services/device/getDevice';
 import { Device } from '@/entities/Device';
 import { getThisColorName } from '@/services/color/getColor';
 import { getThisTypeName } from '@/services/type/getType';
 import { getThisManufacturerName } from '@/services/overview/getOverviewManufacturer';
 import BackBtn from '@/components/buttons/BackBtn';
-import DetailsContent from '@/components/contents/package/DetailsContent';
-import AddClientInfoForm from '@/components/forms/package/AddClientInfoForm';
+import AddClientInfoForm, {
+  newClientInputData,
+} from '@/components/forms/package/AddClientInfoForm';
 import { getPackageById } from '@/services/package/getPackage';
-import { set } from 'zod';
 import { Package } from '@/entities/Package';
 import FormBar from '@/components/forms/FormBar';
 import SubAddBtn from '@/components/buttons/package/SubAddBtn';
 import { toDate } from '@/components/contents/package/toDate';
+import AddPackageForm from '@/components/forms/AddPackageForm';
+import { removeDevicePackageId } from '@/services/device/updateDevice';
+import { removePackageClientInfo } from '@/services/package/updatePackage';
+import ConfirmCard from '@/components/cards/ConfirmCard';
+import EditPackageDeviceContent from '@/components/contents/package/EditPackageDeviceContent';
+import EditPackageContent from '@/components/contents/package/EditPackageContent';
+import { deletePackage } from '@/services/package/deletePackage';
+import { useRouter } from 'next/navigation';
+import { set } from 'zod';
+import MessageCard from '@/components/cards/MessageCard';
 
 export default function PackageId() {
+  const router = useRouter();
+  const clearClientInfoData = {
+    clientId: '',
+    fittingDate: '',
+    warrantyDate: '',
+    comment: '',
+  };
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('package_id') ?? '';
   const [devices, setDevices] = useState<Device[]>([]);
@@ -30,44 +46,61 @@ export default function PackageId() {
   >([]);
   const [currentLocation, setCurrentLocation] = useState<string>('');
   const [hasClient, setHasClient] = useState<boolean>(false);
-  const [addClientSection, setAddClientSection] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isEditSection, setIsEditSection] = useState<boolean>(false);
+  const [isAddClientSection, setIsAddClientSection] = useState<boolean>(false);
+  const [isUpdateDeviceSection, setIsUpdateDeviceSection] =
+    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [clientInfoData, setClientInfoData] =
+    useState<newClientInputData>(clearClientInfoData);
+  const [editDeviceData, setEditDeviceData] = useState<
+    (string | number | Date | null)[][]
+  >([]);
+  const [deviceListUpdate, setDeviceListUpdate] = useState<boolean>(false);
+  const [addDeviceSection, setAddDeviceSection] = useState<boolean>(false);
+  const [showConfirmCard, setShowConfirmCard] = useState<boolean>(false);
+  const [confirmCardContent, setConfirmCardContent] = useState<string>('');
+  const [cardFor, setCardFor] = useState<string>('');
+  const [hasAlertCard, setHasAlertCard] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [messageAlertType, setMessageAlertType] = useState<string>('');
 
-  const deviceTitle = [
-    'Device ID',
-    'Serial Number',
-    'Manufacturer',
-    'Color',
-    'Type',
-    'Stock in Date',
-    'Sell Date',
-    'Package ID',
-  ];
+  const addDeviceFormBarTitle = `Add Device into Package ID ${selectedId}`;
+  const updateClientFormBarTitle = `Update Client Information - Package ID ${selectedId}`;
 
-  const packageTitle = [
-    'Package ID',
-    'Client ID',
-    'Fitting Date',
-    'Warranty Date',
-    'Comment',
-  ];
+  const alertCardData = (
+    hasAlertCard: boolean,
+    alertMessage: string,
+    messageAlertType: string,
+  ) => {
+    setHasAlertCard(hasAlertCard);
+    setAlertMessage(alertMessage);
+    setMessageAlertType(messageAlertType);
+    if (hasAlertCard) {
+      setTimeout(() => {
+        setHasAlertCard(false);
+      }, 3000);
+    }
+  };
 
+  const editDeviceTitle = ['Device ID', 'Manufacturer', 'Color', 'Type'];
+
+  // fetch data
   useEffect(() => {
     const fetchDevices = async () => {
       getAllDevices().then((data) => {
         setDevices(data);
       });
-
       getPackageById(parseInt(selectedId)).then((data) => {
         setPackages([data]);
       });
-
-      setLoading(false);
+      setIsLoading(false);
     };
     fetchDevices();
-  }, []);
+  }, [isAddClientSection, deviceListUpdate]);
 
   useEffect(() => {
+    setDeviceListUpdate(false);
     const current = `Package ID: ${selectedId}`;
     setCurrentLocation(current);
     const fetchData = async () => {
@@ -83,8 +116,6 @@ export default function PackageId() {
           : 'N/A',
         thisPackage.comments,
       ]) as (string | number | Date | null)[][];
-
-      console.log('packageDataResult: ', packageDataResult);
       setPackageData(packageDataResult);
 
       // devices
@@ -104,25 +135,132 @@ export default function PackageId() {
       const resolvedData = await Promise.all(data);
       setDeviceData(resolvedData);
     };
-    fetchData().then((data) => {
-      console.log(data);
-    });
-  }, [devices, selectedId]);
+    fetchData();
+  }, [packages, devices, deviceListUpdate, selectedId]);
 
   // check if the package has a client
   useEffect(() => {
     if (packages[0] !== undefined) {
       if (packages[0].clientId === undefined || packages[0].clientId === null) {
         setHasClient(false);
+        setClientInfoData(clearClientInfoData);
       } else {
         setHasClient(true);
-        setAddClientSection(false);
+        // for auto filling the client info form when editing the package
+        setClientInfoData({
+          clientId: packages[0].clientId.toString(),
+          fittingDate: packages[0].fittingDate
+            ? toDate(packages[0].fittingDate.toString())
+            : '',
+          warrantyDate: packages[0].warrantyExpiration
+            ? toDate(packages[0].warrantyExpiration.toString())
+            : '',
+          comment: packages[0].comments ?? '',
+        });
       }
     }
-  }, [packages]);
+    const editDeviceDataTemp = deviceData.map((device) => [
+      device[0],
+      device[2],
+      device[3],
+      device[4],
+    ]);
+    setEditDeviceData(editDeviceDataTemp);
+  }, [packages, deviceData, hasClient]);
 
-  const handleClick = () => {
-    setAddClientSection(true);
+  const handleCancelBtn = () => {
+    setIsEditSection(false);
+    setIsAddClientSection(false);
+    setIsUpdateDeviceSection(false);
+    setAddDeviceSection(false);
+  };
+
+  useEffect(() => {
+    console.log('Updated Alert State:', {
+      hasAlertCard,
+      alertMessage,
+      messageAlertType,
+    });
+  }, [hasAlertCard, alertMessage, messageAlertType]);
+
+  const handleDeviceRemove = async (index: number) => {
+    if (deviceData.length > 1 && deviceData[index][0]) {
+      const response = await removeDevicePackageId(
+        Number(deviceData[index][0]),
+      );
+      setDeviceListUpdate(true);
+      if (response.id) {
+        alertCardData(
+          true,
+          `Device ID ${response.id} removed from ${currentLocation} successfully.`,
+          'alert-success',
+        );
+      } else {
+        alertCardData(true, 'Failed to remove device', 'alert-error');
+      }
+    }
+    if (deviceData.length === 1 && clientInfoData.clientId === '') {
+      setShowConfirmCard(true);
+      setConfirmCardContent(
+        'Remove the last device will remove the package ID as the same time. Are you sure to remove the last device and the package?',
+      );
+      setCardFor('packageRemove');
+    }
+    if (deviceData.length === 1 && clientInfoData.clientId !== '') {
+      alertCardData(
+        true,
+        'Cannot remove the last device when client info exists in the package.',
+        'alert-error',
+      );
+      console.log(
+        'check alert card: ',
+        hasAlertCard,
+        alertMessage,
+        messageAlertType,
+      );
+    }
+  };
+
+  const handleRemoveClientBtn = () => {
+    setShowConfirmCard(true);
+    setConfirmCardContent('Are you sure to remove the client information?');
+    setCardFor('clientRemove');
+  };
+
+  const handleSubmitAddDevice = () => {
+    setAddDeviceSection(false);
+    setDeviceListUpdate(true);
+  };
+
+  const handleConfirm = async () => {
+    let message = '';
+    try {
+      if (cardFor === 'packageRemove') {
+        await deletePackage(parseInt(selectedId));
+        message = `PackageID ${selectedId} removed successfully.`;
+        router.push('./');
+      }
+      if (cardFor === 'clientRemove') {
+        await removePackageClientInfo(parseInt(selectedId));
+        message = 'Removed client information successfully.';
+      }
+      alertCardData(true, message, 'alert-success');
+      setHasClient(false);
+      setDeviceListUpdate(true);
+      setIsEditSection(false);
+      setShowConfirmCard(false);
+    } catch (error) {
+      alert('Error: Failed to remove. Please try again.');
+    }
+  };
+
+  const handleSuccessfulCard = (
+    hasSuccessfulCard: boolean,
+    successMessage: string,
+  ) => {
+    setHasAlertCard(hasSuccessfulCard);
+    setAlertMessage(successMessage);
+    setMessageAlertType('alert-success');
   };
 
   return (
@@ -133,41 +271,96 @@ export default function PackageId() {
           currentLocation={currentLocation}
           pathName="/packages"
         />
-        {hasClient || addClientSection ? (
-          <SubAddBtn btnName="Add Client" disabled />
-        ) : (
-          <SubAddBtn btnName="Add Client" handleClick={handleClick} />
-        )}
+        <div className="flex gap-3">
+          {isEditSection ? (
+            <SubAddBtn btnName="Done" handleClick={handleCancelBtn} />
+          ) : (
+            <SubAddBtn
+              btnName="Edit"
+              handleClick={() => setIsEditSection(true)}
+            />
+          )}
+        </div>
       </div>
-
-      {addClientSection ? (
-        <div>
-          <FormBar title="Assign Client to the Package" />
-          <AddClientInfoForm packageId={parseInt(selectedId)} />
+      {hasAlertCard && (
+        <div className="flex justify-end mx-5">
+          <div className="w-[500px]">
+            <MessageCard message={alertMessage} alertType={messageAlertType} />
+          </div>
         </div>
-      ) : (
-        // <Suspense fallback={<div>Loading...</div>}>
-        <div>
-          <DetailsContent
-            header={packageTitle}
-            data={packageData}
-            title="Package Information"
-          />
-          {loading && (
-            <div className="text-lg flex justify-center">Loading...</div>
-          )}
-          <div className="h-16"></div>
-          <DetailsContent
-            header={deviceTitle}
-            data={deviceData}
-            title="Device Information"
-          />
-          {loading && (
-            <div className="text-lg flex justify-center">Loading...</div>
-          )}
-        </div>
-        // {/* </Suspense> */}
       )}
+
+      {!isAddClientSection && !isUpdateDeviceSection && (
+        <EditPackageContent
+          clientCondition={hasClient}
+          editCondition={isEditSection}
+          loadingCondition={isLoading}
+          deviceData={deviceData}
+          packageData={packageData}
+          handleRemoveClientBtn={() => handleRemoveClientBtn()}
+          handleUpdateClientBtn={() => setIsAddClientSection(true)}
+          handleUpdateDeviceBtn={() => setIsUpdateDeviceSection(true)}
+        />
+      )}
+
+      {isAddClientSection && (
+        <div>
+          <FormBar title={updateClientFormBarTitle} />
+          <AddClientInfoForm
+            packageId={parseInt(selectedId)}
+            clientInfoData={clientInfoData}
+            handleSubCancelBtn={handleCancelBtn}
+            handleSubSubmitBtn={handleCancelBtn}
+            onSuccessfulSubmit={handleSuccessfulCard}
+          />
+        </div>
+      )}
+
+      {!addDeviceSection && isUpdateDeviceSection && (
+        <EditPackageDeviceContent
+          header={editDeviceTitle}
+          data={editDeviceData}
+          editData={editDeviceData}
+          handRemoveBtn={handleDeviceRemove}
+          handleAddBtn={() => setAddDeviceSection(true)}
+          deviceData={deviceData}
+        />
+      )}
+
+      {addDeviceSection && (
+        <div>
+          <FormBar title={addDeviceFormBarTitle} />
+          <div className="flex justify-center">
+            <div className="flex-col">
+              <p className="mb-1 font-bold">Note:</p>
+              <p className="mb-1 font-bold">Maximum device amount: 4</p>
+              <p className="mb-10 font-bold">
+                Current device amount in this package: {deviceData.length}
+              </p>
+              <AddPackageForm
+                deviceListLength={deviceData.length}
+                subPage
+                currentPackage={Number(selectedId)}
+                handleSubSubmitBtn={handleSubmitAddDevice}
+                handleSubCancelBtn={() => setAddDeviceSection(false)}
+                onSuccessfulSubmit={handleSuccessfulCard}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmCard && (
+        <ConfirmCard
+          title="Remove"
+          content={confirmCardContent}
+          category={cardFor}
+          handleConfirm={handleConfirm}
+          handleCancel={() => setShowConfirmCard(false)}
+        />
+      )}
+
+      <div className="h-24"></div>
     </div>
   );
 }
