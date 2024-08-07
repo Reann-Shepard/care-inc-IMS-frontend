@@ -22,7 +22,7 @@ export default function ManufacturerList() {
   return (
     <>
       <div className="overflow-x-auto mt-5 mx-5">
-        <div className="text-right mx-10">
+        <div className="text-right">
           <AddBtn
             pathName="manufacturer/new-manufacturer"
             element="Manufacturer"
