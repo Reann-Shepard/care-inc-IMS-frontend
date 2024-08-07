@@ -101,7 +101,7 @@ export default function ListTable({
   onClick = () => {},
 }: ListTableProps) {
   return (
-    <div>
+    <div className="mx-5">
       <table className="table table-sm border-2 w-full">
         <thead>
           <tr className="text-black bg-gray-200 text-center">
