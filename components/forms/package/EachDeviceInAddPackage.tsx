@@ -5,7 +5,7 @@ import DeviceDetailsInfo from '../../inputs/package/DeviceDetailsInfo';
 
 interface DeviceDataProps {
   index: number;
-  deviceId?: number;
+  deviceSn?: string;
   listTitle: string;
   deviceType?: string;
   deviceColor?: string;
@@ -15,7 +15,7 @@ interface DeviceDataProps {
 
 export default function DeviceFormInAddPackage({
   index,
-  deviceId,
+  deviceSn,
   listTitle,
   // typeData,
   deviceType,
@@ -38,14 +38,14 @@ export default function DeviceFormInAddPackage({
           <td onClick={onClickHandler}>
             <Controller
               control={control}
-              name={`devices.${index}.deviceId`}
-              defaultValue={deviceId ? deviceId : ''}
+              name={`devices.${index}.deviceSn`}
+              defaultValue={deviceSn ? deviceSn : ''}
               render={({ field }) => (
                 <InputBox
-                  label="Device ID"
-                  placeholder="Enter device ID"
+                  label="Device Serial Number"
+                  placeholder="Enter device serial number"
                   isRequired
-                  name={`devices.${index}.deviceId`}
+                  name={`devices.${index}.deviceSn`}
                   value={field.value}
                   onChangeHandler={field.onChange}
                 />

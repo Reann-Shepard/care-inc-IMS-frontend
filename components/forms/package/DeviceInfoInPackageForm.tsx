@@ -63,9 +63,9 @@ export default function DeviceInfoInPackageForm({
   const [isDeviceListUpdated, setIsDeviceListUpdated] =
     useState<boolean>(false);
   // get device id which is being modified
-  const getEachDeviceId = useWatch({
+  const getEachDeviceSn = useWatch({
     control: form.control,
-    name: `devices.${modifyingIndex}.deviceId`,
+    name: `devices.${modifyingIndex}.deviceSn`,
   });
 
   // clear device data when device is not found and when device id input is empty
@@ -85,13 +85,13 @@ export default function DeviceInfoInPackageForm({
   useEffect(() => {
     setIsDeviceListUpdated(false);
     // no device id input
-    if (!getEachDeviceId) {
+    if (!getEachDeviceSn) {
       clearDeviceData();
       return;
     }
 
     const thisDeviceInfo = allDevices.find(
-      (device) => device.id === parseInt(getEachDeviceId),
+      (device) => device.serialNumber === getEachDeviceSn,
     );
 
     // device id not found
@@ -124,37 +124,38 @@ export default function DeviceInfoInPackageForm({
     );
     setThisDeviceType((prev) => updatedInfo(prev, newDeviceType?.name || ''));
     console.log('check', deviceAmount);
-  }, [getEachDeviceId, deviceAmount, isDeviceListUpdated]);
+  }, [getEachDeviceSn, deviceAmount, isDeviceListUpdated]);
 
   // check if device id is duplicated, unknown, or unavailable
+
   useEffect(() => {
-    let deviceIds: string | string[] = [];
+    let deviceSns: string | string[] = [];
     let deviceDuplicates = [];
     let deviceWarnings: string[] = [];
     let deviceErrors: string[] = [];
     for (let i = 0; i < deviceAmount; i++) {
-      const deviceId = form.getValues(`devices.${i}.deviceId`);
+      const deviceSn = form.getValues(`devices.${i}.deviceSn`);
       // to check if device id is already in the form
-      if (deviceIds.length > 0 && deviceId !== '') {
-        if (deviceIds.includes(deviceId)) {
-          deviceDuplicates.push(deviceId);
+      if (deviceSns.length > 0 && deviceSn !== '') {
+        if (deviceSns.includes(deviceSn)) {
+          deviceDuplicates.push(deviceSn);
         }
       }
-      deviceIds.push(deviceId);
+      deviceSns.push(deviceSn);
 
-      const checkId = allDevices.find(
-        (device) => device.id === parseInt(deviceId),
+      const checkSn = allDevices.find(
+        (device) => device.serialNumber === deviceSn,
       );
 
-      if (deviceId) {
-        if (!checkId) {
-          if (!deviceErrors.includes(deviceId)) {
-            deviceErrors.push(deviceId);
+      if (deviceSn) {
+        if (!checkSn) {
+          if (!deviceErrors.includes(deviceSn)) {
+            deviceErrors.push(deviceSn);
           }
         } else {
-          if (checkId.packageId || checkId.sellDate) {
-            if (!deviceWarnings.includes(deviceId)) {
-              deviceWarnings.push(deviceId);
+          if (checkSn.packageId || checkSn.sellDate) {
+            if (!deviceWarnings.includes(deviceSn)) {
+              deviceWarnings.push(deviceSn);
             }
           }
         }
@@ -167,7 +168,49 @@ export default function DeviceInfoInPackageForm({
     setErrorDeviceId(deviceErrors.sort());
     setHasUnavailableWarning(deviceWarnings.length > 0);
     setWarningDeviceId(deviceWarnings.sort());
-  }, [getEachDeviceId]);
+  }, [getEachDeviceSn]);
+
+  // const checkSnValidity = () => {
+  //   let deviceSns: string | string[] = [];
+  //   let deviceDuplicates = [];
+  //   let deviceWarnings: string[] = [];
+  //   let deviceErrors: string[] = [];
+  //   for (let i = 0; i < deviceAmount; i++) {
+  //     const deviceSn = form.getValues(`devices.${i}.deviceSn`);
+  //     // to check if device id is already in the form
+  //     if (deviceSns.length > 0 && deviceSn !== '') {
+  //       if (deviceSns.includes(deviceSn)) {
+  //         deviceDuplicates.push(deviceSn);
+  //       }
+  //     }
+  //     deviceSns.push(deviceSn);
+
+  //     const checkSn = allDevices.find(
+  //       (device) => device.serialNumber === deviceSn,
+  //     );
+
+  //     if (deviceSn) {
+  //       if (!checkSn) {
+  //         if (!deviceErrors.includes(deviceSn)) {
+  //           deviceErrors.push(deviceSn);
+  //         }
+  //       } else {
+  //         if (checkSn.packageId || checkSn.sellDate) {
+  //           if (!deviceWarnings.includes(deviceSn)) {
+  //             deviceWarnings.push(deviceSn);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   setHasDuplicateWarning(deviceDuplicates.length > 0);
+  //   setDuplicatedDeviceId(deviceDuplicates.sort());
+  //   setHasUnknownWarning(deviceErrors.length > 0);
+  //   setErrorDeviceId(deviceErrors.sort());
+  //   setHasUnavailableWarning(deviceWarnings.length > 0);
+  //   setWarningDeviceId(deviceWarnings.sort());
+  // }
 
   const handleAddDevice = useCallback(() => {
     setIsDeviceListUpdated(true);
@@ -177,7 +220,7 @@ export default function DeviceInfoInPackageForm({
   const handleRemoveDevice = useCallback(() => {
     setIsDeviceListUpdated(true);
     setDeviceAmount((getDeviceAmount) => getDeviceAmount - 1);
-    form.setValue(`devices.${deviceAmount - 1}.deviceId`, '');
+    form.setValue(`devices.${deviceAmount - 1}.deviceSn`, '');
     setThisDeviceType((prev) => prev.slice(0, -1));
     setThisDeviceColor((prev) => prev.slice(0, -1));
     setThisDeviceManufacturer((prev) => prev.slice(0, -1));

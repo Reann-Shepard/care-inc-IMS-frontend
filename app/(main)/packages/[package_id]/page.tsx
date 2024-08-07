@@ -83,7 +83,12 @@ export default function PackageId() {
     }
   };
 
-  const editDeviceTitle = ['Device ID', 'Manufacturer', 'Color', 'Type'];
+  const editDeviceTitle = [
+    'Device Serial Number',
+    'Manufacturer',
+    'Color',
+    'Type',
+  ];
 
   // fetch data
   useEffect(() => {
@@ -123,7 +128,7 @@ export default function PackageId() {
         (device) => device.packageId === parseInt(selectedId),
       );
       const data = thisPackageDevices.map(async (thisDevice) => [
-        thisDevice.id,
+        // thisDevice.id,
         thisDevice.serialNumber,
         await getThisManufacturerName(thisDevice.manufacturerId),
         await getThisColorName(thisDevice.colorId),
@@ -161,9 +166,9 @@ export default function PackageId() {
     }
     const editDeviceDataTemp = deviceData.map((device) => [
       device[0],
+      device[1],
       device[2],
       device[3],
-      device[4],
     ]);
     setEditDeviceData(editDeviceDataTemp);
   }, [packages, deviceData, hasClient]);
@@ -184,15 +189,15 @@ export default function PackageId() {
   }, [hasAlertCard, alertMessage, messageAlertType]);
 
   const handleDeviceRemove = async (index: number) => {
-    if (deviceData.length > 1 && deviceData[index][0]) {
+    if (deviceData.length > 1 && deviceData[index][1]) {
       const response = await removeDevicePackageId(
-        Number(deviceData[index][0]),
+        deviceData[index][1]!.toString(),
       );
       setDeviceListUpdate(true);
       if (response.id) {
         alertCardData(
           true,
-          `Device ID ${response.id} removed from ${currentLocation} successfully.`,
+          `Device ${response.id} removed from ${currentLocation} successfully.`,
           'alert-success',
         );
       } else {
@@ -284,7 +289,7 @@ export default function PackageId() {
       </div>
       {hasAlertCard && (
         <div className="flex justify-end mx-5">
-          <div className="w-[500px]">
+          <div className="w-[420px]">
             <MessageCard message={alertMessage} alertType={messageAlertType} />
           </div>
         </div>

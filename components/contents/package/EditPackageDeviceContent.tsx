@@ -1,6 +1,5 @@
 import SubAddBtn from '@/components/buttons/package/SubAddBtn';
 import DetailsContent from './DetailsContent';
-import MessageCard from '@/components/cards/MessageCard';
 
 interface EditPackageDeviceContentProps {
   header: string[];

@@ -2,9 +2,9 @@ import { Device } from '@/entities/Device';
 import apiClient from '../auth/axios-interceptor';
 
 // Patch
-const updateDevice = async (id: number, data: Partial<Device>) => {
+const updateDevice = async (sn: string, data: Partial<Device>) => {
   try {
-    const response = await apiClient.patch(`/device/${id}`, data);
+    const response = await apiClient.patch(`/device/${sn}`, data);
     console.log('Device data: ', response.data);
     return response.data;
   } catch (error) {
@@ -13,10 +13,10 @@ const updateDevice = async (id: number, data: Partial<Device>) => {
   }
 };
 
-const removeDevicePackageId = async (id: number) => {
+const removeDevicePackageId = async (sn: string) => {
   try {
     const response = await apiClient.patch(
-      `/device/${id}/remove-package-id-null`,
+      `/device/${sn}/remove-package-id-null`,
     );
     return response.data;
   } catch (error) {

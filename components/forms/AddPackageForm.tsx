@@ -20,7 +20,6 @@ import MessageCard from '@/components/cards/MessageCard';
 import SubAddBtn from '../buttons/package/SubAddBtn';
 import SubSubmitAndCancelBtn from '../buttons/package/SubSubmitAndCancelBtn';
 import DeviceInfoInPackageForm from './package/DeviceInfoInPackageForm';
-import { setTime } from 'react-datepicker/dist/date_utils';
 
 interface AddPackageFormProps {
   deviceListLength?: number;
@@ -36,7 +35,7 @@ interface AddPackageFormProps {
 
 interface DeviceData {
   type: string;
-  deviceId: string;
+  deviceSn: string;
 }
 
 interface newPackageInputData {
@@ -125,6 +124,7 @@ export default function AddPackage({
 
   const onSubmit = async (data: newPackageInputData) => {
     try {
+      // checkSnValidity();
       if (
         !hasUnavailableWarning &&
         !hasUnknownWarning &&
@@ -146,7 +146,7 @@ export default function AddPackage({
         setSuccessMessage(`Package ID ${response.id} is successfully created.`);
 
         for (let i = 0; i < deviceAmount; i++) {
-          await updateDevice(parseInt(data.devices[i].deviceId), {
+          await updateDevice(data.devices[i].deviceSn, {
             packageId: response.id,
           });
         }
@@ -157,9 +157,17 @@ export default function AddPackage({
         setThisDeviceManufacturer([]);
         setThisDeviceType([]);
 
-        if (hasSuccessfulCard) {
+        if (
+          hasSuccessfulCard ||
+          hasUnknownWarning ||
+          hasDuplicateWarning ||
+          hasUnavailableWarning
+        ) {
           setTimeout(() => {
             setHasSuccessfulCard(false);
+            setHasUnknownWarning(false);
+            setHasDuplicateWarning(false);
+            setHasUnavailableWarning(false);
           }, 5000);
         }
       }
@@ -170,7 +178,7 @@ export default function AddPackage({
 
   const onSubmitSubPage = async () => {
     let currentDeviceId;
-    let ids: string[] = [];
+    let sns: string[] = [];
     try {
       if (
         !hasUnavailableWarning &&
@@ -178,16 +186,16 @@ export default function AddPackage({
         !hasDuplicateWarning
       ) {
         for (let i = 0; i < deviceAmount; i++) {
-          currentDeviceId = form.getValues(`devices.${i}.deviceId`);
-          await updateDevice(Number(currentDeviceId), {
+          currentDeviceId = form.getValues(`devices.${i}.deviceSn`);
+          await updateDevice(currentDeviceId, {
             packageId: currentPackage,
           });
-          ids.push(currentDeviceId);
+          sns.push(currentDeviceId);
         }
         if (onSuccessfulSubmit) {
           onSuccessfulSubmit(
             true,
-            `Device ID ${ids} are successfully added to package ID ${currentPackage}.`,
+            `Device ${sns} are successfully added to package ID ${currentPackage}.`,
           );
         }
       }
@@ -273,19 +281,19 @@ export default function AddPackage({
           {hasDuplicateWarning && (
             <MessageCard
               alertType="alert-warning"
-              message={`Warning: Device ID ${duplicateDeviceId} is already in the form.`}
+              message={`Warning: Device ${duplicateDeviceId} is already in the form.`}
             />
           )}
           {hasUnavailableWarning && (
             <MessageCard
               alertType="alert-warning"
-              message={`Warning: Device ID ${warningDeviceId} is not available to be assigned to the package.`}
+              message={`Warning: Device ${warningDeviceId} is not available to be assigned to the package.`}
             />
           )}
           {hasUnknownWarning && (
             <MessageCard
               alertType="alert-error"
-              message={`Error: Device ID ${errorDeviceId} is not found.`}
+              message={`Error: Device ${errorDeviceId} is not found.`}
             />
           )}
 
