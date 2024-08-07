@@ -13,6 +13,7 @@ import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { deviceToInv } from '@/services/device/deviceToInv';
+import AddBtn from '@/components/buttons/AddBtn';
 
 // Interface for inventory data
 export interface InvData {
@@ -24,31 +25,31 @@ export interface InvData {
 }
 
 export default function Inventory() {
-  const [devices, setDevices] = useState<InvData[]>([]); // State for holding filtered devices
-  const [dataSet, setDataSet] = useState<InvData[]>([]); // State for holding all devices
-  const [sort, setSort] = useState<keyof InvData | ''>(); // State for sorting key
-  const [selectedModel, setSelectedModel] = useState<string>('All'); // State for selected model
+  const [devices, setDevices] = useState<InvData[]>([]);
+  const [dataSet, setDataSet] = useState<InvData[]>([]);
+  const [sort, setSort] = useState<keyof InvData | ''>();
+  const [selectedModel, setSelectedModel] = useState<string>('All');
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const modelParam = searchParams.get('model'); // Get selected model from url search params
+  const modelParam = searchParams.get('model');
 
   useEffect(() => {
     // Fetch all devices and transform data to inventory format
     const fetchDevices = async () => {
       try {
         const data = await getAllDevices();
-        const transformedData = await deviceToInv(data); // Transform device data to inventory format
-        setDataSet(transformedData); // Set all devices
-        setDevices([...transformedData]); // Set filtered devices
-        setSelectedModel(modelParam || 'All'); // Set selected model from url search params
+        const transformedData = await deviceToInv(data);
+        setDataSet(transformedData);
+        setDevices([...transformedData]);
+        setSelectedModel(modelParam || 'All');
       } catch (error) {
-        console.error('Error fetching devices', error); // Log error if fetching devices fails
+        console.error('Error fetching devices', error);
       }
     };
 
-    fetchDevices(); // Fetch devices when the component mounts
-  }, [modelParam]); // Fetch devices when modelParam changes
+    fetchDevices();
+  }, [modelParam]);
 
   // Get unique models from the dataset
   const uniqueModels = Array.from(
@@ -61,13 +62,13 @@ export default function Inventory() {
     const sortedDevices = devices.sort((a, b) =>
       a[sortBy].localeCompare(b[sortBy]),
     );
-    setDevices([...sortedDevices]); // Set sorted devices in state
+    setDevices([...sortedDevices]);
   };
 
   // Handle Model Change
   const handleModelChange = (newModel: string) => {
-    setSelectedModel(newModel); // Set selected model
-    router.push(`?model=${newModel}`); // Push new model to url
+    setSelectedModel(newModel);
+    router.push(`?model=${newModel}`);
   };
 
   useEffect(() => {
@@ -75,24 +76,24 @@ export default function Inventory() {
       setDevices([...dataSet]);
     } else {
       const filteredDevices = dataSet.filter(
-        (device) => device.model === selectedModel, // Filter devices based on selected model
+        (device) => device.model === selectedModel,
       );
       setDevices(filteredDevices);
     }
-    setSort(''); // Reset sorting when model changes
-  }, [selectedModel, dataSet]); // Update devices when selected model or dataset changes
+    setSort('');
+  }, [selectedModel, dataSet]);
 
   useEffect(() => {
     if (sort) {
-      handleSort(sort); // Handle sorting when sort key changes
+      handleSort(sort);
     }
-  }, [sort]); // Update devices when sort key changes
+  }, [sort]);
 
   // Table Headers and Data
   const headers =
     selectedModel === 'All'
-      ? ['Model', 'Color', 'Device Type', 'Serial Number', 'Package'] // Table headers for all models
-      : ['Color', 'Device Type', 'Serial Number', 'Package']; // Table headers for selected model
+      ? ['Model', 'Color', 'Device Type', 'Serial Number', 'Package']
+      : ['Color', 'Device Type', 'Serial Number', 'Package'];
 
   // Filter devices based on package status
   const asg = devices
@@ -129,7 +130,6 @@ export default function Inventory() {
               <option value="" disabled selected>
                 Select
               </option>
-              {/* <option value="model">Model</option> */}
               <option value="color">Color</option>
               <option value="type">Device Type</option>
             </select>
@@ -160,12 +160,7 @@ export default function Inventory() {
         )}
 
         <div className="w-96 flex justify-end">
-          <Link
-            href="/inventory/add_inventory"
-            className="btn px-10 font-bold text-white bg-[#54CE50]"
-          >
-            +
-          </Link>
+          <AddBtn pathName="/inventory/add_inventory" element="Device" />
         </div>
       </div>
 

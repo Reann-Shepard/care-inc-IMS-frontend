@@ -1,9 +1,10 @@
 'use client';
-import Link from 'next/link'; // import Link from 'next/link' for client-side navigation
+
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'; // import hooks for accessing url search parameters and navigation
-import { getAllDevices } from '@/services/device/getDevice'; // import function to fetch all devices
+import { useSearchParams, useRouter } from 'next/navigation';
+import { getAllDevices } from '@/services/device/getDevice';
 import { deviceToInv } from '@/services/device/deviceToInv';
+import AddBtn from '@/components/buttons/AddBtn';
 
 export const metadata = {
   title: 'Inventory',
@@ -15,17 +16,17 @@ interface CategoryData {
 }
 
 export default function InventoryOVPage() {
-  const router = useRouter(); // initialize the router object
-  const [devices, setDevices] = useState<CategoryData[]>([]); // initialize the state for categorized inventory data
-  const searchParams = useSearchParams(); // initialize the searchParams object to access url search parameters
-  const selectedModel = searchParams.get('model'); // extract the selected model from the url search parameters
+  const router = useRouter();
+  const [devices, setDevices] = useState<CategoryData[]>([]);
+  const searchParams = useSearchParams();
+  const selectedModel = searchParams.get('model');
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const data = await getAllDevices(); // fetch all devices from the database
-        const invData = await deviceToInv(data); // convert device data to inventory data format using the deviceToInv function
-        const modelCounts: { [key: string]: number } = {}; // initialize an object to store model counts
+        const data = await getAllDevices();
+        const invData = await deviceToInv(data);
+        const modelCounts: { [key: string]: number } = {};
 
         invData.forEach((device) => {
           modelCounts[device.model] = (modelCounts[device.model] || 0) + 1;
@@ -33,16 +34,16 @@ export default function InventoryOVPage() {
 
         const categorizedData = Object.keys(modelCounts).map((model) => ({
           model,
-          quantity: modelCounts[model], // create an array of objects with model and quantity properties
+          quantity: modelCounts[model],
         }));
 
-        setDevices(categorizedData); // set the state with the categorized inventory data
+        setDevices(categorizedData);
       } catch (error) {
-        console.error('Error fetching devices', error); // log an error message if fetching devices fails
+        console.error('Error fetching devices', error);
       }
     };
 
-    fetchDevices(); // Fetching devices when the component mounts
+    fetchDevices();
   }, []);
 
   // navigate to the detailed inventory list page for the selected model
@@ -83,12 +84,7 @@ export default function InventoryOVPage() {
   return (
     <div>
       <div className="flex justify-end mb-2 mr-10">
-        <Link
-          href="/inventory/add_inventory"
-          className="btn px-10 font-bold text-white bg-[#54CE50]"
-        >
-          +
-        </Link>
+        <AddBtn pathName="/inventory/add_inventory" element="Device" />
       </div>
 
       <div className="flex justify-between mx-24">
