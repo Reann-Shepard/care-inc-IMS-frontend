@@ -26,7 +26,7 @@ import { deviceToInv } from '@/services/device/deviceToInv';
 import MessageCard from '../cards/MessageCard';
 // import MessageCard from '@/components/cards/package/MessageCard';
 
-interface newInventoryInputData {
+export interface newInventoryInputData {
   stockDate: string;
   manufacturer: string;
   type: string;
