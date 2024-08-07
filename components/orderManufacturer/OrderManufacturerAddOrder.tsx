@@ -16,6 +16,7 @@ interface RowData {
 const OrderManufacturerAddOrder = () => {
   const [rows, setRows] = useState<RowData[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
   const [manufacturerOptions, setManufacturerOptions] = useState<
     { value: number; label: string }[]
   >([]);
@@ -25,7 +26,6 @@ const OrderManufacturerAddOrder = () => {
   const [colorOptions, setColorOptions] = useState<
     { value: number; label: string }[]
   >([]);
-  const [commonManufacturer, setCommonManufacturer] = useState<string>('');
   const {
     handleSubmit,
     setValue,
@@ -40,7 +40,7 @@ const OrderManufacturerAddOrder = () => {
 
   const router = useRouter();
 
-  watch('commonManufacturer');
+  const commonManufacturer = watch('commonManufacturer');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +68,7 @@ const OrderManufacturerAddOrder = () => {
       prevRows.filter((_, index) => !selectedRows.includes(index)),
     );
     setSelectedRows([]);
+    setSelectAll(false);
   };
 
   const handleCheckboxChange = (index: number) => {
@@ -76,6 +77,15 @@ const OrderManufacturerAddOrder = () => {
         ? prevSelectedRows.filter((rowIndex) => rowIndex !== index)
         : [...prevSelectedRows, index],
     );
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(rows.map((_, index) => index));
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleSelectChange = (index: number, field: string, value: number) => {
@@ -176,7 +186,12 @@ const OrderManufacturerAddOrder = () => {
             <tr className="bg-gray-200">
               <th className="text-base text-black font-semibold">
                 <label>
-                  <input type="checkbox" className="checkbox" />
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                  />
                 </label>
               </th>
               <th className="text-base text-black font-semibold">Type</th>
