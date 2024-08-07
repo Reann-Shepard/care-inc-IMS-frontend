@@ -13,9 +13,7 @@ import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { deviceToInv } from './deviceToInv';
-import SortByBtn from '@/components/buttons/SortByBtn';
-import FilterBtn from '@/components/buttons/FilterBtn';
-import { set } from 'zod';
+import AddBtn from '../buttons/AddBtn';
 
 // Interface for inventory data
 export interface InvData {
@@ -100,7 +98,7 @@ export default function Inventory() {
 
   // Filter devices based on package status
   const ASS = devices
-    .filter((device) => device.package === 'Yes')
+    .filter((device) => device.package === '🟢')
     .map((device) =>
       selectedModel === 'All'
         ? [device.model, device.color, device.type, device.SN, device.package]
@@ -165,12 +163,7 @@ export default function Inventory() {
         )}
 
         <div className="w-96 flex justify-end">
-          <Link
-            href="/inventory/add_inventory"
-            className="btn px-10 font-bold text-white bg-[#54CE50]"
-          >
-            +
-          </Link>
+          <AddBtn pathName="/inventory/add_inventory" element="Inventory" />
         </div>
       </div>
 

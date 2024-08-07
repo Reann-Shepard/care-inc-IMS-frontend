@@ -8,6 +8,7 @@ import { getAllOrderManufacturers } from '@/services/orderManufacturer/getOrderM
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import AddBtn from '../buttons/AddBtn';
 
 export default function OrderManufacturerList() {
   const [orderManufacturers, setOrderManufacturers] = useState<
@@ -100,16 +101,14 @@ export default function OrderManufacturerList() {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <div className="flex justify-between mx-8 mb-2">
+    <div className="overflow-x-auto mt-5">
+      <div className="flex justify-between mx-8 mb-5">
         <div className="relative">
           <span>Filter By: </span>
           <ManufacturerFilter onManufacturerSelect={setSelectedManufacturer} />
           <OrderedAtFilter onDateRangeSelect={setSelectedDateRange} />
         </div>
-        <Link href="/order-manufacturer/new">
-          <button className="btn btn-outline btn-success">+ Add Order</button>
-        </Link>
+        <AddBtn pathName="/order-manufacturer/new" element="Order" />
       </div>
       {selectedManufacturer || selectedDateRange ? (
         <div className="border-t border-gray-200 p-1 my-2">
@@ -171,18 +170,14 @@ export default function OrderManufacturerList() {
       </div>
       <div className="table-wrapper">
         <table className="table">
-          <thead>
+          <thead className="text-black">
             <tr className="bg-gray-200">
-              <th className="text-base text-black font-semibold">#</th>
-              <th className="text-base text-black font-semibold">
-                Manufacturers
-              </th>
-              <th className="text-base text-black font-semibold">Amount</th>
-              <th className="text-base text-black font-semibold">Order Date</th>
-              <th className="text-base text-black font-semibold">
-                Stock In Date
-              </th>
-              <th className="text-base text-black font-semibold">Actions</th>
+              <th>#</th>
+              <th>Manufacturers</th>
+              <th>Amount</th>
+              <th>Order Date</th>
+              <th>Stock In Date</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>

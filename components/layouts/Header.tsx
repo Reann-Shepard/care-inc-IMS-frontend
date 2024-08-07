@@ -32,13 +32,13 @@ export default function Header() {
         <span className="text-white text-xl font-normal">
           INVENTORY MANAGEMENT SYSTEM
         </span>
-        <div className="form-control">
+        {/* <div className="form-control">
           <input
             type="text"
             placeholder="Search"
             className="input input-bordered w-20 md:w-auto h-7 mt-2"
           />
-        </div>
+        </div> */}
       </div>
       <div className="flex items-end h-16">
         <div>
