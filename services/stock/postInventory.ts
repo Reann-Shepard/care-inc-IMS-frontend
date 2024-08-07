@@ -73,7 +73,7 @@ const postInventory = async (data: newInventoryInputData) => {
 
   // Constructing the inventory data object to be posted
   const inventoryData = {
-    serialNumber: data.serialNumber1,
+    serialNumber: data.serialNumber,
     stockInDate: new Date(data.stockDate).toISOString(),
     // Finding the ID of the color, manufacturer, and type from the list of colors, manufacturers, and types
     color: Number(colorList.find((color) => color.name === data.color)?.id),

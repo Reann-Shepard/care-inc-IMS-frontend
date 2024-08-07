@@ -7,7 +7,7 @@ import { Device } from '@/entities/Device';
 import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
 import { getAllColors } from '@/services/color/getColor';
 import { getAllTypes } from '@/services/type/getType';
-import { InvData } from './inventory_page';
+import { InvData } from '../../components/inventory/InventoryPage';
 
 const deviceToInv = async (devices: Device[]) => {
   let manufacturers: Manufacturer[] = [];

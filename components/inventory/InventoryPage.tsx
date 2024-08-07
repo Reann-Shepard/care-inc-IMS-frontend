@@ -12,8 +12,10 @@ import Link from 'next/link';
 import React, { useState, useEffect, use } from 'react';
 import { getAllDevices } from '@/services/device/getDevice';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { deviceToInv } from './deviceToInv';
-import AddBtn from '../buttons/AddBtn';
+import { deviceToInv } from '@/services/device/deviceToInv';
+import SortByBtn from '@/components/buttons/SortByBtn';
+import FilterBtn from '@/components/buttons/FilterBtn';
+import { set } from 'zod';
 
 // Interface for inventory data
 export interface InvData {
@@ -97,15 +99,15 @@ export default function Inventory() {
       : ['Color', 'Device Type', 'Serial Number', 'Package']; // Table headers for selected model
 
   // Filter devices based on package status
-  const ASS = devices
-    .filter((device) => device.package === '🟢')
+  const asg = devices
+    .filter((device) => device.package === 'Yes')
     .map((device) =>
       selectedModel === 'All'
         ? [device.model, device.color, device.type, device.SN, device.package]
         : [device.color, device.type, device.SN, device.package],
     );
 
-  const UASS = devices
+  const uasg = devices
     .filter((device) => device.package === '')
     .map((device) =>
       selectedModel === 'All'
@@ -131,16 +133,15 @@ export default function Inventory() {
               <option value="" disabled selected>
                 Select
               </option>
-              <option value="model">Model</option>
+              {/* <option value="model">Model</option> */}
               <option value="color">Color</option>
               <option value="type">Device Type</option>
-              <option value="SN">Serial Number</option>
             </select>
           </div>
           <div>
             <label htmlFor="filter" className="mr-2">
               {' '}
-              Filter:{' '}
+              Filter by Model:{' '}
             </label>
             <select
               id="filter"
@@ -163,12 +164,17 @@ export default function Inventory() {
         )}
 
         <div className="w-96 flex justify-end">
-          <AddBtn pathName="/inventory/add_inventory" element="Inventory" />
+          <Link
+            href="/inventory/add_inventory"
+            className="btn px-10 font-bold text-white bg-[#54CE50]"
+          >
+            +
+          </Link>
         </div>
       </div>
 
       <div>
-        <Table header={headers} data={[...UASS, ...ASS]} />
+        <Table header={headers} data={[...uasg, ...asg]} />
       </div>
     </>
   );

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 interface InputBoxProps {
+  type?: string;
   label?: string;
   placeholder: string;
   isRequired?: boolean;
@@ -11,6 +12,7 @@ interface InputBoxProps {
 }
 
 export default function InputBox({
+  type = '',
   label = '',
   placeholder,
   isRequired,
@@ -25,7 +27,7 @@ export default function InputBox({
         {isRequired && <span className="font-bold text-red-600">*</span>}
       </p>
       <input
-        type="text"
+        type={type ? type : 'text'}
         placeholder={placeholder}
         name={name}
         value={value || ''}

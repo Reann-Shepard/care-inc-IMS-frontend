@@ -1,27 +1,28 @@
 import React, { memo, useEffect } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import InputBox from '../../inputs/InputBox';
-import InputDropdownBox from '../../inputs/InputDropdownBox';
 import DeviceDetailsInfo from '../../inputs/package/DeviceDetailsInfo';
 
 interface DeviceDataProps {
   index: number;
+  deviceId?: number;
   listTitle: string;
-  // typeData?: string[];
   deviceType?: string;
   deviceColor?: string;
   deviceManufacturer?: string;
-  // onChangeHandler?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClickHandler?: () => void;
 }
 
 export default function DeviceFormInAddPackage({
   index,
+  deviceId,
   listTitle,
   // typeData,
   deviceType,
   deviceColor,
   deviceManufacturer,
   // onChangeHandler=()=>{},
+  onClickHandler,
 }: DeviceDataProps) {
   const { control } = useFormContext();
 
@@ -34,11 +35,11 @@ export default function DeviceFormInAddPackage({
           </td>
         </tr>
         <tr>
-          <td>
+          <td onClick={onClickHandler}>
             <Controller
               control={control}
               name={`devices.${index}.deviceId`}
-              defaultValue={''}
+              defaultValue={deviceId ? deviceId : ''}
               render={({ field }) => (
                 <InputBox
                   label="Device ID"
@@ -58,25 +59,8 @@ export default function DeviceFormInAddPackage({
               label="Type"
               placeholder="Type"
               value={deviceType || ''}
-              index={index}
+              // index={index}
             />
-            {/* <Controller 
-              control={control}
-              name={`devices.${index}.type`}
-              defaultValue={''}
-              render={({ field }) => (
-                <InputDropdownBox
-                  label="Type"
-                  placeholder="Select type"
-                  name={`devices.${index}.type`}
-                  data={typeData}
-                  value={field.value}
-                  onChangeHandler={field.onChange}
-                />
-                
-              )}
-              rules={{ required: true }}
-            /> */}
           </td>
         </tr>
         <tr>
@@ -86,7 +70,7 @@ export default function DeviceFormInAddPackage({
               label="Color"
               placeholder="Color"
               value={deviceColor || ''}
-              index={index}
+              // index={index}
             />
           </td>
           <td className="pl-12">
@@ -95,7 +79,7 @@ export default function DeviceFormInAddPackage({
               label="Manufacturer"
               placeholder="Manufacturer"
               value={deviceManufacturer || ''}
-              index={index}
+              // index={index}
             />
           </td>
         </tr>

@@ -8,12 +8,20 @@ import { getAllClients } from '@/services/client/getClient';
 import { updatePackage } from '@/services/package/updatePackage';
 import { set } from 'zod';
 import { clear } from 'console';
+import SubSubmitAndCancelBtn from '@/components/buttons/package/SubSubmitAndCancelBtn';
 
 interface AddClientInfoFormProps {
+  handleSubCancelBtn?: () => void;
+  handleSubSubmitBtn?: () => void;
+  clientInfoData?: newClientInputData;
   packageId: number;
+  onSuccessfulSubmit?: (
+    hasSuccessfulCard: boolean,
+    successMessage: string,
+  ) => void;
 }
 
-interface newClientInputData {
+export interface newClientInputData {
   clientId: string;
   fittingDate: string;
   warrantyDate: string;
@@ -22,6 +30,10 @@ interface newClientInputData {
 
 export default function AddClientInfoForm({
   packageId,
+  clientInfoData,
+  handleSubCancelBtn,
+  handleSubSubmitBtn,
+  onSuccessfulSubmit,
 }: AddClientInfoFormProps) {
   const methods = useForm<newClientInputData>();
   const { reset, handleSubmit } = methods;
@@ -54,8 +66,11 @@ export default function AddClientInfoForm({
       };
 
       await updatePackage(packageId, clientInfo);
-      alert(`This Package's client info has been updated`);
+      // alert(`This Package's client info has been updated`);
+      onSuccessfulSubmit &&
+        onSuccessfulSubmit(true, `Client information has been updated.`);
       reset(clearData);
+      handleSubSubmitBtn && handleSubSubmitBtn();
     } catch (error) {
       console.error('Failed to update Package data: ', error);
     }
@@ -66,11 +81,16 @@ export default function AddClientInfoForm({
       <div className="mt-20 flex justify-center">
         <FormProvider {...methods}>
           <form className="w-fit" onSubmit={handleSubmit(onSubmit)}>
-            <p>Package Id: {packageId}</p>
+            {/* <p>Package Id: {packageId}</p> */}
             <ClientPackageForm
               clientsData={allClients.map((client) => client.id)}
+              clientInfo={clientInfoData}
             />
-            <SubmitAndCancelDiv cancelPath="./" />
+            {handleSubCancelBtn && handleSubSubmitBtn ? (
+              <SubSubmitAndCancelBtn handlePath={handleSubCancelBtn} />
+            ) : (
+              <SubmitAndCancelDiv cancelPath="./" />
+            )}
           </form>
         </FormProvider>
       </div>
