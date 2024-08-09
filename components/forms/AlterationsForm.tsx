@@ -333,7 +333,7 @@ export default function AlterationsForm() {
                     <span>Form Submitted</span>
                   </div>
                 ) : null}
-                <SubmitAndCancelDiv cancelPath="./overview" />
+                <SubmitAndCancelDiv cancelPath="/" />
               </td>
             </tr>
           </tbody>

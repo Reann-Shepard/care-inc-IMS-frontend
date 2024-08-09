@@ -4,17 +4,20 @@ import ListTable from '../tables/ListTable';
 import { useState, useEffect } from 'react';
 import { getAllRepairs } from '@/services/repair/getRepair';
 import dayjs from 'dayjs';
+import { Manufacturer } from '@/entities/manufacturer';
+import { getAllManufacturers } from '@/services/overview/getOverviewManufacturer';
 
 interface AlterationData {
   clientId: string;
   manufacturerId: string;
   reason: string;
-  shipDate: Date;
+  shippingDate: Date;
   receivedDate: Date;
 }
 
 export default function AlterationsContent() {
   const [repairData, setRepairData] = useState<AlterationData[]>([]);
+  const [manufacturerData, setManufacturerData] = useState<Manufacturer[]>([]);
 
   const header = [
     'Client ID',
@@ -32,6 +35,12 @@ export default function AlterationsContent() {
       } catch (error) {
         console.error('Error fetching alterations', error);
       }
+      try {
+        const manufacturers = await getAllManufacturers();
+        setManufacturerData(manufacturers);
+      } catch (error) {
+        console.error('Error fetching manufacturer', error);
+      }
     };
 
     fetchAlterations();
@@ -39,9 +48,11 @@ export default function AlterationsContent() {
 
   const data = repairData.map((repair) => [
     repair.clientId,
-    repair.manufacturerId,
+    manufacturerData.find(
+      (manufacturer) => manufacturer.id === Number(repair.manufacturerId),
+    )?.name || '',
     repair.reason,
-    dayjs(repair.shipDate).format('MM-DD-YYYY'),
+    repair.shippingDate ? dayjs(repair.shippingDate).format('MM-DD-YYYY') : '',
     repair.receivedDate ? dayjs(repair.receivedDate).format('MM-DD-YYYY') : '',
   ]);
   return (
